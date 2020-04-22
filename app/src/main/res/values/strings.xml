@@ -37,6 +37,11 @@
     <string name="send_message_menu">Send</string>
     <string name="cancel_sending_menu">Cancel</string>
 
+    <string name="delete_message">Delete</string>
+    <string name="reply">Reply</string>
+    <string name="reply_to_all">Reply To All</string>
+    <string name="forward">Forward</string>
+
 
     <string-array name="pref_syncConnectionTypes_entries">
         <item>1 min</item>

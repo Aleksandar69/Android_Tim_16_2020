@@ -47,6 +47,11 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         startActivity(intent);
     }
 
+    public void onTempButtonClicked(View view){
+        Intent intent = new Intent(this, EmailActivity.class);
+        startActivity(intent);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
