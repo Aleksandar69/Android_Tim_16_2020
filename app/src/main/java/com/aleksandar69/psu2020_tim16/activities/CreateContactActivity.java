@@ -1,15 +1,17 @@
-package com.aleksandar69.psu2020_tim16;
+package com.aleksandar69.psu2020_tim16.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class ProfileActivity extends AppCompatActivity {
+import com.aleksandar69.psu2020_tim16.R;
+
+public class CreateContactActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_create_contact);
     }
 
     @Override

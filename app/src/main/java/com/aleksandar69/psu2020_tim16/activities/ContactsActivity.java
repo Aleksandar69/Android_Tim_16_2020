@@ -1,4 +1,4 @@
-package com.aleksandar69.psu2020_tim16;
+package com.aleksandar69.psu2020_tim16.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -11,7 +11,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
+import com.aleksandar69.psu2020_tim16.R;
 import com.google.android.material.navigation.NavigationView;
 
 public class ContactsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
@@ -38,6 +40,10 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
     }
 
+    public void onProfileClicked(View view){
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

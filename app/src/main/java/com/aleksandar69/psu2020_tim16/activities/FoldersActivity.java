@@ -1,4 +1,4 @@
-package com.aleksandar69.psu2020_tim16;
+package com.aleksandar69.psu2020_tim16.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -10,8 +10,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import com.aleksandar69.psu2020_tim16.R;
 import com.google.android.material.navigation.NavigationView;
 
 public class FoldersActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
@@ -36,6 +39,11 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
         navigationView.setCheckedItem(R.id.nav_folders);
         navigationView.setNavigationItemSelectedListener(this);
 
+    }
+
+    public void onProfileClicked(View view){
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
     }
 
 

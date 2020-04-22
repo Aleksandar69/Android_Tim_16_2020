@@ -9,11 +9,11 @@
             android:title="@string/inbox" />
         <item
             android:id="@+id/nav_folders"
-            android:icon="@android:drawable/ic_dialog_dialer"
+            android:icon="@drawable/baseline_folder_black_24dp"
             android:title="@string/folders" />
         <item
             android:id="@+id/nav_contacts"
-            android:icon="@android:drawable/ic_menu_call"
+            android:icon="@drawable/baseline_contacts_black_24dp"
             android:title="@string/contacts" />
 
 

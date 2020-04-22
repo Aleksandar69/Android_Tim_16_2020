@@ -1,10 +1,12 @@
-package com.aleksandar69.psu2020_tim16;
+package com.aleksandar69.psu2020_tim16.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import com.aleksandar69.psu2020_tim16.R;
 
 public class LoginActivity extends AppCompatActivity {
 

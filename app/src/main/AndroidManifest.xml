@@ -9,21 +9,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".activities.LoginActivity"></activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".CreateContactActivity" />
-        <activity android:name=".ContactActivity" />
-        <activity android:name=".ContactsActivity" />
-        <activity android:name=".ProfileActivity" />
-        <activity android:name=".FoldersActivity" />
-        <activity android:name=".FolderActivity" />
-        <activity android:name=".EmailActivity" />
-        <activity android:name=".EmailsActivity" />
-        <activity android:name=".CreateFolderActivity" />
-        <activity android:name=".CreateEmailActivity" />
-        <activity android:name=".SplashActivity">
+        <activity android:name=".activities.CreateContactActivity" />
+        <activity android:name=".activities.ContactActivity" />
+        <activity android:name=".activities.ContactsActivity" />
+        <activity android:name=".activities.ProfileActivity" />
+        <activity android:name=".activities.FoldersActivity" />
+        <activity android:name=".activities.FolderActivity" />
+        <activity
+            android:name=".activities.EmailActivity"
+            android:parentActivityName=".activities.EmailsActivity" />/>
+        <activity android:name=".activities.EmailsActivity" />
+        <activity android:name=".activities.CreateFolderActivity" />
+        <activity
+            android:name=".activities.CreateEmailActivity"
+            android:parentActivityName=".activities.EmailsActivity" />
+        <activity android:name=".activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

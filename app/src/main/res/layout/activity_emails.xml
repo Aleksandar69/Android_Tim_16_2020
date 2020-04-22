@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EmailsActivity"
+    tools:context=".activities.EmailsActivity"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.Toolbar
@@ -25,6 +25,12 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="EmailsActivity"
+            style="@style/TextAppearance.AppCompat.Large"/>
 
         <ListView
             android:id="@+id/emails_list_view"
@@ -46,7 +52,8 @@
         android:id="@+id/nav_view"
         app:menu="@menu/menu_nav"
         app:headerLayout="@layout/nav_layout"
-        android:layout_gravity="start"/>
+        android:layout_gravity="start"
+        android:onClick="onProfileClicked"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>
 

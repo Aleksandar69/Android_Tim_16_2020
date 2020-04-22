@@ -26,13 +26,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Title"
+        android:text="Ime"
+        android:textColor="#000000"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Subtitle" />
+        android:textColor="#000000"
+        android:text="Prezime" />
 
 </LinearLayout>

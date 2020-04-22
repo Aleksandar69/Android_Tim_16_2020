@@ -1,8 +1,10 @@
-package com.aleksandar69.psu2020_tim16;
+package com.aleksandar69.psu2020_tim16.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.aleksandar69.psu2020_tim16.R;
 
 public class FolderActivity extends AppCompatActivity {
 
