@@ -78,6 +78,7 @@ public class ProfileActivity extends AppCompatActivity implements NavigationView
                 break;
             case R.id.nav_logout:
                 intent = new Intent(this, LoginActivity.class);
+                break;
             case R.id.nav_inbox:
                 intent = new Intent(this,EmailsActivity.class);
                 break;

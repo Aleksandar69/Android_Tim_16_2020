@@ -92,6 +92,7 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
                 break;
             case R.id.nav_logout:
                 intent = new Intent(this, LoginActivity.class);
+                break;
             default:
                 intent = new Intent(this,EmailsActivity.class);
         }
