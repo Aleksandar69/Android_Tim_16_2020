@@ -1,8 +1,11 @@
 package com.aleksandar69.psu2020_tim16.activities;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
+import android.view.Menu;
 
 import com.aleksandar69.psu2020_tim16.R;
 
@@ -12,7 +15,23 @@ public class FolderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_folder);
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_folder);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setTitle("Folder");
+
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_folder, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
 
     @Override
     protected void onStart() {

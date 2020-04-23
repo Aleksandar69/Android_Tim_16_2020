@@ -42,6 +42,15 @@
     <string name="reply_to_all">Reply To All</string>
     <string name="forward">Forward</string>
 
+    <string name="create_folder_menu">Create Folder</string>
+    <string name="edit_folder_menu">Edit Folder</string>
+
+    <string name="folder_name">Folder Name</string>
+    <string name="cancel_folder_creation">Cancel Folder Creation</string>
+    <string name="save_folder">Save Folder</string>
+
+    <string name="logout_profile">Log Out</string>
+
 
     <string-array name="pref_syncConnectionTypes_entries">
         <item>1 min</item>

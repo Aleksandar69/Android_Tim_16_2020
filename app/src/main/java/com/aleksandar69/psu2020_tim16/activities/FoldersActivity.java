@@ -41,9 +41,32 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
 
     }
 
+    public void onTestButton(View view){
+        Intent intent = new Intent(this, FolderActivity.class);
+        startActivity(intent);
+    }
+
     public void onProfileClicked(View view){
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_folders, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.create_folder:
+                Intent intent = new Intent(this, CreateFolderActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 

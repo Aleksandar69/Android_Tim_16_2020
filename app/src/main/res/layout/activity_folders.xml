@@ -30,9 +30,16 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="FOLDERS"
+                android:text="FOLDERS ACTIVITY"
                 android:layout_gravity="center"
                 style="@style/TextAppearance.AppCompat.Large"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Go To FolderActivity"
+                android:onClick="onTestButton"/>
 
 
             <ListView

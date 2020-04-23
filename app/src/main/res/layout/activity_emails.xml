@@ -7,12 +7,10 @@
     tools:context=".activities.EmailsActivity"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
+
+    <include
         android:id="@+id/emails_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/design_default_color_primary_dark"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark"/>
+        layout="@layout/toolbar_layout"/>
 
 <androidx.drawerlayout.widget.DrawerLayout
     android:layout_width="match_parent"

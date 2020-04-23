@@ -4,14 +4,67 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.ProfileActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".activities.ProfileActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="ProfileActivity"
-        style="@style/TextAppearance.AppCompat.Large"/>
+    <include
+        android:id="@+id/toolbar_profile"
+        layout="@layout/toolbar_layout"/>
 
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/main_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:layout_gravity="center_horizontal"
+
+                style="@style/TextAppearance.AppCompat.Large"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+
+                android:text="Surname"
+                style="@style/TextAppearance.AppCompat.Large"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+
+                android:text="Username"
+                style="@style/TextAppearance.AppCompat.Large"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+
+                android:text="Password"
+                style="@style/TextAppearance.AppCompat.Large"/>
+
+
+        </LinearLayout>
+
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:onClick="onProfileClicked"
+            app:headerLayout="@layout/nav_layout"
+            app:menu="@menu/menu_nav" />
+
+    </androidx.drawerlayout.widget.DrawerLayout>
 </LinearLayout>
