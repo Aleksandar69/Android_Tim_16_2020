@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.aleksandar69.psu2020_tim16">
+    package="com.aleksandar69.PMSU2020Tim16">
 
     <application
         android:allowBackup="true"
@@ -9,7 +9,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.LoginActivity"></activity>
+        <provider
+            android:name=".database.provider.MessagesContentProvider"
+            android:authorities="com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentProvider"
+            android:enabled="true"
+            android:exported="true">
+
+        </provider>
+
+        <activity android:name=".activities.LoginActivity" />
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings" />

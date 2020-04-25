@@ -1,4 +1,4 @@
-package com.aleksandar69.psu2020_tim16;
+package com.aleksandar69.PMSU2020Tim16;
 
 import org.junit.Test;
 

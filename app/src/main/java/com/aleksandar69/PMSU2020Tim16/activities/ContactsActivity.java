@@ -1,4 +1,4 @@
-package com.aleksandar69.psu2020_tim16.activities;
+package com.aleksandar69.PMSU2020Tim16.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -14,20 +14,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.aleksandar69.psu2020_tim16.R;
+import com.aleksandar69.PMSU2020Tim16.R;
 import com.google.android.material.navigation.NavigationView;
 
-public class FoldersActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener  {
+public class ContactsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_folders);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.folders_toolbar);
+        setContentView(R.layout.activity_contacts);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.contacts_toolbar);
         setSupportActionBar(toolbar);
-        final ActionBar actionBar = getSupportActionBar();
+
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(android.R.drawable.ic_input_get);
-        actionBar.setTitle("Folders");
+        actionBar.setTitle("Contacts");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -36,39 +38,39 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setCheckedItem(R.id.nav_folders);
+        navigationView.setCheckedItem(R.id.nav_contacts);
         navigationView.setNavigationItemSelectedListener(this);
 
     }
 
-    public void onTestButton(View view){
-        Intent intent = new Intent(this, FolderActivity.class);
+    public void onTempPressed(View view){
+        Intent intent = new Intent(this, ContactActivity.class);
         startActivity(intent);
     }
 
-    public void onProfileClicked(View view){
+    public void onProfileClicked(View view) {
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_folders, menu);
+        getMenuInflater().inflate(R.menu.menu_contacts, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.create_folder:
-                Intent intent = new Intent(this, CreateFolderActivity.class);
+            case R.id.new_contact:
+                Intent intent = new Intent(this, CreateContactActivity.class);
                 startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -78,11 +80,11 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
 
         switch (id) {
 
-            case R.id.nav_contacts:
-                intent = new Intent(this, ContactsActivity.class);
+            case R.id.nav_folders:
+                intent = new Intent(this, FoldersActivity.class);
                 break;
             case R.id.nav_inbox:
-                intent = new Intent(this,EmailsActivity.class);
+                intent = new Intent(this, EmailsActivity.class);
                 break;
             case R.id.nav_settings:
                 intent = new Intent(this, SettingsActivity.class);
@@ -91,8 +93,7 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
                 intent = new Intent(this, LoginActivity.class);
                 break;
             default:
-                intent = new Intent(this, FoldersActivity.class);
-
+                intent = new Intent(this, ContactsActivity.class);
         }
 
         startActivity(intent);
@@ -105,9 +106,9 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
 
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if(drawer.isDrawerOpen(GravityCompat.START)){
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        }else{
+        } else {
             super.onBackPressed();
         }
     }

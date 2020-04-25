@@ -1,4 +1,4 @@
-package com.aleksandar69.psu2020_tim16.activities;
+package com.aleksandar69.PMSU2020Tim16.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -13,7 +13,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.aleksandar69.psu2020_tim16.R;
+import com.aleksandar69.PMSU2020Tim16.R;
 import com.google.android.material.navigation.NavigationView;
 
 public class ProfileActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {

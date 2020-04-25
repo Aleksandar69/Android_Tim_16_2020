@@ -1,4 +1,4 @@
-package com.aleksandar69.psu2020_tim16.activities;
+package com.aleksandar69.PMSU2020Tim16.activities;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,29 +7,31 @@ import androidx.appcompat.widget.Toolbar;
 import android.os.Bundle;
 import android.view.Menu;
 
-import com.aleksandar69.psu2020_tim16.R;
+import com.aleksandar69.PMSU2020Tim16.R;
 
-public class CreateFolderActivity extends AppCompatActivity {
+public class FolderActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_folder);
+        setContentView(R.layout.activity_folder);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_create_folder);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_folder);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        setTitle("Create Folder");
+        actionBar.setTitle("Folder");
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_create_folder, menu);
+        getMenuInflater().inflate(R.menu.menu_folder, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
 
     @Override
     protected void onStart() {

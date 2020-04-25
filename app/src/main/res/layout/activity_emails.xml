@@ -33,9 +33,17 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="GET TO EMAIL"
-            android:onClick="onTempButtonClicked"
+            android:text="Delete Item"
+            android:onClick="onTempButtonClickedFind"
             android:layout_gravity="center_horizontal"/>
+
+        <EditText
+            android:id="@+id/searchText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="SEARCH"
+            android:layout_gravity="center_horizontal"
+            />
 
         <ListView
             android:id="@+id/emails_list_view"
