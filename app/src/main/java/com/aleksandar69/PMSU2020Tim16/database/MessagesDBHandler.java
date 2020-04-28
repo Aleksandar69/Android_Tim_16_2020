@@ -11,6 +11,8 @@ import com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentProvider;
 import com.aleksandar69.PMSU2020Tim16.models.Message;
 
 import java.sql.SQLData;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
@@ -113,6 +115,58 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             message = null;
         }
         return message;
+    }
+
+    public Cursor getAllMessages(){
+
+        String[] projection = {COLUMN_ID, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT};
+        String selection = null;
+
+        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection, selection, null, null);
+
+        return cursor;
+    }
+
+    public List<Message> queryAllMessages() {
+
+        String[] projection = {COLUMN_ID, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT};
+        String selection = null;
+
+        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection, selection, null, null);
+
+        List<Message> messages = new ArrayList<>();
+
+/*        Message[] messages = new Message[cursor.getCount()];
+        int i = 0;*/
+
+
+        cursor.moveToFirst();
+        {
+            while (!cursor.isAfterLast()) {
+                Message message = new Message();
+                message.set_id(Integer.parseInt(cursor.getString(0)));
+                message.setFrom(cursor.getString(1));
+                message.setTo(cursor.getString(2));
+                message.setCc(cursor.getString(3));
+                message.setBcc(cursor.getString(4));
+                message.setSubject(cursor.getString(5));
+                message.setContent(cursor.getString(6));
+/*
+                int id = Integer.parseInt(cursor.getString(0));
+                String messageFrom = cursor.getString(1);
+                String messageTo = cursor.getString(2);
+                String messageCC = cursor.getString(3);
+                String messageBcc = cursor.getString(4);
+                String messageSubject = cursor.getString(5);
+                String messageContent = cursor.getString(6);
+*/
+                messages.add(message);
+             //   messages[i] = message;
+                cursor.moveToNext();
+            }
+            cursor.close();
+            return messages;
+        }
     }
 
     public boolean deleteMessage(String messageSubject) {
