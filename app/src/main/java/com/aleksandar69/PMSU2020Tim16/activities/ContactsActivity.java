@@ -8,6 +8,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -16,6 +17,8 @@ import android.view.View;
 
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.List;
 
 public class ContactsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -43,10 +46,6 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
     }
 
-    public void onTempPressed(View view){
-        Intent intent = new Intent(this, ContactActivity.class);
-        startActivity(intent);
-    }
 
     public void onProfileClicked(View view) {
         Intent intent = new Intent(this, ProfileActivity.class);
@@ -112,6 +111,10 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
             super.onBackPressed();
         }
     }
+
+    //dodati onConfigurationChanged metodu
+
+
 
     @Override
     protected void onStart() {
