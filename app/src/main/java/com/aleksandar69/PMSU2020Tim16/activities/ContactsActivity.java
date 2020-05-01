@@ -14,32 +14,48 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.aleksandar69.PMSU2020Tim16.R;
+import com.aleksandar69.PMSU2020Tim16.adapters.CustomListViewAdapter;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.List;
 
 public class ContactsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    ListView listView;
+    String[] ime = {"Elena", "Petar","Mihailo"};
+    String[] prezime = {"Krunic", "Vukovic", "Nikolic"};
+    String[] display = {"Elena Krunic", "Petar Vukovic", "Mihailo Nikolic"};
+    String[] email = {"elenakrunic@gmail.com", "perovukovic@gmail.com", "micanikolic@gmail.com"};
+
+    Integer[] imageID = {R.drawable.baseline_contacts_black_24dp, R.drawable.baseline_contacts_black_24dp, R.drawable.baseline_contacts_black_24dp};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
+        //sve vezano za prikaz kontakta
+        listView = (ListView) findViewById(R.id.lista_kontakti);
+        CustomListViewAdapter adapter = new CustomListViewAdapter(this,ime,prezime,display,email,imageID);
+        listView.setAdapter(adapter);
+
+        //sve vezano za toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.contacts_toolbar);
         setSupportActionBar(toolbar);
-
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(android.R.drawable.ic_input_get);
         actionBar.setTitle("Contacts");
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.nav_contacts);
         navigationView.setNavigationItemSelectedListener(this);
