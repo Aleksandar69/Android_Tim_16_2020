@@ -9,6 +9,7 @@
     android:layout_marginTop="20dp">
 
     <EditText
+        android:id="@+id/username_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/hint_username"
@@ -16,6 +17,7 @@
         style="@style/TextAppearance.AppCompat.Large"/>
 
     <EditText
+        android:id="@+id/password_field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/hint_password"
@@ -29,4 +31,25 @@
         android:layout_gravity="center_horizontal"
         android:text="@string/button_text"
         android:onClick="onLoginButtonClicked"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="UDJI ODMA"
+        android:layout_gravity="center_horizontal"
+        android:onClick="tempButtClick"/>
+
+    <TextView
+        android:layout_marginRight="20dp"
+        android:layout_gravity="right"
+        android:text="No account? Register now!"
+        android:id="@+id/register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ListView
+        android:id="@+id/test_accounts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
 </LinearLayout>

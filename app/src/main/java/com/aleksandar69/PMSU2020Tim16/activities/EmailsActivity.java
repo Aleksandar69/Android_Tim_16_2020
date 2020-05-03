@@ -8,36 +8,32 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
+import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.adapters.EmailsCursorAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
-import com.aleksandar69.PMSU2020Tim16.models.Message;
 import com.google.android.material.navigation.NavigationView;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
-
-public class EmailsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class EmailsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ListView.OnItemClickListener {
 
     Cursor cursor;
     SQLiteDatabase db;
     ListView emails;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,63 +58,68 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-/*        ArrayAdapter<Message> listAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,Message.messages);
-        emails.setAdapter(listAdapter);*/
+
 
         // populateListFromDB();
+
+        sharedPreferences = getSharedPreferences(LoginActivity.myPreferance, Context.MODE_PRIVATE);
+
         populateList();
 
     }
 
-    public void populateList() {
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
+        String email_id = cursor.getString(0);
 
-        MessagesDBHandler handler = new MessagesDBHandler(this);
-        SQLiteDatabase db = handler.getWritableDatabase();
+        MessagesDBHandler emailsDb = new MessagesDBHandler(this);
 
-        //cursor = db.rawQuery("SELECT messagefrom, subject, content from Messages", null);
-
-       // cursor = db.rawQuery("SELECT * FROM Messages", null);
-
-        cursor = handler.getAllMessages();
-
-        ListView lvItems = (ListView) findViewById(R.id.emails_list_view);
-
-
-        EmailsCursorAdapter emailsAdapter = new EmailsCursorAdapter(this, cursor);
-        lvItems.setAdapter(emailsAdapter);
-
+        Intent intent = new Intent(this, EmailActivity.class);
+        intent.putExtra(EmailActivity.MESS_ID_EXTRA, email_id);
+        startActivity(intent);
     }
 
-    public void populateListFromDB() {
-        SQLiteOpenHelper messagesDBHandler = new MessagesDBHandler(this);
-        try {
-            db = messagesDBHandler.getReadableDatabase();
+    public void populateList() {
 
-            cursor = db.query("Messages", new String[]{"_id", "subject"}, null, null, null, null, null);
+       try {
 
-            SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, cursor,
-                    new String[]{"subject"}, new int[]{android.R.id.text1}, 0);
-            emails.setAdapter(adapter);
-        } catch (SQLiteException e) {
+        MessagesDBHandler handler = new MessagesDBHandler(this);
+
+            cursor = handler.getAllMessages(sharedPreferences.getInt(LoginActivity.userId, -1));
+
+            ListView lvItems = (ListView) findViewById(R.id.emails_list_view);
+
+            EmailsCursorAdapter emailsAdapter = new EmailsCursorAdapter(this, cursor);
+            emails.setOnItemClickListener(this);
+            lvItems.setAdapter(emailsAdapter);
+        } catch (SQLException e) {
             Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);
             toast.show();
         }
-
     }
+
 
     public void onProfileClicked(View view) {
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
     }
 
+/*
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void onTempButtonClickedFind(View view) {
         EditText editText = (EditText) findViewById(R.id.searchText);
+        EditText editText1 = (EditText) findViewById(R.id.searchText2);
         String edit = editText.getText().toString();
+        String edit1 = editText1.getText().toString();
 
         MessagesDBHandler messagesDBHandler = new MessagesDBHandler(this);
-        //   Message message = messagesDBHandler.findMessage(edit);
+        List <Message> messages = messagesDBHandler.findMessagesTest(edit, edit1);
 
-        List<Message> messages = messagesDBHandler.queryAllMessages();
+
+*/
+/*        List<Message> messages = messagesDBHandler.queryAllMessages();*//*
+
 
         Message[] listMessages = new Message[messages.size()];
         listMessages = messages.toArray(listMessages);
@@ -126,9 +127,11 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         //Message[] messages = messagesDBHandler.queryAllMessages();
 
 
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, messages);
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listMessages);
+        emails.setOnItemClickListener(this);
         emails.setAdapter(adapter);
     }
+*/
 
 
     @Override
@@ -142,14 +145,15 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         switch (item.getItemId()) {
             case R.id.create_message:
                 Intent intent = new Intent(this, CreateEmailActivity.class);
+                Toast.makeText(this, "Create email selected", Toast.LENGTH_LONG).show();
                 startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
 
         }
-
     }
+
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -170,6 +174,9 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
                 break;
             case R.id.nav_logout:
                 intent = new Intent(this, LoginActivity.class);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.commit();
                 break;
             default:
                 intent = new Intent(this, EmailsActivity.class);
@@ -221,5 +228,6 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
     protected void onDestroy() {
         super.onDestroy();
     }
+
 
 }

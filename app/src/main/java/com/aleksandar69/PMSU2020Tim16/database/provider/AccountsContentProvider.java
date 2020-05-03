@@ -10,87 +10,85 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
+import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
+import com.aleksandar69.PMSU2020Tim16.models.Account;
 
-public class MessagesContentProvider extends ContentProvider {
-    private static final String AUTHORITY = "com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentProvider";
-    private static final String MESSAGES_TABLE = "EMAILS";
-    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + MESSAGES_TABLE);
+public class AccountsContentProvider extends ContentProvider {
 
-    public static final int MESSAGES = 1;
-    public static final int MESSAGE_ID = 2;
+    private static final String AUTHORITY = "com.aleksandar69.PMSU2020Tim16.database.provider.AccountsContentProvider";
+    private static final String ACCOUNTS_TABLE = "Accounts";
+    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + ACCOUNTS_TABLE);
+
+    public static final int ACCOUNTS = 1;
+    public static final int ACCOUNT_ID = 2;
 
     private MessagesDBHandler myDB;
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        URI_MATCHER.addURI(AUTHORITY, MESSAGES_TABLE, MESSAGES);
-        URI_MATCHER.addURI(AUTHORITY, MESSAGES_TABLE +"/#", MESSAGE_ID);
+        URI_MATCHER.addURI(AUTHORITY, ACCOUNTS_TABLE, ACCOUNTS);
+        URI_MATCHER.addURI(AUTHORITY, ACCOUNTS_TABLE + "/#", ACCOUNT_ID);
     }
 
-    public MessagesContentProvider() {
+
+    public AccountsContentProvider() {
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        // Implement this to handle requests to delete one or more rows.
-
         int uriType = URI_MATCHER.match(uri);
         SQLiteDatabase sqlDB = myDB.getWritableDatabase();
         int rowsDeleted = 0;
 
         switch (uriType) {
-            case MESSAGES:
-                rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES,
+            case ACCOUNTS:
+                rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_ACCOUNTS,
                         selection,
                         selectionArgs);
                 break;
-
-            case MESSAGE_ID:
+            case ACCOUNT_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
-                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES, MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id, null);
+                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_ACCOUNTS, MessagesDBHandler.COLUMN_ID_ACCOUNTS + "=" + id, null);
                 } else {
-                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES, MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id + " and " + selection,
+                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_ACCOUNTS, MessagesDBHandler.COLUMN_ID_ACCOUNTS + "=" + id + " and " + selection,
                             selectionArgs);
                 }
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
-
         }
+
         getContext().getContentResolver().notifyChange(uri, null);
         return rowsDeleted;
     }
 
-
     @Override
     public String getType(Uri uri) {
         // TODO: Implement this to handle requests for the MIME type of the data
-
+        // at the given URI.
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        // TODO: Implement this to handle requests to insert a new row.
-
         int uriType = URI_MATCHER.match(uri);
 
         SQLiteDatabase sqlDB = myDB.getWritableDatabase();
 
         long id = 0;
+
         switch (uriType) {
-            case MESSAGES:
-                id = sqlDB.insert(MessagesDBHandler.TABLE_MESSAGES, null, values);
+            case ACCOUNTS:
+                id = sqlDB.insert(MessagesDBHandler.TABLE_ACCOUNTS, null, values);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        return Uri.parse(MESSAGES_TABLE + "/" + id);
+        return Uri.parse(ACCOUNTS_TABLE + "/" + id);
     }
-
 
     @Override
     public boolean onCreate() {
@@ -102,19 +100,17 @@ public class MessagesContentProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-        // TODO: Implement this to handle query requests from clients.
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(MessagesDBHandler.TABLE_MESSAGES);
+        queryBuilder.setTables(MessagesDBHandler.TABLE_ACCOUNTS);
 
         int uriType = URI_MATCHER.match(uri);
 
         switch (uriType) {
-            case MESSAGE_ID:
-                queryBuilder.appendWhere(MessagesDBHandler.COLUMN_ID_EMAILS + "="
-                        + uri.getLastPathSegment());
+            case ACCOUNT_ID:
+                queryBuilder.appendWhere(MessagesDBHandler.COLUMN_ID_ACCOUNTS + "=" + uri.getLastPathSegment());
                 break;
-            case MESSAGES:
+            case ACCOUNTS:
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
@@ -129,37 +125,37 @@ public class MessagesContentProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-        // TODO: Implement this to handle requests to update one or more rows.
-
         int uriType = URI_MATCHER.match(uri);
         SQLiteDatabase sqlDB = myDB.getWritableDatabase();
         int rowsUpdated = 0;
 
+
         switch (uriType) {
-            case MESSAGES:
+            case ACCOUNTS:
                 rowsUpdated =
-                        sqlDB.update(MessagesDBHandler.TABLE_MESSAGES,
+                        sqlDB.update(MessagesDBHandler.TABLE_ACCOUNTS,
                                 values,
                                 selection,
                                 selectionArgs);
                 break;
-            case MESSAGE_ID:
+            case ACCOUNT_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
                     rowsUpdated =
-                            sqlDB.update(MessagesDBHandler.TABLE_MESSAGES,
+                            sqlDB.update(MessagesDBHandler.TABLE_ACCOUNTS,
                                     values,
-                                    MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id,
+                                    MessagesDBHandler.COLUMN_ID_ACCOUNTS + "=" + id,
                                     null);
                 } else {
                     rowsUpdated =
-                            sqlDB.update(MessagesDBHandler.TABLE_MESSAGES, values,
-                                    MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id +
+                            sqlDB.update(MessagesDBHandler.TABLE_ACCOUNTS, values,
+                                    MessagesDBHandler.COLUMN_ID_ACCOUNTS + "=" + id +
                                             " and " + selection, selectionArgs);
                 }
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI:" + uri);
+
         }
         getContext().getContentResolver().notifyChange(uri, null);
         return rowsUpdated;

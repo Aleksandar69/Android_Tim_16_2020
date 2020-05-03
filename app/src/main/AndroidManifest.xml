@@ -12,13 +12,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".activities.RegisterActivity"
+            android:parentActivityName=".activities.LoginActivity">
+            
+        </activity>
+
+        <provider
+            android:name=".database.provider.AccountsContentProvider"
+            android:authorities="com.aleksandar69.PMSU2020Tim16.database.provider.AccountsContentProvider"
+            android:enabled="true"
+            android:exported="true" />
         <provider
             android:name=".database.provider.MessagesContentProvider"
             android:authorities="com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentProvider"
             android:enabled="true"
-            android:exported="true">
-
-        </provider>
+            android:exported="true" />
 
         <activity android:name=".activities.LoginActivity" />
         <activity

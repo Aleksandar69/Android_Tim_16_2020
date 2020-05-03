@@ -45,6 +45,14 @@
             android:layout_gravity="center_horizontal"
             />
 
+        <EditText
+            android:id="@+id/searchText2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="SEARCH"
+            android:layout_gravity="center_horizontal"
+            />
+
         <ListView
             android:id="@+id/emails_list_view"
             android:layout_width="match_parent"

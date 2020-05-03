@@ -33,7 +33,7 @@
     <string name="message_cc">CC</string>
     <string name="message_bcc">BCC</string>
     <string name="message_content">Content</string>
-    
+
     <string name="send_message_menu">Send</string>
     <string name="cancel_sending_menu">Cancel</string>
 
@@ -53,14 +53,16 @@
 
     <string name="new_contact">New Contact</string>
     <string name="save_contact">Save Contact</string>
-    
+
     <string name="hint_first_name">First Name</string>
     <string name="hint_last_name">Last Name</string>
     <string name="hint_display_name">Display Name</string>
     <string name="hint_email">Email</string>
-    
+
     <string name="save_new_contact">Save New Contact</string>
     <string name="cancel_contact_creation">Cancel Contact Creation</string>
+
+    <string name="submit">Submit</string>
 
 
     <string-array name="pref_syncConnectionTypes_entries">
