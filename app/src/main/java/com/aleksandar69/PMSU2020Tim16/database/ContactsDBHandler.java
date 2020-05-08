@@ -12,7 +12,7 @@ public class ContactsDBHandler extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "contactsDB";
     public static final int DATABASE_VERSION = 1;
 
-     ContactsDBHandler(Context context) {
+     public ContactsDBHandler(Context context) {
         super(context, DATABASE_NAME,null, DATABASE_VERSION);
     }
 
