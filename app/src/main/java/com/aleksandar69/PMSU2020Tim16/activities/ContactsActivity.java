@@ -20,6 +20,7 @@ public class ContactsActivity extends ListActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //ovde setContentView dodati
 
         ListView listContacts = getListView();
         ArrayAdapter<Contact> listAdapter = new ArrayAdapter<>(
