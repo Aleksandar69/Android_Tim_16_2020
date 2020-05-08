@@ -57,8 +57,8 @@ public class ContactActivity extends AppCompatActivity {
                 firstName.setText(firstText);
                 TextView lastName = (TextView) findViewById(R.id.tv_prezime);
                 lastName.setText(lastText);
-                TextView display = (TextView) findViewById(R.id.displayNameTV);
-                display.setText(displayText);
+               // TextView display = (TextView) findViewById(R.id.displayNameTV);
+              //  display.setText(displayText);
                 TextView email = (TextView) findViewById(R.id.tv_email);
                 email.setText(emailText);
                 ImageView photo = (ImageView) findViewById(R.id.slicica);

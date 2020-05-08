@@ -75,12 +75,12 @@ public class Contact {
         this.imageSourceID = imageSourceID;
     }
 
-
+/*
     public static final Contact[] contacts = {
       new Contact("Elena", "Krunic", "Elena Krunic", "elenakrunic@gmail.com", R.mipmap.ic_launcher_round),
       new Contact("Vincent", "Andolini", "Vincent Andolini", "vincent@gmail.com", R.mipmap.ic_launcher_round),
       new Contact("Mico", "Micic", "Mico Micic", "mico@gmail.com",  R.mipmap.ic_launcher_round)
     };
 
-
+*/
 }

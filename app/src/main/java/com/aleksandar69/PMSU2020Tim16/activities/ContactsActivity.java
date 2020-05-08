@@ -5,17 +5,27 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.CursorAdapter;
+import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.R;
+import com.aleksandar69.PMSU2020Tim16.database.ContactsDBHandler;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
 
 public class ContactsActivity extends ListActivity  {
 
+    private SQLiteDatabase db;
+    private Cursor cursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,10 +33,28 @@ public class ContactsActivity extends ListActivity  {
         //ovde setContentView dodati
 
         ListView listContacts = getListView();
-        ArrayAdapter<Contact> listAdapter = new ArrayAdapter<>(
-                this, android.R.layout.simple_list_item_1, Contact.contacts
-        );
-        listContacts.setAdapter(listAdapter);
+
+        try{
+            SQLiteOpenHelper contactsDatabaseHelper = new ContactsDBHandler(this);
+            db = contactsDatabaseHelper.getReadableDatabase();
+
+            cursor = db.query("CONTACT", new String[] {"_id", "FIRST"}, null,null,null,null,null);
+
+            CursorAdapter listAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1,cursor,new String[]{"FIRST"},
+                    new int[]{android.R.id.text1},0);
+            listContacts.setAdapter(listAdapter);
+        } catch (SQLiteException e) {
+            Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
+
+
+        //stari kod
+
+        //  ArrayAdapter<Contact> listAdapter = new ArrayAdapter<>(
+        //         this, android.R.layout.simple_list_item_1, Contact.contacts
+        //  );
 
 
         //sve vezano za toolbar
@@ -155,5 +183,7 @@ public class ContactsActivity extends ListActivity  {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        cursor.close();
+        db.close();
     }
 }
