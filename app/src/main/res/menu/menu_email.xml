@@ -7,26 +7,26 @@
         android:icon="@drawable/baseline_delete_white_24dp"
         android:orderInCategory="1"
         android:title="@string/delete_message"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
     <item
         android:id="@+id/forward"
-        android:title="@string/forward"
         android:icon="@drawable/baseline_arrow_forward_white_24dp"
         android:orderInCategory="4"
-        app:showAsAction="always"/>
-
-    <item
-        android:id="@+id/reply_to_all_button"
-        android:icon="@drawable/baseline_reply_white_24dp"
-        android:orderInCategory="2"
-        android:title="@string/reply"
-        app:showAsAction="always"/>
+        android:title="@string/forward"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/reply_button"
+        android:icon="@drawable/baseline_reply_white_24dp"
+        android:orderInCategory="2"
+        android:title="@string/reply"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/reply_to_all_button"
         android:icon="@drawable/baseline_reply_all_white_24dp"
         android:orderInCategory="3"
         android:title="@string/reply_to_all"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
 </menu>

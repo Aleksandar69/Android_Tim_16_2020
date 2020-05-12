@@ -11,47 +11,47 @@ import android.text.TextUtils;
 
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 
-public class MessagesContentProvider extends ContentProvider {
-    private static final String AUTHORITY = "com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentProvider";
-    private static final String MESSAGES_TABLE = "EMAILS";
-    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + MESSAGES_TABLE);
+public class AttachmentsContentProvider extends ContentProvider {
 
-    public static final int MESSAGES = 1;
-    public static final int MESSAGE_ID = 2;
+    private static final String AUTHORITY = "com.aleksandar69.PMSU2020Tim16.database.provider.AttachmentsContentProvider";
+    private static final String ATTACHMENTS_TABLE = "ATTACHMENTS";
+    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + ATTACHMENTS_TABLE);
+
+    public static final int ATTACHMENTS = 1;
+    public static final int ATTACHMENTS_ID = 2;
 
     private MessagesDBHandler myDB;
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
+
     static {
-        URI_MATCHER.addURI(AUTHORITY, MESSAGES_TABLE, MESSAGES);
-        URI_MATCHER.addURI(AUTHORITY, MESSAGES_TABLE +"/#", MESSAGE_ID);
+        URI_MATCHER.addURI(AUTHORITY, ATTACHMENTS_TABLE, ATTACHMENTS);
+        URI_MATCHER.addURI(AUTHORITY, ATTACHMENTS_TABLE + "/#", ATTACHMENTS_ID);
     }
 
-    public MessagesContentProvider() {
+    public AttachmentsContentProvider() {
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        // Implement this to handle requests to delete one or more rows.
-
         int uriType = URI_MATCHER.match(uri);
         SQLiteDatabase sqlDB = myDB.getWritableDatabase();
         int rowsDeleted = 0;
 
         switch (uriType) {
-            case MESSAGES:
-                rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES,
+            case ATTACHMENTS:
+                rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_ATTACHMENTS,
                         selection,
                         selectionArgs);
                 break;
 
-            case MESSAGE_ID:
+            case ATTACHMENTS_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
-                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES, MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id, null);
+                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_ATTACHMENTS, MessagesDBHandler.COLUMN_ID_ATTACHMENTS + "=" + id, null);
                 } else {
-                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES, MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id + " and " + selection,
+                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_ATTACHMENTS, MessagesDBHandler.COLUMN_ID_ATTACHMENTS + "=" + id + " and " + selection,
                             selectionArgs);
                 }
                 break;
@@ -63,32 +63,30 @@ public class MessagesContentProvider extends ContentProvider {
         return rowsDeleted;
     }
 
-
     @Override
     public String getType(Uri uri) {
-
+        // TODO: Implement this to handle requests for the MIME type of the data
+        // at the given URI.
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-
         int uriType = URI_MATCHER.match(uri);
 
         SQLiteDatabase sqlDB = myDB.getWritableDatabase();
 
         long id = 0;
         switch (uriType) {
-            case MESSAGES:
-                id = sqlDB.insert(MessagesDBHandler.TABLE_MESSAGES, null, values);
+            case ATTACHMENTS:
+                id = sqlDB.insert(MessagesDBHandler.TABLE_ATTACHMENTS, null, values);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        return Uri.parse(MESSAGES_TABLE + "/" + id);
+        return Uri.parse(ATTACHMENTS_TABLE + "/" + id);
     }
-
 
     @Override
     public boolean onCreate() {
@@ -99,18 +97,17 @@ public class MessagesContentProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(MessagesDBHandler.TABLE_MESSAGES);
+        queryBuilder.setTables(MessagesDBHandler.TABLE_ATTACHMENTS);
 
         int uriType = URI_MATCHER.match(uri);
 
         switch (uriType) {
-            case MESSAGE_ID:
-                queryBuilder.appendWhere(MessagesDBHandler.COLUMN_ID_EMAILS + "="
+            case ATTACHMENTS_ID:
+                queryBuilder.appendWhere(MessagesDBHandler.COLUMN_ID_ATTACHMENTS + "="
                         + uri.getLastPathSegment());
                 break;
-            case MESSAGES:
+            case ATTACHMENTS:
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
@@ -125,31 +122,30 @@ public class MessagesContentProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-
         int uriType = URI_MATCHER.match(uri);
         SQLiteDatabase sqlDB = myDB.getWritableDatabase();
         int rowsUpdated = 0;
 
         switch (uriType) {
-            case MESSAGES:
+            case ATTACHMENTS:
                 rowsUpdated =
-                        sqlDB.update(MessagesDBHandler.TABLE_MESSAGES,
+                        sqlDB.update(MessagesDBHandler.TABLE_ATTACHMENTS,
                                 values,
                                 selection,
                                 selectionArgs);
                 break;
-            case MESSAGE_ID:
+            case ATTACHMENTS_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
                     rowsUpdated =
-                            sqlDB.update(MessagesDBHandler.TABLE_MESSAGES,
+                            sqlDB.update(MessagesDBHandler.TABLE_ATTACHMENTS,
                                     values,
-                                    MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id,
+                                    MessagesDBHandler.COLUMN_ID_ATTACHMENTS + "=" + id,
                                     null);
                 } else {
                     rowsUpdated =
-                            sqlDB.update(MessagesDBHandler.TABLE_MESSAGES, values,
-                                    MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id +
+                            sqlDB.update(MessagesDBHandler.TABLE_ATTACHMENTS, values,
+                                    MessagesDBHandler.COLUMN_ID_ATTACHMENTS + "=" + id +
                                             " and " + selection, selectionArgs);
                 }
                 break;

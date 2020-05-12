@@ -23,9 +23,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.adapters.EmailsCursorAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
+import com.aleksandar69.PMSU2020Tim16.javamail.CheckEmails;
 import com.google.android.material.navigation.NavigationView;
 
 public class EmailsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ListView.OnItemClickListener {
@@ -73,10 +75,9 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
         String email_id = cursor.getString(0);
 
-        MessagesDBHandler emailsDb = new MessagesDBHandler(this);
 
         Intent intent = new Intent(this, EmailActivity.class);
-        intent.putExtra(EmailActivity.MESS_ID_EXTRA, email_id);
+        intent.putExtra(Data.MESS_ID_EXTRA, email_id);
         startActivity(intent);
     }
 
@@ -84,10 +85,12 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
 
        try {
 
+
+
         MessagesDBHandler handler = new MessagesDBHandler(this);
 
-            cursor = handler.getAllMessages(sharedPreferences.getInt(LoginActivity.userId, -1));
-
+           // cursor = handler.getAllMessages(sharedPreferences.getInt(LoginActivity.userId, -1));
+            cursor = handler.getAllMessages2();
             ListView lvItems = (ListView) findViewById(R.id.emails_list_view);
 
             EmailsCursorAdapter emailsAdapter = new EmailsCursorAdapter(this, cursor);

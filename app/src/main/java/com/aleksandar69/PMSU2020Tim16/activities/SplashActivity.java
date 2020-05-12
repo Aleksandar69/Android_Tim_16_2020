@@ -8,19 +8,12 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.google.android.material.snackbar.Snackbar;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class SplashActivity extends AppCompatActivity {
 

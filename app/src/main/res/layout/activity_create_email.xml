@@ -83,12 +83,24 @@
         android:gravity="top"
         android:layout_weight="1"/>
 
+    />
+    <Button
+        android:id="@+id/add_attach"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/subject"
+        android:layout_toRightOf="@id/attachments"
+        android:text="Attach Files"
+        android:onClick="openFileClick"/>
+
+<!--
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Send"
         android:layout_gravity="center_horizontal"
         android:onClick="sendMessage"/>
+-->
 
 
     <!--

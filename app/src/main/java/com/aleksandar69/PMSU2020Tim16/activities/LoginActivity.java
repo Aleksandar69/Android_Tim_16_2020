@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
+import com.aleksandar69.PMSU2020Tim16.javamail.ImapFetchMail;
 import com.aleksandar69.PMSU2020Tim16.models.Account;
 
 import java.util.List;
@@ -34,10 +35,14 @@ public class LoginActivity extends AppCompatActivity {
     public static String userId = "useridKey";
 
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
 
         registerTV = (TextView) findViewById(R.id.register);
         testView = (ListView) findViewById(R.id.test_accounts);
@@ -65,6 +70,8 @@ public class LoginActivity extends AppCompatActivity {
         Account account = dbHandler.findAccount(usernameText.getText().toString(),passwordText.getText().toString());
 
         if(account != null) {
+/*            CheckEmails checkEmails = new CheckEmails(this);
+            checkEmails.execute();*/
             Intent intent = new Intent(this, EmailsActivity.class);
             startActivity(intent);
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -99,9 +106,26 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void tempButtClick(View view){
+
+
+/*        Pop3FetchEmails fetchingEmails = new Pop3FetchEmails(this);
+        fetchingEmails.execute();*/
+
+/*        CheckEmails checkEmails = new CheckEmails(this);
+        checkEmails.execute();*/
+
         Intent intent = new Intent(this, EmailsActivity.class);
         startActivity(intent);
+/*        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(userId, account.get_id());
+        editor.commit();*/
     }
+
+    public void tempButton2(View view){
+
+
+    }
+
 
 
     //PRIVREMENO
@@ -135,6 +159,12 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        /*Pop3FetchEmails fetchingEmails = new Pop3FetchEmails(this);
+        fetchingEmails.execute();*/
+
+        ImapFetchMail imapFetchMail = new ImapFetchMail(this);
+        imapFetchMail.execute();
+
         super.onStart();
     }
 
