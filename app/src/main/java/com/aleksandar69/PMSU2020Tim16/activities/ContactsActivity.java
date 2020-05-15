@@ -1,52 +1,64 @@
 package com.aleksandar69.PMSU2020Tim16.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.CursorAdapter;
+import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.R;
-import com.aleksandar69.PMSU2020Tim16.adapters.CustomListViewAdapter;
-import com.google.android.material.navigation.NavigationView;
+import com.aleksandar69.PMSU2020Tim16.database.ContactsDBHandler;
+import com.aleksandar69.PMSU2020Tim16.models.Contact;
 
-import java.util.List;
+public class ContactsActivity extends ListActivity  {
 
-public class ContactsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    ListView listView;
-    String[] ime = {"Elena", "Petar","Mihailo"};
-    String[] prezime = {"Krunic", "Vukovic", "Nikolic"};
-    String[] display = {"Elena Krunic", "Petar Vukovic", "Mihailo Nikolic"};
-    String[] email = {"elenakrunic@gmail.com", "perovukovic@gmail.com", "micanikolic@gmail.com"};
-
-    Integer[] imageID = {R.drawable.baseline_contacts_black_24dp, R.drawable.baseline_contacts_black_24dp, R.drawable.baseline_contacts_black_24dp};
+    private SQLiteDatabase db;
+    private Cursor cursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_contacts);
+        //ovde setContentView dodati
 
-        //sve vezano za prikaz kontakta
-        listView = (ListView) findViewById(R.id.lista_kontakti);
-        CustomListViewAdapter adapter = new CustomListViewAdapter(this,ime,prezime,display,email,imageID);
-        listView.setAdapter(adapter);
+        ListView listContacts = getListView();
+
+        try{
+            SQLiteOpenHelper contactsDatabaseHelper = new ContactsDBHandler(this);
+            db = contactsDatabaseHelper.getReadableDatabase();
+
+            cursor = db.query("CONTACT", new String[] {"_id", "FIRST"}, null,null,null,null,null);
+
+            CursorAdapter listAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1,cursor,new String[]{"FIRST"},
+                    new int[]{android.R.id.text1},0);
+            listContacts.setAdapter(listAdapter);
+        } catch (SQLiteException e) {
+            Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
+
+
+        //stari kod
+
+        //  ArrayAdapter<Contact> listAdapter = new ArrayAdapter<>(
+        //         this, android.R.layout.simple_list_item_1, Contact.contacts
+        //  );
+
 
         //sve vezano za toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.contacts_toolbar);
+     /*   Toolbar toolbar = (Toolbar) findViewById(R.id.contacts_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(android.R.drawable.ic_input_get);
@@ -58,10 +70,16 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.nav_contacts);
-        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(this);*/
 
     }
 
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        Intent intent = new Intent(ContactsActivity.this, ContactActivity.class);
+        intent.putExtra(ContactActivity.CONTACT_NUMBER, (int) id);
+        startActivity(intent);
+    }
 
     public void onProfileClicked(View view) {
         Intent intent = new Intent(this, ProfileActivity.class);
@@ -74,8 +92,17 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         return super.onCreateOptionsMenu(menu);
     }
 
+    //ListView list = (ListView) findViewById(R.id.listview);
+    //list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+    //   @Override
+    //   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    //      Object listItem = list.getItemAtPosition(position);
+    //   }
+    //});
 
-    @Override
+
+
+   /* @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.new_contact:
@@ -85,10 +112,10 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
+    }*/
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+  /*  public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
         int id = item.getItemId();
         Intent intent = null;
@@ -117,7 +144,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         drawer.closeDrawer(GravityCompat.START);
         return true;
 
-    }
+    }*/
 
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -127,10 +154,6 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
             super.onBackPressed();
         }
     }
-
-    //dodati onConfigurationChanged metodu
-
-
 
     @Override
     protected void onStart() {
@@ -160,5 +183,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        cursor.close();
+        db.close();
     }
 }

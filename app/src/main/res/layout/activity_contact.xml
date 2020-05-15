@@ -11,39 +11,32 @@
         android:id="@+id/toolbar_contact"
         layout="@layout/toolbar_layout"/>
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/maci_android"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:layout_gravity="center_horizontal"
-        android:src="@mipmap/ic_launcher_round"/>
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/slicica"/>
 
     <TextView
         android:id="@+id/tv_ime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_first_name"
-        style="@style/TextAppearance.AppCompat.Large"/>
+      />
 
     <TextView
         android:id="@+id/tv_prezime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_last_name"
-        style="@style/TextAppearance.AppCompat.Large"/>
+       />
     <TextView
         android:id="@+id/tv_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_display_name"
-        style="@style/TextAppearance.AppCompat.Large"/>
+/>
     <TextView
         android:id="@+id/tv_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_email"
-        style="@style/TextAppearance.AppCompat.Large"/>
+     />
 
 
 </LinearLayout>
