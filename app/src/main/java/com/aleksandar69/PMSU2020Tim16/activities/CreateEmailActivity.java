@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.Data;
@@ -30,6 +31,9 @@ import com.aleksandar69.PMSU2020Tim16.javamail.SendMultipartEmail;
 import com.aleksandar69.PMSU2020Tim16.models.Account;
 import com.aleksandar69.PMSU2020Tim16.models.Message;
 import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CreateEmailActivity extends AppCompatActivity {
 
@@ -42,10 +46,12 @@ public class CreateEmailActivity extends AppCompatActivity {
     TextInputEditText bccEditBox;
     TextInputEditText subjectEditBox;
     EditText contentEditBox;
+    TextView attachedFiles;
 
     SharedPreferences mSharedPreferences;
 
-    String filePath = null;
+    private String filePath = null;
+    private List<String> uriList;
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
@@ -64,6 +70,11 @@ public class CreateEmailActivity extends AppCompatActivity {
         bccEditBox = (TextInputEditText) findViewById(R.id.email_bcc);
         subjectEditBox = (TextInputEditText) findViewById(R.id.email_subject);
         contentEditBox = (EditText) findViewById(R.id.email_content);
+        attachedFiles = (TextView) findViewById(R.id.attached_files);
+
+        attachedFiles.setText("0");
+
+        uriList = new ArrayList<>();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.create_email);
         setSupportActionBar(toolbar);
@@ -136,21 +147,7 @@ public class CreateEmailActivity extends AppCompatActivity {
         openFile("*/*");
     }
 
-    public void openFile(String mimeType) {
 
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType(mimeType);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-        // special intent for Samsung file manager
-        Intent sIntent = new Intent("com.sec.android.app.myfiles.PICK_DATA");
-
-        try {
-            startActivityForResult(sIntent, PERM_CODE);
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(getApplicationContext(), "No suitable File Manager was found.", Toast.LENGTH_SHORT).show();
-        }
-    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -162,15 +159,13 @@ public class CreateEmailActivity extends AppCompatActivity {
                 return true;
             case R.id.email_send_button:
                 MessagesDBHandler dbHandler = new MessagesDBHandler(this);
-
-
                 Message message = new Message(fromEditBox.getText().toString(), toEditBox.getText().toString(),
                         ccEditBox.getText().toString(), bccEditBox.getText().toString(), subjectEditBox.getText().toString(), contentEditBox.getText().toString());
                 message.setLogged_user_id(mSharedPreferences.getInt(LoginActivity.userId, -1));
                 /*  dbHandler.addMessage(message);*/
 
                 if (filePath != null) {
-                    SendMultipartEmail sendMessage = new SendMultipartEmail(this, message.getTo(), message.getSubject(), message.getContent(), filePath, message.getCc(), message.getBcc());
+                    SendMultipartEmail sendMessage = new SendMultipartEmail(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo());
                     sendMessage.execute();
                 } else {
                     SendEmail sendMessage = new SendEmail(message.getSubject(), message.getContent(), message.getCc(), message.getBcc(), message.getTo());
@@ -181,7 +176,31 @@ public class CreateEmailActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+    public void openFile(String mimeType) {
 
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
+        intent.setType(mimeType);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        // special intent for Samsung file manager
+        Intent sIntent = new Intent("com.sec.android.app.myfiles.PICK_DATA");
+        sIntent.putExtra("CONTENT_TYPE", mimeType);
+        sIntent.addCategory(Intent.CATEGORY_DEFAULT);
+
+        try {
+            if(android.os.Build.MANUFACTURER.toLowerCase().equals("samsung")) {
+                startActivityForResult(sIntent, PERM_CODE);
+            }
+            else{
+                startActivityForResult(Intent.createChooser(intent, "Select Files"), PERM_CODE);
+            }
+            //startActivityForResult(Intent.createChooser(intent,"Select file/s"), PERM_CODE);
+
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(getApplicationContext(), "No suitable File Manager was found.", Toast.LENGTH_SHORT).show();
+        }
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -192,20 +211,13 @@ public class CreateEmailActivity extends AppCompatActivity {
                     if (null != data.getClipData()) { // checking multiple selection or not
                         for (int i = 0; i < data.getClipData().getItemCount(); i++) {
                             filePath = data.getClipData().getItemAt(i).getUri().getPath();
-                            //uriList.add(uri);
-                            Log.d("PATH AT: ", filePath);
-                            Log.d("Path with envionment:", Environment.getExternalStorageDirectory().toString());
-                            Log.d("Path with absolute:", Environment.getExternalStorageDirectory().getAbsolutePath());
-                            Log.d("Path with parent:", Environment.getExternalStorageDirectory().getParent());
+                            uriList.add(data.getClipData().getItemAt(i).getUri().getPath());
+                            attachedFiles.setText(String.valueOf(uriList.size()));
                         }
                     } else {
                         filePath = data.getData().getPath();
-                        //uriList.add(uri);
-                        Log.d("PATH AT: ", filePath);
-                        Log.d("Path with functions:", Environment.getExternalStorageDirectory().getAbsolutePath() + "/5113lJZJQuL.JPG");
-                        Log.d("Path with envionment:", Environment.getExternalStorageDirectory().toString());
-                        Log.d("Path with absolute:", Environment.getExternalStorageDirectory().getAbsolutePath());
-                        Log.d("Path with parent:", Environment.getExternalStorageDirectory().getParent());
+                        uriList.add(data.getData().getPath());
+                        attachedFiles.setText(String.valueOf(uriList.size()));
                     }
                 } else {
                     Toast.makeText(getApplicationContext(),

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.aleksandar69.PMSU2020Tim16.database.provider.AccountsContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.AttachmentsContentProvider;
@@ -19,7 +20,7 @@ import java.util.List;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 86;
+    public static final int DATABASE_VERSION = 89;
     public static final String DATABASE_NAME = "EMAILDB";
 
 
@@ -49,13 +50,13 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     private static final String COLUMN_PASSWORD = "password";
     private static final String COLUMN_DISPLAYNAME = "displayname";
     private static final String COLUMN_EMAIL = "email";
-    private static final String COLUMN_ATTACH_ID = "attachment";
 
     public static final String TABLE_ATTACHMENTS = "ATTACHMENTS";
 
     public static final String COLUMN_ID_ATTACHMENTS = "_id";
     private static final String COLUMN_ATTACH_CONTENT = "content";
     public static final String COLUMN_FILENAME = "filename";
+    public static final String COLUMN_EMAIL_ID_FK = "linkedemailid";
 
     private ContentResolver myContentResolver;
 
@@ -65,9 +66,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             COLUMN_BCC + " TEXT, " + COLUMN_SUBJECT + " TEXT, " +
             COLUMN_CONTENT + " TEXT, " + COLUMN_DATETIME + " TEXT, " +
             COLUMN_ACCOUNTS_FK + " INTEGER, " +
-            COLUMN_ATTACH_ID + " INTEGER, " +
-            "FOREIGN KEY(" + COLUMN_ACCOUNTS_FK + ") REFERENCES ACCOUNTS(_id), "
-            + "FOREIGN KEY(" + COLUMN_ATTACH_ID + ") REFERENCES ATTACHMENTS(_id)" + ")";
+            "FOREIGN KEY(" + COLUMN_ACCOUNTS_FK + ") REFERENCES ACCOUNTS(_id) " + ")";
 
     private static String CREATE_ACCOUNTS_TABLE = "CREATE TABLE " + TABLE_ACCOUNTS +
             "(" + COLUMN_ID_ACCOUNTS + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -77,7 +76,9 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     private static String CREATE_ATTACHMENT_TABLE = "CREATE TABLE " + TABLE_ATTACHMENTS +
             "(" + COLUMN_ID_ATTACHMENTS + " INTEGER PRIMARY KEY, " +
-            COLUMN_ATTACH_CONTENT + " TEXT, " + COLUMN_FILENAME + " TEXT" + ")";
+            COLUMN_ATTACH_CONTENT + " TEXT, " + COLUMN_FILENAME + " TEXT, "
+            + COLUMN_EMAIL_ID_FK + " INTEGER, "
+            + "FOREIGN KEY(" + COLUMN_EMAIL_ID_FK + ") REFERENCES EMAILS(_id)" +")";
 
 
     public MessagesDBHandler(Context context/*, String name, SQLiteDatabase.CursorFactory factory, int version*/) {
@@ -116,14 +117,28 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         values.put(COLUMN_SUBJECT, message.getSubject());
         values.put(COLUMN_CONTENT, message.getContent());
         values.put(COLUMN_ACCOUNTS_FK, message.getLogged_user_id());
-        values.put(COLUMN_ATTACH_ID, message.getAttachmentId());
 
         myContentResolver.insert(MessagesContentProvider.CONTENT_URI, values);
     }
 
+    public Cursor filterEmail(String term){
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME};
+
+        String selection = COLUMN_CONTENT + " LIKE ? OR " + COLUMN_SUBJECT + " LIKE ?";
+
+        String[] selectionArgs= {"%"+term+"%","%"+term+"%"};
+
+        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,selection,selectionArgs, null);
+
+        return cursor;
+
+
+
+    }
+
     public Message findMessage(int messageId) {
 
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ATTACH_ID};
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME};
         String selection = "_id = \"" + messageId + "\"";
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection, selection, null, null);
@@ -140,7 +155,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             message.setSubject(cursor.getString(5));
             message.setContent(cursor.getString(6));
             message.setDateTime(cursor.getString(7));
-            message.setAttachmentId(Integer.parseInt(cursor.getString(8)));
 
             cursor.close();
         } else {
@@ -155,7 +169,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public Cursor getAllMessages(int userId) {
 
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ATTACH_ID};
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK};
 
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
@@ -166,7 +180,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public Cursor getAllMessages2() {
 
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ATTACH_ID};
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME};
 
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
@@ -179,7 +193,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public List<Message> queryAllMessages() {
 
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ATTACH_ID};
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME};
         String selection = null;
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection, selection, null, null);
@@ -201,7 +215,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             message.setSubject(cursor.getString(5));
             message.setContent(cursor.getString(6));
             message.setDateTime(cursor.getString(7));
-            message.setAttachmentId(Integer.parseInt(cursor.getString(8)));
 
             messages.add(message);
             cursor.moveToNext();
@@ -315,40 +328,45 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     }
 
-    //ATTACHMENTS
+    /////////////////////////////////////////ATTACHMENTS/////////////////////////////////////////
 
     public void addAttachment(Attachment attachment) {
         ContentValues values = new ContentValues();
         values.put(COLUMN_ATTACH_CONTENT, attachment.getContent());
         values.put(COLUMN_FILENAME, attachment.getFileName());
+        values.put(COLUMN_EMAIL_ID_FK,attachment.getMessageId());
 
         myContentResolver.insert(AttachmentsContentProvider.CONTENT_URI, values);
     }
 
-    public Attachment queryAttachForMessage(int messageAttId) {
-        String[] projection = {COLUMN_ID_ATTACHMENTS, COLUMN_ATTACH_CONTENT, COLUMN_FILENAME};
+    public List<Attachment> queryAttachForMessage(int messageAttId) {
+        String[] projection = {COLUMN_ID_ATTACHMENTS, COLUMN_ATTACH_CONTENT, COLUMN_FILENAME, COLUMN_EMAIL_ID_FK};
 
         Cursor cursor = myContentResolver.query(AttachmentsContentProvider.CONTENT_URI,
-                projection, COLUMN_ID_ATTACHMENTS + "=" + messageAttId, null, null);
+                projection, COLUMN_EMAIL_ID_FK + "=" + messageAttId, null, null);
 
-        Attachment attachment;
+        List<Attachment> attachemntList = new ArrayList<>();
 
-        if (cursor.moveToFirst()) {
-            attachment = new Attachment();
-            attachment.set_id(Integer.parseInt(cursor.getString(0)));
-            attachment.setContent(cursor.getString(1));
-            attachment.setFileName(cursor.getString(2));
-            cursor.close();
+        cursor.moveToFirst();
+        try {
+            while (!cursor.isAfterLast()) {
+                Attachment attachment = new Attachment();
+                attachment.set_id(Integer.parseInt(cursor.getString(0)));
+                attachment.setContent(cursor.getString(1));
+                attachment.setFileName(cursor.getString(2));
+                attachemntList.add(attachment);
+                cursor.moveToNext();
+            }
+        }catch (NullPointerException e){
+            Log.e("NULL", "Cursor attachment can't be null");
         }
-        else{
-            attachment = null;
-        }
-        return attachment;
+        cursor.close();
+        return attachemntList;
 
     }
 
     public Attachment queryAttachbyName(String messageName) {
-        String[] projection = {COLUMN_ID_ATTACHMENTS, COLUMN_ATTACH_CONTENT, COLUMN_FILENAME};
+        String[] projection = {COLUMN_ID_ATTACHMENTS, COLUMN_ATTACH_CONTENT, COLUMN_FILENAME, COLUMN_EMAIL_ID_FK};
 
         String selection = COLUMN_FILENAME + " = ? ";
 

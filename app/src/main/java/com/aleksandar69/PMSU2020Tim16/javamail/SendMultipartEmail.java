@@ -1,31 +1,29 @@
 package com.aleksandar69.PMSU2020Tim16.javamail;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
-import android.widget.Toast;
+import android.util.Log;
 
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.aleksandar69.PMSU2020Tim16.activities.TestImageLoadActivity;
+import com.aleksandar69.PMSU2020Tim16.activities.CreateEmailActivity;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import javax.mail.Authenticator;
 import javax.mail.BodyPart;
 import javax.mail.Message;
@@ -39,7 +37,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import javax.sql.DataSource;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -53,7 +50,8 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
   //  public static String recipient;
     public static String subject;
     public static String content;
-    public static String fileName;
+    //public static String filePath;
+    private List<String> filePath;
     Context mContext;
     private String myToList;
     private String myCCList;
@@ -62,10 +60,10 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
     private static final String SMTP_HOST_NAME = "smtp.gmail.com";
     private static final int SMTP_HOST_PORT = 465;
 
-    public SendMultipartEmail(Context context, String subject, String content, String fileName, String myCC, String myBCC, String myTo) {
+    public SendMultipartEmail(Context context, String subject, String content, List<String> filePath, String myCC, String myBCC, String myTo) {
         this.subject = subject;
         this.content = content;
-        this.fileName = fileName;
+        this.filePath = filePath;
         mContext = context;
         this.myCCList = myCC;
         this.myBCCList = myBCC;
@@ -157,51 +155,58 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
             BodyPart messageBodyPart = new MimeBodyPart();
 
             Multipart multiPart = new MimeMultipart();
+
+            // dio sa tekstom poruke
             multiPart.addBodyPart(messageBodyPart);
             messageBodyPart.setText(content);
 
-            myCCList = "";
-            myBCCList = "";
+
 
             //attachment
 
-            //String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/5113lJZJQuL.JPG";
 
-            //String fileName = "/storage/emulated/0/1091035_366679420102464_628854323_o.jpg";
+            for(int i = 0; i < filePath.size(); i++){
+                MimeBodyPart messageBodyPart2 = new MimeBodyPart();
 
-            File file = new File(fileName);
+                Random random = new Random();
 
-            saveFile(encodeFileToBase64Binary(fileName), "/tempBase64.txt");
+                String ranint = String.valueOf(random.nextInt());
+
+                File file = new File(filePath.get(i));
+                saveFile(encodeFileToBase64Binary(filePath.get(i)), "/" + ranint + "tempBase64.txt");
+                String encoded = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + ranint + "tempBase64.txt";
+
+                messageBodyPart2.attachFile(encoded);
+
+                messageBodyPart2.setDisposition(Part.ATTACHMENT);
+                messageBodyPart2.setFileName(file.getName());
+                multiPart.addBodyPart(messageBodyPart2);
+
+                message.setContent(multiPart);
+                message.saveChanges();
+
+            }
+
+
+            Log.d("VELICINA",String.valueOf(filePath.size()));
+
+          /*  MimeBodyPart messageBodyPart2 = new MimeBodyPart();
+
+            File file = new File(filePath);
+
+            saveFile(encodeFileToBase64Binary(filePath), "/tempBase64.txt");
 
             String encoded = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tempBase64.txt";
 
-            MimeBodyPart messageBodyPart2 = new MimeBodyPart();
+
             messageBodyPart2.attachFile(encoded);
-
-
-            //messageBodyPart = new MimeBodyPart();
-
-
-      /*      String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/5113lJZJQuL.JPG";
-            FileDataSource source = new FileDataSource(fileName);
-            messageBodyPart.setDataHandler(new DataHandler(source));
-            messageBodyPart.setFileName("Image");
-            multiPart.addBodyPart(messageBodyPart);*/
-/*
-            String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/5113lJZJQuL.JPG";
-            String base64attachment = encodeFileToBase64Binary(fileName);
-            messageBodyPart.setHeader("Content-Transfer-Encoding", "base64");
-            messageBodyPart.setFileName(fileName);
-            messageBodyPart.setText(base64attachment);
-            messageBodyPart.setDisposition(Part.ATTACHMENT);
-            multiPart.addBodyPart(messageBodyPart);*/
 
             messageBodyPart2.setDisposition(Part.ATTACHMENT);
             messageBodyPart2.setFileName(file.getName());
             multiPart.addBodyPart(messageBodyPart2);
 
             message.setContent(multiPart);
-            message.saveChanges();
+            message.saveChanges();*/
 
 
            // Transport.send(message);
@@ -217,6 +222,7 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
         }
         return null;
     }
+
 
     private void saveFile(String base64file, String fileName) {
         String state = Environment.getExternalStorageState();

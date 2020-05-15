@@ -15,16 +15,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <provider
             android:name=".database.provider.AttachmentsContentProvider"
             android:authorities="com.aleksandar69.PMSU2020Tim16.database.provider.AttachmentsContentProvider"
             android:enabled="true"
-            android:exported="true"></provider>
+            android:exported="true" />
 
-        <activity android:name=".activities.TestImageLoadActivity"></activity>
+        <activity android:name=".activities.TestImageLoadActivity" />
         <activity
             android:name=".activities.RegisterActivity"
-            android:parentActivityName=".activities.LoginActivity"></activity>
+            android:parentActivityName=".activities.LoginActivity" />
 
         <provider
             android:name=".database.provider.AccountsContentProvider"
@@ -55,8 +56,18 @@
             android:parentActivityName=".activities.FoldersActivity" />
         <activity
             android:name=".activities.EmailActivity"
-            android:parentActivityName=".activities.EmailsActivity" />
-        <activity android:name=".activities.EmailsActivity" />
+            android:parentActivityName=".activities.EmailsActivity">
+
+        </activity>
+        <activity android:name=".activities.EmailsActivity"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
         <activity
             android:name=".activities.CreateFolderActivity"
             android:parentActivityName=".activities.FoldersActivity" />

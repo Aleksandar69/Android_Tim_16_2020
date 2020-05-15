@@ -1,24 +1,14 @@
 package com.aleksandar69.PMSU2020Tim16.javamail;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.aleksandar69.PMSU2020Tim16.models.Attachment;
 
-import org.apache.commons.codec.binary.StringUtils;
-
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,13 +18,11 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.NoSuchProviderException;
 import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
@@ -117,9 +105,9 @@ public class Pop3FetchEmails extends AsyncTask<Void, Void, Void> {
                             //String fileContent = part.getContent().toString();
                             //part.saveFile(saveDirectory + File.separator + fileName);
                             dbHandler.addAttachment(attachment);
-                            message.setAttachment(attachment);
-                            Attachment attachmentCopy = dbHandler.queryAttachbyName(part.getFileName());
-                            message.setAttachmentId(attachmentCopy.get_id());
+                            message.addAttachments(attachment);
+                   /*         Attachment attachmentCopy = dbHandler.queryAttachbyName(part.getFileName());
+                            message.setAttachmentId(attachmentCopy.get_id());*/
 
                         }
                     }

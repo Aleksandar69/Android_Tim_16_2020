@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -147,12 +146,13 @@ public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
                             if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
                                 // this part is attachment
                                 Attachment attachment = new Attachment(part.getContent().toString(), part.getFileName());
+                                attachment.setMessageId(messageid);
                                 //String fileContent = part.getContent().toString();
                                 //part.saveFile(saveDirectory + File.separator + fileName);
                                 dbHandler.addAttachment(attachment);
-                                message.setAttachment(attachment);
-                                Attachment attachmentCopy = dbHandler.queryAttachbyName(part.getFileName());
-                                message.setAttachmentId(attachmentCopy.get_id());
+                                message.addAttachments(attachment);
+         /*                       Attachment attachmentCopy = dbHandler.queryAttachbyName(part.getFileName());
+                                message.setAttachmentId(attachmentCopy.get_id());*/
 
                             }
                         }

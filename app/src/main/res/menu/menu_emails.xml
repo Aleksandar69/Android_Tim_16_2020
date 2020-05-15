@@ -6,14 +6,14 @@
         android:id="@+id/create_message"
         android:title="@string/create_message_title"
         android:icon="@drawable/baseline_add_white_24dp"
-        android:orderInCategory="1"
+        android:orderInCategory="2"
         app:showAsAction="collapseActionView|ifRoom"/>
 
     <item
         android:id="@+id/search_emails"
         android:title="@string/search_emails"
         android:icon="@drawable/baseline_search_black_24dp"
-        android:orderInCategory="2"
+        android:orderInCategory="1"
         app:showAsAction="ifRoom"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
 

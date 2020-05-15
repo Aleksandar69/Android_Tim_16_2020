@@ -8,6 +8,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,7 +22,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import androidx.appcompat.widget.SearchView;
 import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.Data;
@@ -33,9 +38,10 @@ import com.google.android.material.navigation.NavigationView;
 public class EmailsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ListView.OnItemClickListener {
 
     Cursor cursor;
-    SQLiteDatabase db;
     ListView emails;
     SharedPreferences sharedPreferences;
+    MessagesDBHandler handler;
+    SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +49,14 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         setContentView(R.layout.activity_emails);
 
         emails = (ListView) findViewById(R.id.emails_list_view);
+
+        try {
+            handler = new MessagesDBHandler(this);
+        }catch (SQLException e) {
+            Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.emails_toolbar);
         setSupportActionBar(toolbar);
@@ -60,14 +74,41 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
-
         // populateListFromDB();
 
         sharedPreferences = getSharedPreferences(LoginActivity.myPreferance, Context.MODE_PRIVATE);
 
         populateList();
 
+        handleIntent(getIntent());
+
+    }
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        handleIntent(intent);
+        super.onNewIntent(intent);
+    }
+    public void onTempButtonClickedFind(View view){
+        onSearchRequested();
+    }
+
+    private void handleIntent(Intent intent){
+        if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            if(query == "" || query.isEmpty()){
+                Cursor c = handler.getAllMessages2();
+                EmailsCursorAdapter emailsAdapter = new EmailsCursorAdapter(this, c);
+                emails.setAdapter(emailsAdapter);
+
+            }
+            Cursor c = handler.filterEmail(query);
+            EmailsCursorAdapter emailsAdapter = new EmailsCursorAdapter(this, c);
+            emails.setAdapter(emailsAdapter);
+
+        }
     }
 
     @Override
@@ -81,25 +122,23 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         startActivity(intent);
     }
 
+
     public void populateList() {
 
-       try {
-
-
-
-        MessagesDBHandler handler = new MessagesDBHandler(this);
+ /*      try {
+        handler = new MessagesDBHandler(this);*/
 
            // cursor = handler.getAllMessages(sharedPreferences.getInt(LoginActivity.userId, -1));
             cursor = handler.getAllMessages2();
-            ListView lvItems = (ListView) findViewById(R.id.emails_list_view);
+           // ListView lvItems = (ListView) findViewById(R.id.emails_list_view);
 
             EmailsCursorAdapter emailsAdapter = new EmailsCursorAdapter(this, cursor);
             emails.setOnItemClickListener(this);
-            lvItems.setAdapter(emailsAdapter);
-        } catch (SQLException e) {
+            emails.setAdapter(emailsAdapter);
+ /*       } catch (SQLException e) {
             Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);
             toast.show();
-        }
+        }*/
     }
 
 
@@ -140,8 +179,29 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_emails, menu);
-        return super.onCreateOptionsMenu(menu);
+
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.search_emails).getActionView();
+        //searchView.setSearchableInfo(searchManager.getSearchableInfo( new ComponentName(this, SearchResultActivity.class)));
+        searchView.setSearchableInfo(searchManager.getSearchableInfo( getComponentName()));
+
+        ImageView closeButton = (ImageView)searchView.findViewById(R.id.search_close_btn);
+
+        closeButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+               populateList();
+                EditText et = (EditText) findViewById(R.id.search_src_text);
+                et.setText("");
+            }
+        });
+
+
+        return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -231,6 +291,5 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
     protected void onDestroy() {
         super.onDestroy();
     }
-
 
 }

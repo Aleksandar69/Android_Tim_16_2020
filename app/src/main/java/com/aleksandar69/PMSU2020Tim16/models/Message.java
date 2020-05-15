@@ -1,19 +1,9 @@
 package com.aleksandar69.PMSU2020Tim16.models;
 
-import android.os.Build;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
-import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 
 public class Message {
 
@@ -26,8 +16,8 @@ public class Message {
     private String subject;
     private String content;
     private int logged_user_id;
-    private Attachment mAttachment;
-    private int attachmentId;
+    private List<Attachment> attachments;
+/*    private int attachmentId;*/
 
     public Message() {
        // Calendar calendar = Calendar.getInstance();
@@ -37,6 +27,7 @@ public class Message {
         format = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
         dateToString = format.format(curDate);
         dateTime = dateToString;*/
+        attachments = new ArrayList<>();
     }
 
 
@@ -51,13 +42,13 @@ public class Message {
         dateToString = format.format(curDate);
         dateTime = dateToString;
 */
-
         this.from = from;
         this.to = to;
         this.cc = cc;
         this.bcc = bcc;
         this.subject = subject;
         this.content = content;
+        attachments = new ArrayList<>();
 
     }
 
@@ -83,12 +74,12 @@ public class Message {
         this.from = from;
     }
 
-    public Attachment getAttachment() {
-        return mAttachment;
+    public List<Attachment> getAttachments() {
+        return attachments;
     }
 
-    public void setAttachment(Attachment attachment) {
-        mAttachment = attachment;
+    public void addAttachments(Attachment attachment) {
+        this.attachments.add(attachment);
     }
 
     public String getTo() {
@@ -115,13 +106,13 @@ public class Message {
         this.bcc = bcc;
     }
 
-    public int getAttachmentId() {
+/*    public int getAttachmentId() {
         return attachmentId;
     }
 
     public void setAttachmentId(int attachmentId) {
         this.attachmentId = attachmentId;
-    }
+    }*/
 
     public String getDateTime() {
         return dateTime;

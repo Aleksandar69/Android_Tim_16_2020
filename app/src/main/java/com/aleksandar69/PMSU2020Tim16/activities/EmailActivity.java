@@ -27,6 +27,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class EmailActivity extends AppCompatActivity {
@@ -38,7 +40,7 @@ public class EmailActivity extends AppCompatActivity {
     private TextView tvCC;
     private TextView tvTo;
     private Button buttonAttach;
-    private Attachment attachment;
+    private List<Attachment> attachments;
 
 
     private int itemId;
@@ -65,8 +67,7 @@ public class EmailActivity extends AppCompatActivity {
         itemId = Integer.parseInt(emailId);
         message = emailsDb.findMessage(itemId);
 
-        attachment = emailsDb.queryAttachForMessage(message.getAttachmentId());
-
+       attachments = emailsDb.queryAttachForMessage(message.get_id());
 
         loadEmail();
 
@@ -77,7 +78,7 @@ public class EmailActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Message");
 
-        if (attachment == null) {
+        if (attachments.size() < 1) {
             buttonAttach.setVisibility(View.GONE);
         }
     }
@@ -107,22 +108,21 @@ public class EmailActivity extends AppCompatActivity {
 
     public void decodeOnClick(View view) throws IOException {
 
-        if (attachment != null) {
+        if (!(attachments.size() < 1)) {
 
-            String fileContent = decodeBase64(attachment.getContent());
+            for(int i = 0; i < attachments.size(); i++){
+
+            String fileContent = decodeBase64(attachments.get(i).getContent());
 
             // String file = decodeBase64(message.getAttachments());
 
-            byte[] imgBytes = Base64.decode(attachment.getContent(), Base64.DEFAULT);
+            byte[] imgBytes = Base64.decode(attachments.get(i).getContent(), Base64.DEFAULT);
 
             File storage = Environment.getExternalStorageDirectory();
             File dir = new File(storage.getAbsolutePath());
 
-            Random random = new Random();
 
-            String randomStr = String.valueOf(random.nextInt());
-
-            File file1 = new File(dir, attachment.getFileName());
+            File file1 = new File(dir, attachments.get(i).getFileName());
 
             FileOutputStream fos = new FileOutputStream(file1);
             fos.write(imgBytes);
@@ -130,7 +130,7 @@ public class EmailActivity extends AppCompatActivity {
 
             Toast.makeText(this, "Attachment Saved To Root", Toast.LENGTH_SHORT).show();
 
-
+            }
         } else {
             Toast.makeText(this, "Your message has no attachment included.", Toast.LENGTH_SHORT).show();
         }
