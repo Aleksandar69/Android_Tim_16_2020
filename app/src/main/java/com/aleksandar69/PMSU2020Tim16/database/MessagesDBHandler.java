@@ -10,9 +10,11 @@ import android.util.Log;
 
 import com.aleksandar69.PMSU2020Tim16.database.provider.AccountsContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.AttachmentsContentProvider;
+import com.aleksandar69.PMSU2020Tim16.database.provider.ContactsContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentProvider;
 import com.aleksandar69.PMSU2020Tim16.models.Account;
 import com.aleksandar69.PMSU2020Tim16.models.Attachment;
+import com.aleksandar69.PMSU2020Tim16.models.Contact;
 import com.aleksandar69.PMSU2020Tim16.models.Message;
 
 import java.util.ArrayList;
@@ -22,6 +24,17 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public static final int DATABASE_VERSION = 89;
     public static final String DATABASE_NAME = "EMAILDB";
+
+    //contacts
+    public static final String TABLE_CONTACTS = "CONTACT";
+
+    public static final String COLUMN_ID_CONTACTS = "_id";
+    private static final String COLUMN_FIRST = "firstname";
+    private static final String COLUMN_LAST = "lastname";
+    private static final String COLUMN_DISPLAY = "displaytext";
+    //DODATI PLAIN,HTML
+    private static final String COLUMN_CONTACT_EMAIL = "emailtext";
+    private static final String COLUMN_IMAGE_RESOURCE = "imageresourceid";
 
 
     //emails
@@ -80,6 +93,11 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             + COLUMN_EMAIL_ID_FK + " INTEGER, "
             + "FOREIGN KEY(" + COLUMN_EMAIL_ID_FK + ") REFERENCES EMAILS(_id)" +")";
 
+    private static String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS +
+            "(" + COLUMN_ID_CONTACTS + "INTEGER PRIMARY KEY AUTOINCREMENT," +
+            COLUMN_FIRST + " TEXT, " + COLUMN_LAST + " TEXT, " +
+            COLUMN_DISPLAY + " TEXT, " + COLUMN_CONTACT_EMAIL + "TEXT , " + COLUMN_IMAGE_RESOURCE + " INTEGER " +")";
+
 
     public MessagesDBHandler(Context context/*, String name, SQLiteDatabase.CursorFactory factory, int version*/) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -91,7 +109,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_MESSAGES_TABLE);
         db.execSQL(CREATE_ACCOUNTS_TABLE);
         db.execSQL(CREATE_ATTACHMENT_TABLE);
-
+        db.execSQL(CREATE_CONTACTS_TABLE);
     }
 
     @Override
@@ -100,6 +118,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ACCOUNTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTACHMENTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
         onCreate(db);
 
     }
@@ -392,5 +411,108 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
 
     }
+
+
+    /////////////////////////// CONTACTS /////////////////////////////////
+
+    private void addContacts(Contact contact) {
+        ContentValues contactsValues = new ContentValues();
+        contactsValues.put(COLUMN_ID_CONTACTS, contact.get_id());
+        contactsValues.put(COLUMN_FIRST, contact.getFirst());
+        contactsValues.put(COLUMN_LAST, contact.getLast());
+        contactsValues.put(COLUMN_DISPLAY, contact.getDisplay());
+        contactsValues.put(COLUMN_CONTACT_EMAIL, contact.getEmail());
+        contactsValues.put(COLUMN_IMAGE_RESOURCE, contact.getImageSourceID());
+
+        myContentResolver.insert(ContactsContentProvider.CONTENT_URI,contactsValues);
+    }
+
+    public Contact findContact(int contactId) {
+        String[] projection = {COLUMN_ID_CONTACTS, COLUMN_FIRST, COLUMN_LAST, COLUMN_DISPLAY, COLUMN_CONTACT_EMAIL,COLUMN_IMAGE_RESOURCE};
+        String selection = "_id = \"" + contactId + "\"";
+        Cursor cursor = myContentResolver.query(ContactsContentProvider.CONTENT_URI,projection, selection, null,null);
+
+        Contact contact = new Contact();
+
+        if(cursor.moveToFirst()) {
+            cursor.moveToFirst();
+            contact.set_id(Integer.parseInt(cursor.getString(0)));
+            contact.setFirst(cursor.getString(1));
+            contact.setLast(cursor.getString(2));
+            contact.setDisplay(cursor.getString(3));
+            contact.setEmail(cursor.getString(4));
+            contact.setImageSourceID(Integer.parseInt(cursor.getString(5)));
+
+            cursor.close();
+        } else {
+            contact = null;
+        }
+        return contact;
+
+    }
+
+    public void dropTableContact(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
+    }
+
+    public boolean deleteContact(int id) {
+        boolean result = false;
+
+        int rowsDeleted = myContentResolver.delete(ContactsContentProvider.CONTENT_URI,
+                COLUMN_ID_CONTACTS + " = " + id,null);
+
+        if(rowsDeleted > 0)
+            result = true;
+
+        return  result;
+    }
+
+    public Contact queryContactByName(String contactFirstName) {
+        String[] projection = {COLUMN_ID_CONTACTS, COLUMN_FIRST, COLUMN_LAST, COLUMN_DISPLAY, COLUMN_CONTACT_EMAIL,COLUMN_IMAGE_RESOURCE};
+        String selection = COLUMN_FIRST + " = ?";
+        String[] selectionArgs = {contactFirstName};
+
+        Cursor cursor = myContentResolver.query(ContactsContentProvider.CONTENT_URI,
+                projection,selection, selectionArgs,null);
+
+        Contact contact;
+
+        if(cursor.moveToFirst()) {
+            contact = new Contact();
+            contact.set_id(Integer.parseInt(cursor.getString(0)));
+            contact.setFirst(cursor.getString(1));
+            contact.setLast(cursor.getString(2));
+            contact.setDisplay(cursor.getString(3));
+            contact.setEmail(cursor.getString(4));
+            contact.setImageSourceID(Integer.parseInt(cursor.getString(5)));
+            cursor.close();
+        } else {
+            contact = null;
+        }
+        return contact;
+     }
+
+     public List<Contact> queryContacts() {
+         String[] projection = {COLUMN_ID_CONTACTS, COLUMN_FIRST, COLUMN_LAST, COLUMN_DISPLAY, COLUMN_CONTACT_EMAIL,COLUMN_IMAGE_RESOURCE};
+         Cursor cursor = myContentResolver.query(ContactsContentProvider.CONTENT_URI,projection,null,null,null);
+
+         List<Contact> contacts = new ArrayList<>();
+
+         cursor.moveToFirst();
+         while(!cursor.isAfterLast()) {
+
+             Contact contact = new Contact();
+             contact.set_id(Integer.parseInt(cursor.getString(0)));
+             contact.setFirst(cursor.getString(1));
+             contact.setLast(cursor.getString(2));
+             contact.setDisplay(cursor.getString(3));
+             contact.setEmail(cursor.getString(4));
+             contact.setImageSourceID(Integer.parseInt(cursor.getString(5)));
+             contacts.add(contact);
+             cursor.moveToNext();
+         }
+         cursor.close();
+         return contacts;
+     }
 
 }

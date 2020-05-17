@@ -49,9 +49,12 @@ public class MessagesContentProvider extends ContentProvider {
             case MESSAGE_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
-                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES, MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id, null);
+                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES,
+                            MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id,
+                            null);
                 } else {
-                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES, MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id + " and " + selection,
+                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES,
+                            MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id + " and " + selection,
                             selectionArgs);
                 }
                 break;
@@ -80,7 +83,8 @@ public class MessagesContentProvider extends ContentProvider {
         long id = 0;
         switch (uriType) {
             case MESSAGES:
-                id = sqlDB.insert(MessagesDBHandler.TABLE_MESSAGES, null, values);
+                id = sqlDB.insert(MessagesDBHandler.TABLE_MESSAGES,
+                        null, values);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);

@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -19,8 +18,6 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.R;
-import com.aleksandar69.PMSU2020Tim16.database.ContactsDBHandler;
-import com.aleksandar69.PMSU2020Tim16.models.Contact;
 
 public class ContactsActivity extends ListActivity  {
 

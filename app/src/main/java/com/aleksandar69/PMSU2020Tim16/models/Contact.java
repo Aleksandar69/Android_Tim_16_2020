@@ -4,6 +4,7 @@ import com.aleksandar69.PMSU2020Tim16.R;
 
 public class Contact {
 
+    private int _id;
     private String first;
     private String last;
     private String display;
@@ -13,8 +14,6 @@ public class Contact {
     public void setLast(String last) {
         this.last = last;
     }
-
-    private int _id;
 
     public void setEmail(String email) {
         this.email = email;
@@ -75,6 +74,9 @@ public class Contact {
         this.imageSourceID = imageSourceID;
     }
 
+    public Contact(){
+
+    }
 /*
     public static final Contact[] contacts = {
       new Contact("Elena", "Krunic", "Elena Krunic", "elenakrunic@gmail.com", R.mipmap.ic_launcher_round),
