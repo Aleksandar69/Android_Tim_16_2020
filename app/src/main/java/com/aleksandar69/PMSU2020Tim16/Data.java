@@ -17,4 +17,6 @@ public class Data {
     public static final String REPLY_TO_ALL_TO = "replytoallto";
     public static final String REPLY_TO_ALL_CONTENT = "replytoallcontent";
     public static boolean isReplyToAll = false;
+    //contacts
+    public static final String CONTACT_ID_EXTRA = "contactID";
 }

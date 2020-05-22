@@ -515,4 +515,24 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
          return contacts;
      }
 
+     //metoda za dobavljanje svih kontakata
+     public Cursor getAllContacts() {
+         String[] projection = {COLUMN_ID_CONTACTS, COLUMN_FIRST, COLUMN_LAST, COLUMN_DISPLAY, COLUMN_CONTACT_EMAIL,COLUMN_IMAGE_RESOURCE};
+         Cursor cursor = myContentResolver.query(ContactsContentProvider.CONTENT_URI, projection,
+                 null, null, null);
+         return cursor;
+     }
+
+     //filtriranje kroz kontakte
+     public Cursor filterContacts(String term){
+         String[] projection = {COLUMN_ID_CONTACTS, COLUMN_FIRST, COLUMN_LAST, COLUMN_DISPLAY, COLUMN_CONTACT_EMAIL,COLUMN_IMAGE_RESOURCE};
+         String selection = COLUMN_FIRST + " LIKE ? OR " + COLUMN_LAST + " LIKE ?";
+         String[] selectionArgs= {"%"+term+"%","%"+term+"%"};
+         Cursor cursor = myContentResolver.query(ContactsContentProvider.CONTENT_URI, projection,selection,selectionArgs, null);
+
+         return cursor;
+
+
+
+     }
 }
