@@ -12,11 +12,6 @@
         android:id="@+id/contacts_toolbar"
         layout="@layout/toolbar_layout"/>
 
-  <!--  <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/lista_kontakti"/> -->
-
     <androidx.drawerlayout.widget.DrawerLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,10 +26,19 @@
         <ListView
             android:id="@+id/lista_kontakti2"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:orientation = "vertical"
+            />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Contacts Activity"
+            style="@style/TextAppearance.AppCompat.Large"
+            />
 
-        <!--   <ListView
+           <ListView
                android:id="@+id/contacts_list_view"
                android:layout_width="match_parent"
                android:layout_height="wrap_content"
@@ -43,7 +47,7 @@
                android:choiceMode="singleChoice"
                android:clickable="true"
                android:dividerHeight="10.0sp"
-               android:scrollbars="vertical" /> -->
+               android:scrollbars="vertical" />
 
         </LinearLayout>
 

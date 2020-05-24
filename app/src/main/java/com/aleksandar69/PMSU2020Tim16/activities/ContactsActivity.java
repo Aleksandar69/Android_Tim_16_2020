@@ -62,6 +62,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
             toast.show();
         }
 
+
         //sve vezano za toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.contacts_toolbar);
         setSupportActionBar(toolbar);
@@ -101,22 +102,20 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        populateList();
         getMenuInflater().inflate(R.menu.menu_contacts, menu);
 
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+       //ImageView closeButton = (ImageView) searchView.findViewById(R.id.search_close_btn);
 
-        ImageView closeButton = (ImageView) searchView.findViewById(R.id.search_close_btn);
+        //closeButton.setOnClickListener(new View.OnClickListener() {
 
-        closeButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                populateList();
-                EditText editText = (EditText) findViewById(R.id.search_src_text);
-                editText.setText("");
-            }
-        });
+          //  @Override
+            //public void onClick(View v) {
+              //  populateList();
+                //EditText editText = (EditText) findViewById(R.id.search_src_text);
+                //editText.setText("");
+            //}
+        //});
 
         return true;
     }
@@ -166,6 +165,8 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
     }
 
+
+
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -205,6 +206,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         super.onDestroy();
     }
 
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
@@ -214,6 +216,9 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         intent.putExtra(Data.CONTACT_ID_EXTRA, contact_id);
         startActivity(intent);
     }
+
+
+
 
     public void onTempButtonClickedFind(View view){
         onSearchRequested();

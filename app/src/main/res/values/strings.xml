@@ -90,4 +90,8 @@
         <item>ascending</item>
         <item>descending</item>
     </string-array>
+
+    <string name="search_contacts">Search Contacts</string>
+
+
 </resources>
