@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.database.provider.AccountsContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.AttachmentsContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.ContactsContentProvider;
@@ -22,6 +23,8 @@ import com.aleksandar69.PMSU2020Tim16.models.Tag;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
@@ -134,8 +137,10 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_MESSAGES_TABLE);
         db.execSQL(CREATE_ACCOUNTS_TABLE);
         db.execSQL(CREATE_ATTACHMENT_TABLE);
+        Log.d("Elena", "Pokrenuto kreiranje tabela");
         db.execSQL(CREATE_TAG_TABLE);
         db.execSQL(CREATE_CONTACTS_TABLE);
+
     }
 
     @Override
@@ -555,7 +560,8 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     /////////////////////////// CONTACTS /////////////////////////////////
 
-    private void addContacts(Contact contact) {
+    public void addContacts(Contact contact) {
+        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contactsValues = new ContentValues();
         contactsValues.put(COLUMN_ID_CONTACTS, contact.get_id());
         contactsValues.put(COLUMN_FIRST, contact.getFirst());
@@ -564,7 +570,11 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         contactsValues.put(COLUMN_CONTACT_EMAIL, contact.getEmail());
         contactsValues.put(COLUMN_IMAGE_RESOURCE, contact.getImageSourceID());
 
-        myContentResolver.insert(ContactsContentProvider.CONTENT_URI,contactsValues);
+        db.insert(Data.TABLE_CONTACTS,null, contactsValues);
+        Log.d("Elena", "Succesfully inserted contacts ");
+        db.close();
+
+        //myContentResolver.insert(ContactsContentProvider.CONTENT_URI,contactsValues);
     }
 
     public Contact findContact(int contactId) {
@@ -655,13 +665,37 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
          return contacts;
      }
 
-     //metoda za dobavljanje svih kontakata
+     //metoda za dobavljanje svih kontakata jedan
      public Cursor getAllContacts() {
          String[] projection = {COLUMN_ID_CONTACTS, COLUMN_FIRST, COLUMN_LAST, COLUMN_DISPLAY, COLUMN_CONTACT_EMAIL,COLUMN_IMAGE_RESOURCE};
          Cursor cursor = myContentResolver.query(ContactsContentProvider.CONTENT_URI, projection,
                  null, null, null);
          return cursor;
      }
+
+     //metoda za dobavljanje svih kontakata preko liste
+    public List<Contact> getAllContactsList() {
+        List<Contact> contactList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        //read from db
+        String selection = "SELECT * FROM " + TABLE_CONTACTS;
+        Cursor cursor = db.rawQuery(selection,null);
+
+        if(cursor.moveToFirst()) {
+            do{
+                Contact contact = new Contact();
+                contact.set_id(Integer.parseInt(cursor.getString(0)));
+                contact.setFirst(cursor.getString(1));
+                contact.setLast(cursor.getString(2));
+                contact.setDisplay(cursor.getString(3));
+                contact.setEmail(cursor.getString(4));
+                contact.setImageSourceID(Integer.parseInt(cursor.getString(5)));
+                contactList.add(contact);
+            }while (cursor.moveToNext());
+        }
+        return  contactList;
+    }
 
      //filtriranje kroz kontakte
      public Cursor filterContacts(String term){

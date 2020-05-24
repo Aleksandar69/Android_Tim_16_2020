@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,14 +38,17 @@ import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.adapters.ContactsCursorAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
+import com.aleksandar69.PMSU2020Tim16.models.Contact;
 import com.google.android.material.navigation.NavigationView;
+
+import java.util.List;
 
 public class ContactsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,ListView.OnItemClickListener {
 
     ListView contacts;
     SharedPreferences sharedPreferences;
     MessagesDBHandler handler;
-    SearchView searchView;
+
     private Cursor cursor;
 
 
@@ -57,6 +61,45 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
         try{
           handler = new MessagesDBHandler(this);
+          //dodavanje kontakta u DB
+            Contact elena = new Contact();
+            elena.set_id(1);
+            elena.setFirst("Elena");
+            elena.setLast("Krunic");
+            elena.setDisplay("Elena krunic");
+            elena.setEmail("elenakrunic@gmail.com");
+            elena.setImageSourceID(null);
+            handler.addContacts(elena);
+
+            Contact pera = new Contact();
+            elena.set_id(1);
+            elena.setFirst("pera");
+            elena.setLast("Krunic");
+            elena.setDisplay("Elena krunic");
+            elena.setEmail("elenakrunic@gmail.com");
+            elena.setImageSourceID(null);
+            handler.addContacts(pera);
+
+            Contact mera = new Contact();
+            elena.set_id(1);
+            elena.setFirst("mera");
+            elena.setLast("Krunic");
+            elena.setDisplay("Elena krunic");
+            elena.setEmail("elenakrunic@gmail.com");
+            elena.setImageSourceID(null);
+            handler.addContacts(mera);
+
+            Log.d("Elena", "ID-evi za tri kontakta su : " + elena.get_id() + pera.get_id()+ mera.get_id());
+
+            //fetch contacts
+            List<Contact> allContacts = handler.getAllContactsList();
+            for(Contact contact: allContacts) {
+                Log.d("Elena", "Id" + contact.get_id() + "\n" + "FirstName" + contact.getFirst() + "\n"
+                + "LastName" + contact.getLast() + "\n" + "Display"
+                        + contact.getDisplay() + "\n" + "Email" + contact.getEmail()
+                + "\n" + "Image Resource ID " + contact.getImageSourceID() + "\n");
+            }
+
         } catch (SQLiteException e) {
             Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);
             toast.show();

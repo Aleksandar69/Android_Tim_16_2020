@@ -49,7 +49,7 @@ public class ContactsContentProvider extends ContentProvider {
             case CONTACT_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
-                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_CONTACTS,
+                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_CONTACTS ,
                             MessagesDBHandler.COLUMN_ID_CONTACTS + "=" + id,
                             null);
                 } else {
