@@ -26,6 +26,9 @@ public class AuthenticateMail extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... voids) {
 
+        if (android.os.Debug.isDebuggerConnected())
+            android.os.Debug.waitForDebugger();
+
         try {
             Properties props = new Properties();
             props.setProperty("mail.store.protocol", "imaps");
@@ -41,6 +44,7 @@ public class AuthenticateMail extends AsyncTask<Void, Void, Void> {
 
             store.connect(imapHOst, eMail, password);
 
+            Boolean isconn = store.isConnected();
 
 
         } catch (MessagingException e) {

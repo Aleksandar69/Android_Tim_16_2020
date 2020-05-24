@@ -119,7 +119,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             "FOREIGN KEY(" + COLUMN_EMAIL_TAG_ID_FK + ") REFERENCES EMAILS(_id)" + ")";
 
     private static String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS +
-            "(" + COLUMN_ID_CONTACTS + "INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "(" + COLUMN_ID_CONTACTS + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             COLUMN_FIRST + " TEXT, " + COLUMN_LAST + " TEXT, " +
             COLUMN_DISPLAY + " TEXT, " + COLUMN_CONTACT_EMAIL + "TEXT , " + COLUMN_IMAGE_RESOURCE + " INTEGER " +")";
 

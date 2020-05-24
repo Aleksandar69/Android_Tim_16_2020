@@ -79,7 +79,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         navigationView.setNavigationItemSelectedListener(this);
 
         //popuni listu
-        sharedPreferences = getSharedPreferences(LoginActivity.myPreferance, Context.MODE_PRIVATE);
+       // sharedPreferences = getSharedPreferences(LoginActivity.myPreferance, Context.MODE_PRIVATE);
 
         populateList();
 
