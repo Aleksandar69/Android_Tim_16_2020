@@ -1,6 +1,7 @@
 package com.aleksandar69.PMSU2020Tim16.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,14 +10,17 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.SearchManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,14 +29,20 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+
 import androidx.appcompat.widget.SearchView;
+import androidx.preference.PreferenceManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.adapters.EmailsCursorAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
-import com.aleksandar69.PMSU2020Tim16.javamail.CheckEmails;
+import com.aleksandar69.PMSU2020Tim16.javamail.ImapFetchMail;
+import com.aleksandar69.PMSU2020Tim16.services.EmailSyncService;
+import com.aleksandar69.PMSU2020Tim16.services.EmailsJobSchedulerSyncService;
 import com.google.android.material.navigation.NavigationView;
 
 public class EmailsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ListView.OnItemClickListener {
@@ -42,6 +52,9 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
     SharedPreferences sharedPreferences;
     MessagesDBHandler handler;
     SearchView searchView;
+    EditText searchViewET;
+    EmailsCursorAdapter emailsAdapter;
+    SwipeRefreshLayout pullToRefresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +62,12 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         setContentView(R.layout.activity_emails);
 
         emails = (ListView) findViewById(R.id.emails_list_view);
+        pullToRefresh = findViewById(R.id.pullToRefresh);
+
 
         try {
             handler = new MessagesDBHandler(this);
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);
             toast.show();
         }
@@ -76,12 +91,59 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
 
         // populateListFromDB();
 
-        sharedPreferences = getSharedPreferences(LoginActivity.myPreferance, Context.MODE_PRIVATE);
+        //sharedPreferences = getSharedPreferences(LoginActivity.myPreferance, Context.MODE_PRIVATE);
+
+ /*        Data.syncTime= sharedPreferences.getString(getString(R.string.pref_sync_list),"60000" );
+        Data.allowSync = sharedPreferences.getBoolean(getString(R.string.pref_sync),false);
+
+        Log.d("SYNCTIME:", Data.syncTime);
+       Log.d("ALLOWSYNC", Data.allowSync.toString());*/
 
         populateList();
 
+        Log.d("onCreateSharedPrefs" ,Data.allowSync.toString());
+        Log.d("onCreateSharedPrefs" ,Data.syncTime);
+        Log.d("onCreateSharedPrefs" ,Data.prefSort);
+
         handleIntent(getIntent());
 
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                populateList();
+                handleIntent(getIntent());
+                pullToRefresh.setRefreshing(false);
+            }
+        });
+
+    }
+
+    public void startSyncService() {
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+
+            ComponentName componentName = new ComponentName(this,
+                    EmailsJobSchedulerSyncService.class);
+
+            JobInfo jobInfoObj = new JobInfo.Builder(111, componentName).setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY).build();
+
+            jobScheduler.schedule(jobInfoObj);
+        }
+        else{
+            Intent i = new Intent(this, EmailSyncService.class);
+            startService(i);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void StopSyncingService(){
+        JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+        jobScheduler.cancel(111);
+    }
+
+    public void onClickFAB(View view) {
+        startActivity(new Intent(this, CreateEmailActivity.class));
     }
 
 
@@ -91,23 +153,23 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         handleIntent(intent);
         super.onNewIntent(intent);
     }
-    public void onTempButtonClickedFind(View view){
+
+    public void onTempButtonClickedFind(View view) {
         onSearchRequested();
     }
 
-    private void handleIntent(Intent intent){
-        if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            if(query == "" || query.isEmpty()){
+/*            if (query == "" || query.isEmpty()) {
                 Cursor c = handler.getAllMessages2();
                 EmailsCursorAdapter emailsAdapter = new EmailsCursorAdapter(this, c);
                 emails.setAdapter(emailsAdapter);
 
-            }
+            }*/
             Cursor c = handler.filterEmail(query);
-            EmailsCursorAdapter emailsAdapter = new EmailsCursorAdapter(this, c);
+            emailsAdapter = new EmailsCursorAdapter(this, c);
             emails.setAdapter(emailsAdapter);
-
         }
     }
 
@@ -125,20 +187,24 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
 
     public void populateList() {
 
- /*      try {
-        handler = new MessagesDBHandler(this);*/
+        // cursor = handler.getAllMessages(sharedPreferences.getInt(LoginActivity.userId, -1));
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        Data.syncTime = sharedPreferences.getString(getString(R.string.pref_syncConnectionType),"60000" );
+        Data.allowSync = sharedPreferences.getBoolean(getString((R.string.pref_sync)),false);
+        Data.prefSort = sharedPreferences.getString(getString(R.string.pref_sort),"ascending");
 
-           // cursor = handler.getAllMessages(sharedPreferences.getInt(LoginActivity.userId, -1));
-            cursor = handler.getAllMessages2();
-           // ListView lvItems = (ListView) findViewById(R.id.emails_list_view);
+        if(Data.prefSort.equals("ascending")){
+            cursor = handler.sortEmailAsc(sharedPreferences.getInt(Data.userId, -1));
+        }
+        else if(Data.prefSort.equals("descending")){
+            cursor = handler.sortEmailDesc(sharedPreferences.getInt(Data.userId, -1));
+        }
 
-            EmailsCursorAdapter emailsAdapter = new EmailsCursorAdapter(this, cursor);
-            emails.setOnItemClickListener(this);
-            emails.setAdapter(emailsAdapter);
- /*       } catch (SQLException e) {
-            Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);
-            toast.show();
-        }*/
+
+        emailsAdapter = new EmailsCursorAdapter(this, cursor);
+        emails.setOnItemClickListener(this);
+        emails.setAdapter(emailsAdapter);
+
     }
 
 
@@ -160,7 +226,7 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
 
 
 */
-/*        List<Message> messages = messagesDBHandler.queryAllMessages();*//*
+    /*        List<Message> messages = messagesDBHandler.queryAllMessages();*//*
 
 
         Message[] listMessages = new Message[messages.size()];
@@ -184,15 +250,15 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         searchView = (SearchView) menu.findItem(R.id.search_emails).getActionView();
         //searchView.setSearchableInfo(searchManager.getSearchableInfo( new ComponentName(this, SearchResultActivity.class)));
-        searchView.setSearchableInfo(searchManager.getSearchableInfo( getComponentName()));
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-        ImageView closeButton = (ImageView)searchView.findViewById(R.id.search_close_btn);
+        ImageView closeButton = (ImageView) searchView.findViewById(R.id.search_close_btn);
 
         closeButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-               populateList();
+                populateList();
                 EditText et = (EditText) findViewById(R.id.search_src_text);
                 et.setText("");
             }
@@ -211,6 +277,17 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
                 Toast.makeText(this, "Create email selected", Toast.LENGTH_LONG).show();
                 startActivity(intent);
                 return true;
+/*            case R.id.sort_by_asc:
+                Cursor cursor = handler.sortEmailAsc();emailsAdapter = new EmailsCursorAdapter(this, cursor);
+                emails.setOnItemClickListener(this);
+                emails.setAdapter(emailsAdapter);
+                return true;
+            case R.id.sort_by_desc:
+                Cursor cursordesc = handler.sortEmailDesc();
+                emailsAdapter = new EmailsCursorAdapter(this, cursordesc);
+                emails.setOnItemClickListener(this);
+                emails.setAdapter(emailsAdapter);
+                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -237,6 +314,9 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
                 break;
             case R.id.nav_logout:
                 intent = new Intent(this, LoginActivity.class);
+                Data.account = null;
+                emails.clearChoices();
+                emails.setAdapter(null);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.clear();
                 editor.commit();
@@ -262,13 +342,29 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onStart() {
+        populateList();
+        handleIntent(getIntent());
+        if(Data.allowSync == true) {
+            startSyncService();
+        }
+        else if(Data.allowSync == false){
+            StopSyncingService();
+        }
+
         super.onStart();
     }
 
     @Override
     protected void onResume() {
+        populateList();
+        handleIntent(getIntent());
+        Log.d("onResumeSharedPrefs",Data.prefSort);
+        Log.d("onResumeSharedPrefs",Data.allowSync.toString());
+        Log.d("onResumeSharedPrefs",Data.syncTime);
+
         super.onResume();
     }
 

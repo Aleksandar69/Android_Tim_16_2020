@@ -1,26 +1,32 @@
 package com.aleksandar69.PMSU2020Tim16.models;
 
+import androidx.annotation.NonNull;
+
 public class Account {
 
     private int _id;
-    private String smtpAddress;
+    private String smtpPort;
     private String port;
     private String username;
     private String password;
     private String displayName;
     private String eMail;
+    private String smtphost;
+    private String imapHost;
 
     public Account() {
 
     }
 
-    public Account(String smtpAddress, String port, String username, String password, String displayName, String eMail){
+    public Account(String smtpAddress, String port, String username, String password, String displayName, String eMail, String smtphost, String imapHost){
         this.eMail = eMail;
-        this.smtpAddress = smtpAddress;
+        this.smtpPort = smtpAddress;
         this.port = port;
         this.username = username;
         this.password = password;
         this.displayName = displayName;
+        this.smtphost = smtphost;
+        this.imapHost = imapHost;
     }
 
     public String geteMail() {
@@ -39,12 +45,12 @@ public class Account {
         this._id = _id;
     }
 
-    public String getSmtpAddress() {
-        return smtpAddress;
+    public String getSmtpPort() {
+        return smtpPort;
     }
 
-    public void setSmtpAddress(String smtpAddress) {
-        this.smtpAddress = smtpAddress;
+    public void setSmtpPort(String smtpPort) {
+        this.smtpPort = smtpPort;
     }
 
     public String getPort() {
@@ -75,7 +81,29 @@ public class Account {
         return displayName;
     }
 
+    public String getSmtphost() {
+        return smtphost;
+    }
+
+    public void setSmtphost(String smtphost) {
+        this.smtphost = smtphost;
+    }
+
+    public String getImapHost() {
+        return imapHost;
+    }
+
+    public void setImapHost(String imapHost) {
+        this.imapHost = imapHost;
+    }
+
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Username:" + username + "E-mail" + eMail + "Password:" + password;
     }
 }

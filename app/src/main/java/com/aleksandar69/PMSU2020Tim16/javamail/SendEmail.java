@@ -4,6 +4,8 @@ package com.aleksandar69.PMSU2020Tim16.javamail;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.aleksandar69.PMSU2020Tim16.models.Account;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -27,17 +29,23 @@ public class SendEmail extends AsyncTask<Void, Void, Void> {
     private String myToList;
     private String myCCList;
     private String myBCCList;
+    private StringBuffer tagList;
+    Account mAccount;
     private static final String MAIL_SERVER = "smtp";
     private static final String SMTP_HOST_NAME = "smtp.gmail.com";
     private static final int SMTP_HOST_PORT = 465;
 
 
-    public SendEmail(String subject, String content, String myCC, String myBCC, String myTo) {
+    public SendEmail(String subject, String content, String myCC, String myBCC, String myTo, String tags, Account account) {
         this.subject = subject;
         this.content = content;
         this.myCCList = myCC;
         this.myBCCList = myBCC;
         this.myToList = myTo;
+        tagList = new StringBuffer();
+        tagList.append(tags);
+        mAccount = account;
+
     }
 
     @Override
@@ -47,17 +55,17 @@ public class SendEmail extends AsyncTask<Void, Void, Void> {
 
         Properties props = new Properties();
 
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.socketFactory.port", "465");
+        props.put("mail.smtp.host", mAccount.getSmtphost());
+        props.put("mail.smtp.socketFactory.port", mAccount.getSmtpPort());
         props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.port", "465");
+        props.put("mail.smtp.port", mAccount.getSmtpPort());
 
         Session sess = Session.getInstance(props, new Authenticator() {
 
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(myeMail, myPassword);
+                return new PasswordAuthentication(mAccount.geteMail(), mAccount.getPassword());
             }
         });
 
@@ -119,8 +127,12 @@ public class SendEmail extends AsyncTask<Void, Void, Void> {
             message.setFrom(new InternetAddress(myeMail));
            // message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
             message.setSubject(subject);
-            message.setText(content);
-
+            if(!tagList.toString().isEmpty()) {
+                message.setText(content + "\n\n----------\nTAGS: " + tagList);
+            }
+            else{
+                message.setText(content);
+            }
             //Transport.send(message);
 
             Transport transport = sess.getTransport(MAIL_SERVER);

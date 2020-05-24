@@ -2,8 +2,14 @@ package com.aleksandar69.PMSU2020Tim16.models;
 
 import androidx.annotation.NonNull;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class Message {
 
@@ -16,11 +22,13 @@ public class Message {
     private String subject;
     private String content;
     private int logged_user_id;
+    private boolean unread;
     private List<Attachment> attachments;
-/*    private int attachmentId;*/
+    private List<Tag> tags;
+    /*    private int attachmentId;*/
 
     public Message() {
-       // Calendar calendar = Calendar.getInstance();
+        // Calendar calendar = Calendar.getInstance();
         /*Date curDate = new Date();
         SimpleDateFormat format = new SimpleDateFormat();
         String dateToString = format.format(curDate);
@@ -28,12 +36,11 @@ public class Message {
         dateToString = format.format(curDate);
         dateTime = dateToString;*/
         attachments = new ArrayList<>();
+        tags = new ArrayList<>();
     }
 
 
-
     public Message(String from, String to, String cc, String bcc, String subject, String content) {
-
 /*
         Date curDate = new Date();
         SimpleDateFormat format = new SimpleDateFormat();
@@ -49,13 +56,63 @@ public class Message {
         this.subject = subject;
         this.content = content;
         attachments = new ArrayList<>();
+        tags = new ArrayList<>();
 
+    }
+
+
+    public Message(String to, String cc, String bcc, String subject, String content) {
+        this.to = to;
+        this.cc = cc;
+        this.bcc = bcc;
+        this.subject = subject;
+        this.content = content;
+        attachments = new ArrayList<>();
+        tags = new ArrayList<>();
+    }
+
+    class SortByDateAsc implements Comparator<Message> {
+        public int compare(Message a, Message b) {
+            Date date1 = fromUTC(a.getDateTime());
+            Date date2 = fromUTC(b.getDateTime());
+            return date1.compareTo(date2);
+        }
+    }
+
+    class SortByDateDesc implements Comparator<Message> {
+        public int compare(Message a, Message b) {
+            Date date1 = fromUTC(a.getDateTime());
+            Date date2 = fromUTC(b.getDateTime());
+            return date2.compareTo(date1);
+        }
     }
 
     @NonNull
     @Override
     public String toString() {
         return "\nTO: " + to + "\nFROM: " + from + "\nCC: " + cc + "\nBCC: " + bcc + "\nSUBJECT: " + subject + "\nCONTENT: " + content + "\n Date: " + dateTime;
+    }
+
+    public static Date fromUTC(String dateStr) {
+        //TimeZone tz = TimeZone.getTimeZone("UTC");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        //df.setTimeZone(tz);
+
+        try {
+            return df.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public boolean isUnread() {
+        return unread;
+    }
+
+    public void setUnread(boolean unread) {
+        this.unread = unread;
     }
 
     public int get_id() {
@@ -88,6 +145,14 @@ public class Message {
 
     public void setTo(String to) {
         this.to = to;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
     }
 
     public String getCc() {

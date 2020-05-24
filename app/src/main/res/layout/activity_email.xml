@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -125,19 +128,79 @@
 
         <TextView
             android:layout_marginTop="20dp"
+            android:hint="@string/message_content"
             android:id="@id/content"
             android:foregroundGravity="center_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="560dp"
+            android:layout_height="540dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+<!--        <TextView
+            android:id="@+id/tagstv"
+            android:layout_width="70dp"
+            android:layout_height="match_parent"
+            android:text="Tags:"
+            android:layout_toStartOf="@id/tags"
+            android:layout_toLeftOf="@id/tags"
+            android:layout_below="@id/content"/>
 
-        <Button
+        <TextView
+            android:hint="Tags"
+            android:id="@+id/tags"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:layout_below="@id/content"/>-->
+
+<!--        <Button
             android:id="@+id/attachments"
             android:text="Click me to convert"
-            android:layout_below="@id/content"
+            android:layout_below="@id/tags"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="decodeOnClick"/>
+            android:onClick="decodeOnClick"/>-->
 
     </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="Tags:"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/tag"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+        <TextView
+            android:id="@+id/tag_tv"
+            android:layout_toRightOf="@id/tag"
+            android:layout_toEndOf="@id/tag"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/attachments"
+        android:text="Click me to convert"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="decodeOnClick"/>
+
+</RelativeLayout>
+
 </LinearLayout>
+</ScrollView>

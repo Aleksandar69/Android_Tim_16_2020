@@ -9,12 +9,12 @@
     <dimen name="edittext_separation">2dp</dimen>
 
     <dimen name="listViewFromHeight">50dp</dimen>
-    <dimen name="listViewFromWidth">100dp</dimen>
+    <dimen name="listViewFromWidth">145dp</dimen>
 
     <dimen name="listViewSubjectHeight">50dp</dimen>
-    <dimen name="listViewSubjectWidth">120dp</dimen>
+    <dimen name="listViewSubjectWidth">145dp</dimen>
 
     <dimen name="listViewContentHeight">50dp</dimen>
-    <dimen name="listViewContentWidth">200dp</dimen>
+    <dimen name="listViewContentWidth">130dp</dimen>
 
 </resources>

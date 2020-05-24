@@ -22,12 +22,16 @@ import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.aleksandar69.PMSU2020Tim16.javamail.DeleteEmail;
 import com.aleksandar69.PMSU2020Tim16.models.Attachment;
 import com.aleksandar69.PMSU2020Tim16.models.Message;
+import com.aleksandar69.PMSU2020Tim16.models.Tag;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -40,6 +44,7 @@ public class EmailActivity extends AppCompatActivity {
     private TextView tvCC;
     private TextView tvTo;
     private Button buttonAttach;
+    private TextView tvTags;
     private List<Attachment> attachments;
 
 
@@ -47,6 +52,8 @@ public class EmailActivity extends AppCompatActivity {
     private MessagesDBHandler emailsDb;
     private String emailId;
     private Message message;
+    private StringBuffer tags;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,16 +65,18 @@ public class EmailActivity extends AppCompatActivity {
         tvContent = (TextView) findViewById(R.id.content);
         tvCC = (TextView) findViewById(R.id.cc_tv);
         tvTo = (TextView) findViewById(R.id.to_tv);
-        Button buttonAttach = (Button) findViewById(R.id.attachments);
+        buttonAttach = (Button) findViewById(R.id.attachments);
+        tvTags = (TextView) findViewById(R.id.tag_tv);
+
 
         emailsDb = new MessagesDBHandler(this);
-
 
         emailId = (String) getIntent().getExtras().get(Data.MESS_ID_EXTRA);
         itemId = Integer.parseInt(emailId);
         message = emailsDb.findMessage(itemId);
+        tags = new StringBuffer();
 
-       attachments = emailsDb.queryAttachForMessage(message.get_id());
+        attachments = emailsDb.queryAttachForMessage(message.get_id());
 
         loadEmail();
 
@@ -82,6 +91,7 @@ public class EmailActivity extends AppCompatActivity {
             buttonAttach.setVisibility(View.GONE);
         }
     }
+
 
 
 
@@ -110,25 +120,25 @@ public class EmailActivity extends AppCompatActivity {
 
         if (!(attachments.size() < 1)) {
 
-            for(int i = 0; i < attachments.size(); i++){
+            for (int i = 0; i < attachments.size(); i++) {
 
-            String fileContent = decodeBase64(attachments.get(i).getContent());
+                String fileContent = decodeBase64(attachments.get(i).getContent());
 
-            // String file = decodeBase64(message.getAttachments());
+                // String file = decodeBase64(message.getAttachments());
 
-            byte[] imgBytes = Base64.decode(attachments.get(i).getContent(), Base64.DEFAULT);
+                byte[] imgBytes = Base64.decode(attachments.get(i).getContent(), Base64.DEFAULT);
 
-            File storage = Environment.getExternalStorageDirectory();
-            File dir = new File(storage.getAbsolutePath());
+                File storage = Environment.getExternalStorageDirectory();
+                File dir = new File(storage.getAbsolutePath());
 
 
-            File file1 = new File(dir, attachments.get(i).getFileName());
+                File file1 = new File(dir, attachments.get(i).getFileName());
 
-            FileOutputStream fos = new FileOutputStream(file1);
-            fos.write(imgBytes);
-            fos.flush();
+                FileOutputStream fos = new FileOutputStream(file1);
+                fos.write(imgBytes);
+                fos.flush();
 
-            Toast.makeText(this, "Attachment Saved To Root", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Attachment Saved To Root", Toast.LENGTH_SHORT).show();
 
             }
         } else {
@@ -200,6 +210,19 @@ public class EmailActivity extends AppCompatActivity {
         tvContent.setText(message.getContent());
         tvCC.setText(message.getCc());
         tvTo.setText(message.getTo());
+
+        List<Tag> tagList = emailsDb.queryTagByMessID(message.get_id());
+
+        for (Tag tag: tagList
+        ) {
+            tags.append(tag.getName());
+        }
+
+        tvTags.setText(tags.toString());
+
+
+        message.setUnread(false);
+        emailsDb.updateisRead(message);
 
     }
 

@@ -6,6 +6,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.preference.PreferenceManager;
 
 import android.Manifest;
 import android.content.Context;
@@ -30,9 +31,11 @@ import com.aleksandar69.PMSU2020Tim16.javamail.SendEmail;
 import com.aleksandar69.PMSU2020Tim16.javamail.SendMultipartEmail;
 import com.aleksandar69.PMSU2020Tim16.models.Account;
 import com.aleksandar69.PMSU2020Tim16.models.Message;
+import com.aleksandar69.PMSU2020Tim16.models.Tag;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CreateEmailActivity extends AppCompatActivity {
@@ -40,15 +43,21 @@ public class CreateEmailActivity extends AppCompatActivity {
     private static final int PERM_CODE = 125;
 
 
-    TextInputEditText fromEditBox;
-    TextInputEditText toEditBox;
-    TextInputEditText ccEditBox;
-    TextInputEditText bccEditBox;
-    TextInputEditText subjectEditBox;
-    EditText contentEditBox;
-    TextView attachedFiles;
+    private TextInputEditText toEditBox;
+    private TextInputEditText ccEditBox;
+    private TextInputEditText bccEditBox;
+    private TextInputEditText subjectEditBox;
+    private EditText contentEditBox;
+    private TextView attachedFiles;
+    private TextInputEditText tagsEditBox;
+    MessagesDBHandler dbHandler;
+
+    private List<Tag> listOfTagObjs;
+
 
     SharedPreferences mSharedPreferences;
+
+    StringBuffer tags;
 
     private String filePath = null;
     private List<String> uriList;
@@ -64,13 +73,16 @@ public class CreateEmailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_email);
 
-        fromEditBox = (TextInputEditText) findViewById(R.id.email_from);
         toEditBox = (TextInputEditText) findViewById(R.id.email_to);
         ccEditBox = (TextInputEditText) findViewById(R.id.email_cc);
         bccEditBox = (TextInputEditText) findViewById(R.id.email_bcc);
         subjectEditBox = (TextInputEditText) findViewById(R.id.email_subject);
         contentEditBox = (EditText) findViewById(R.id.email_content);
         attachedFiles = (TextView) findViewById(R.id.attached_files);
+        tagsEditBox = (TextInputEditText) findViewById(R.id.tags_edit);
+
+        tags = new StringBuffer();
+        dbHandler = new MessagesDBHandler(this);
 
         attachedFiles.setText("0");
 
@@ -83,7 +95,7 @@ public class CreateEmailActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("New Message");
 
-        mSharedPreferences = getSharedPreferences(LoginActivity.myPreferance, Context.MODE_PRIVATE);
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (Data.isForward == true) {
             getForwardContent();
@@ -98,7 +110,9 @@ public class CreateEmailActivity extends AppCompatActivity {
             getReplyToAllContent();
             Data.isReplyToAll = false;
         }
+
     }
+
 
     public void getReplyContent(){
         String from = (String) getIntent().getExtras().get(Data.REPLY_FROM);
@@ -158,17 +172,18 @@ public class CreateEmailActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             case R.id.email_send_button:
-                MessagesDBHandler dbHandler = new MessagesDBHandler(this);
-                Message message = new Message(fromEditBox.getText().toString(), toEditBox.getText().toString(),
+                Message message = new Message(toEditBox.getText().toString(),
                         ccEditBox.getText().toString(), bccEditBox.getText().toString(), subjectEditBox.getText().toString(), contentEditBox.getText().toString());
-                message.setLogged_user_id(mSharedPreferences.getInt(LoginActivity.userId, -1));
+                message.setLogged_user_id(mSharedPreferences.getInt(Data.userId, -1));
                 /*  dbHandler.addMessage(message);*/
 
-                if (filePath != null) {
-                    SendMultipartEmail sendMessage = new SendMultipartEmail(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo());
+                tags.append(tagsEditBox.getText().toString());
+
+                if (filePath != null || !tags.toString().isEmpty()) {
+                    SendMultipartEmail sendMessage = new SendMultipartEmail(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
                     sendMessage.execute();
                 } else {
-                    SendEmail sendMessage = new SendEmail(message.getSubject(), message.getContent(), message.getCc(), message.getBcc(), message.getTo());
+                    SendEmail sendMessage = new SendEmail(message.getSubject(), message.getContent(), message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
                     sendMessage.execute();
                 }
                 startActivity(new Intent(this, EmailsActivity.class));
@@ -249,7 +264,7 @@ public class CreateEmailActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+/*        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
             // We don't have permission so prompt the user
             ActivityCompat.requestPermissions(
@@ -257,7 +272,7 @@ public class CreateEmailActivity extends AppCompatActivity {
                     PERMISSIONS_STORAGE,
                     REQUEST_EXTERNAL_STORAGE
             );
-        }
+        }*/
         super.onStart();
     }
 

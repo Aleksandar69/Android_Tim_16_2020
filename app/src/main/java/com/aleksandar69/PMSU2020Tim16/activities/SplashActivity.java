@@ -2,17 +2,23 @@ package com.aleksandar69.PMSU2020Tim16.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.view.View;
 
 import com.aleksandar69.PMSU2020Tim16.R;
+import com.aleksandar69.PMSU2020Tim16.services.EmailSyncService;
+import com.aleksandar69.PMSU2020Tim16.services.EmailsJobSchedulerSyncService;
 import com.google.android.material.snackbar.Snackbar;
 
 public class SplashActivity extends AppCompatActivity {
@@ -25,6 +31,25 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         new InitTask().execute();
+        //startSyncService();
+    }
+
+    public void startSyncService() {
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
+
+            ComponentName componentName = new ComponentName(this,
+                    EmailsJobSchedulerSyncService.class);
+
+            JobInfo jobInfoObj = new JobInfo.Builder(111, componentName).setMinimumLatency(10000).setBackoffCriteria(10000,JobInfo.BACKOFF_POLICY_LINEAR).build();
+
+            jobScheduler.schedule(jobInfoObj);
+        }
+        else{
+            Intent i = new Intent(this, EmailSyncService.class);
+            startService(i);
+        }
     }
 
 

@@ -16,7 +16,7 @@ import com.aleksandar69.PMSU2020Tim16.models.Account;
 public class AccountsContentProvider extends ContentProvider {
 
     private static final String AUTHORITY = "com.aleksandar69.PMSU2020Tim16.database.provider.AccountsContentProvider";
-    private static final String ACCOUNTS_TABLE = "Accounts";
+    private static final String ACCOUNTS_TABLE = "ACCOUNTS";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + ACCOUNTS_TABLE);
 
     public static final int ACCOUNTS = 1;
@@ -92,7 +92,6 @@ public class AccountsContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        // TODO: Implement this to initialize your content provider on startup.
         myDB = new MessagesDBHandler(getContext());
         return false;
     }

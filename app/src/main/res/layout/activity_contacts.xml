@@ -4,58 +4,65 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.ContactsActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".activities.ContactsActivity">
 
 
     <include
         android:id="@+id/contacts_toolbar"
-        layout="@layout/toolbar_layout"/>
+        layout="@layout/toolbar_layout" />
 
-  <!--  <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/lista_kontakti"/> -->
+    <!--  <ListView
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:id="@+id/lista_kontakti"/> -->
 
     <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/drawer_layout">
+        android:layout_height="match_parent">
 
-    <LinearLayout
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/main_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <ListView
-            android:id="@+id/lista_kontakti2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            <ListView
+                android:id="@+id/lista_kontakti2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
 
-        <!--   <ListView
-               android:id="@+id/contacts_list_view"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:layout_marginTop="10sp"
-               android:divider="@android:color/transparent"
-               android:choiceMode="singleChoice"
-               android:clickable="true"
-               android:dividerHeight="10.0sp"
-               android:scrollbars="vertical" /> -->
+            <!--   <ListView
+                   android:id="@+id/contacts_list_view"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="10sp"
+                   android:divider="@android:color/transparent"
+                   android:choiceMode="singleChoice"
+                   android:clickable="true"
+                   android:dividerHeight="10.0sp"
+                   android:scrollbars="vertical" /> -->
 
-        </LinearLayout>
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="10dp"
+                android:onClick="onClickFAB"
+                android:src="@drawable/baseline_add_black_24dp" />
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 
         <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/nav_view"
-            app:menu="@menu/menu_nav"
-            app:headerLayout="@layout/nav_layout"
             android:layout_gravity="start"
-            />
+            app:headerLayout="@layout/nav_layout"
+            app:menu="@menu/menu_nav" />
 
     </androidx.drawerlayout.widget.DrawerLayout>
 

@@ -3,6 +3,7 @@ package com.aleksandar69.PMSU2020Tim16.javamail;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ public class DeleteEmail extends AsyncTask<Void, Void, Void> {
             Message[] messages = inboxFolder.getMessages();
             MessagesDBHandler dbHandler = new MessagesDBHandler(mContext);
 
-            List<com.aleksandar69.PMSU2020Tim16.models.Message> messagesPulled = dbHandler.queryAllMessages();
+            List<com.aleksandar69.PMSU2020Tim16.models.Message> messagesPulled = dbHandler.queryAllMessages(Data.account.get_id());
             com.aleksandar69.PMSU2020Tim16.models.Message[] listMessages = new com.aleksandar69.PMSU2020Tim16.models.Message[messagesPulled.size()];
             listMessages = messagesPulled.toArray(listMessages);
 

@@ -11,10 +11,10 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
     <TextView
-        android:text="test"
+        android:text="subject"
         android:id="@+id/columnSubject"
         android:layout_width="@dimen/listViewSubjectWidth"
         android:layout_height="@dimen/listViewSubjectHeight"
@@ -23,22 +23,30 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
     <TextView
-        android:text="test"
-        android:textColor="#868a91"
         android:id="@+id/columnContent"
         android:layout_width="@dimen/listViewContentWidth"
         android:layout_height="@dimen/listViewContentHeight"
         android:layout_toEndOf="@id/columnSubject"
         android:layout_toRightOf="@id/columnSubject"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+        android:text="content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textColor="#868a91" />
 
     <TextView
-        android:text="test"
+        android:text="date"
         android:textColor="#5c6066"
         android:id="@+id/columnDate"
         android:layout_below="@id/columnContent"
         android:layout_width="match_parent"
         android:layout_height="20dp"
         android:gravity="center_horizontal"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:id="@+id/tags_listview"
+        android:text="Tags: "
+        android:layout_below="@id/columnDate"
+        />
 
 </RelativeLayout>

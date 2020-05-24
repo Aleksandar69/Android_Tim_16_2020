@@ -11,6 +11,8 @@ import android.util.Log;
 import androidx.core.content.ContextCompat;
 
 import com.aleksandar69.PMSU2020Tim16.activities.CreateEmailActivity;
+import com.aleksandar69.PMSU2020Tim16.models.Account;
+import com.aleksandar69.PMSU2020Tim16.models.Tag;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,11 +58,13 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
     private String myToList;
     private String myCCList;
     private String myBCCList;
+    private StringBuffer tagList;
     private static final String MAIL_SERVER = "smtp";
     private static final String SMTP_HOST_NAME = "smtp.gmail.com";
     private static final int SMTP_HOST_PORT = 465;
+    Account account;
 
-    public SendMultipartEmail(Context context, String subject, String content, List<String> filePath, String myCC, String myBCC, String myTo) {
+    public SendMultipartEmail(Context context, String subject, String content, List<String> filePath, String myCC, String myBCC, String myTo, String tags, Account account) {
         this.subject = subject;
         this.content = content;
         this.filePath = filePath;
@@ -68,6 +72,9 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
         this.myCCList = myCC;
         this.myBCCList = myBCC;
         this.myToList = myTo;
+        tagList = new StringBuffer();
+        tagList.append(tags);
+        this.account = account;
     }
 
     @Override
@@ -78,38 +85,35 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
 
         Properties props = new Properties();
 
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.socketFactory.port", "465");
+        props.put("mail.smtp.host", account.getSmtphost());
+        props.put("mail.smtp.socketFactory.port", account.getSmtpPort());
         props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.port", "465");
-
+        props.put("mail.smtp.port", account.getSmtpPort());
         Session sess = Session.getInstance(props, new Authenticator() {
 
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(myeMail, myPassword);
+                return new PasswordAuthentication(account.geteMail(), account.getPassword());
             }
         });
 
         Message message = new MimeMessage(sess);
 
-        List<String> ccListunConv = Arrays.asList(myCCList.split(",[ ]*"));
+        List<String> ccListunConv = Arrays.asList(myCCList.split(";[ ]*"));
         String[] ccList = new String[ccListunConv.size()];
         ccList = ccListunConv.toArray(ccList);
 
-        List<String> bccListunConv = Arrays.asList(myBCCList.split(",[ ]*"));
+        List<String> bccListunConv = Arrays.asList(myBCCList.split(";[ ]*"));
         String[] bccList = new String[bccListunConv.size()];
         bccList = bccListunConv.toArray(bccList);
 
-        List<String> toListunConv = Arrays.asList(myToList.split(",[ ]*"));
+        List<String> toListunConv = Arrays.asList(myToList.split(";[ ]*"));
         String[] toList = new String[toListunConv.size()];
         toList = toListunConv.toArray(toList);
 
 
         try {
-
-
 
             if(!(toListunConv.contains(""))){
                 InternetAddress[] toAdress = new InternetAddress[toList.length];
@@ -158,15 +162,22 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
 
             // dio sa tekstom poruke
             multiPart.addBodyPart(messageBodyPart);
+  /*          if(!tagList.toString().isEmpty()) {
+                messageBodyPart.setText(content + "\n\n----------\nTAGS: " + tagList);
+            }
+            else{
+                messageBodyPart.setText(content);
+            }*/
             messageBodyPart.setText(content);
 
-
+            MimeBodyPart tagBodyPart = new MimeBodyPart();
+            tagBodyPart.setText("\n\n----------\nTAGS: " + tagList.toString());
+            tagBodyPart.setContentID("11");
+            multiPart.addBodyPart(tagBodyPart);
 
             //attachment
 
-
             for(int i = 0; i < filePath.size(); i++){
-                MimeBodyPart messageBodyPart2 = new MimeBodyPart();
 
                 Random random = new Random();
 
@@ -176,39 +187,32 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
                 saveFile(encodeFileToBase64Binary(filePath.get(i)), "/" + ranint + "tempBase64.txt");
                 String encoded = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + ranint + "tempBase64.txt";
 
-                messageBodyPart2.attachFile(encoded);
+                if(!(encoded.isEmpty())) {
+                    MimeBodyPart messageBodyPart2 = new MimeBodyPart();
 
-                messageBodyPart2.setDisposition(Part.ATTACHMENT);
-                messageBodyPart2.setFileName(file.getName());
-                multiPart.addBodyPart(messageBodyPart2);
+                    messageBodyPart2.attachFile(encoded);
 
-                message.setContent(multiPart);
-                message.saveChanges();
+                    messageBodyPart2.setDisposition(Part.ATTACHMENT);
+                    messageBodyPart2.setFileName(file.getName());
+                    multiPart.addBodyPart(messageBodyPart2);
 
+                    message.setContent(multiPart);
+                    message.saveChanges();
+                }
             }
-
 
             Log.d("VELICINA",String.valueOf(filePath.size()));
 
           /*  MimeBodyPart messageBodyPart2 = new MimeBodyPart();
-
             File file = new File(filePath);
-
             saveFile(encodeFileToBase64Binary(filePath), "/tempBase64.txt");
-
             String encoded = Environment.getExternalStorageDirectory().getAbsolutePath() + "/tempBase64.txt";
-
-
             messageBodyPart2.attachFile(encoded);
-
             messageBodyPart2.setDisposition(Part.ATTACHMENT);
             messageBodyPart2.setFileName(file.getName());
             multiPart.addBodyPart(messageBodyPart2);
-
             message.setContent(multiPart);
             message.saveChanges();*/
-
-
            // Transport.send(message);
 
             Transport transport = sess.getTransport(MAIL_SERVER);
@@ -242,7 +246,6 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
                         e.printStackTrace();
                     }
                 }
-
             }
         }
     }

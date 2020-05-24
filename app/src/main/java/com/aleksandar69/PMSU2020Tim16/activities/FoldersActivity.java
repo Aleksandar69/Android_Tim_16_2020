@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.google.android.material.navigation.NavigationView;
 
@@ -39,6 +40,10 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
         navigationView.setCheckedItem(R.id.nav_folders);
         navigationView.setNavigationItemSelectedListener(this);
 
+    }
+
+    public void onClickFAB(View view){
+        startActivity(new Intent(this, FolderActivity.class));
     }
 
     public void onTestButton(View view){
@@ -89,6 +94,7 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
                 break;
             case R.id.nav_logout:
                 intent = new Intent(this, LoginActivity.class);
+                Data.account = null;
                 break;
             default:
                 intent = new Intent(this, FoldersActivity.class);

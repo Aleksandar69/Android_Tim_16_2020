@@ -1,6 +1,23 @@
 package com.aleksandar69.PMSU2020Tim16;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import androidx.preference.PreferenceManager;
+
+import com.aleksandar69.PMSU2020Tim16.models.Account;
+
 public class Data {
+
+    public static String syncTime;
+    public static Boolean allowSync;
+    public static String prefSort;
+
+    public static String userId = "useridKey";
+    public static String userEmail = "useremailKey";
+    public static String userPassworrd = "userpasswordKey";
+    public static Account account;
+
 
     public static final String MESS_ID_EXTRA = "messId";
     public static final String EMAIL_FORWARD_EXTRA = "forwardextra";
@@ -17,4 +34,7 @@ public class Data {
     public static final String REPLY_TO_ALL_TO = "replytoallto";
     public static final String REPLY_TO_ALL_CONTENT = "replytoallcontent";
     public static boolean isReplyToAll = false;
+
+    public static int totalEmailsServer;
+    public static int totalEmailsDB;
 }

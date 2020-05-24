@@ -22,7 +22,7 @@ import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.database.ContactsDBHandler;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
 
-public class ContactsActivity extends ListActivity  {
+public class ContactsActivity extends ListActivity {
 
     private SQLiteDatabase db;
     private Cursor cursor;
@@ -34,20 +34,19 @@ public class ContactsActivity extends ListActivity  {
 
         ListView listContacts = getListView();
 
-        try{
+        try {
             SQLiteOpenHelper contactsDatabaseHelper = new ContactsDBHandler(this);
             db = contactsDatabaseHelper.getReadableDatabase();
 
-            cursor = db.query("CONTACT", new String[] {"_id", "FIRST"}, null,null,null,null,null);
+            cursor = db.query("CONTACT", new String[]{"_id", "FIRST"}, null, null, null, null, null);
 
-            CursorAdapter listAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1,cursor,new String[]{"FIRST"},
-                    new int[]{android.R.id.text1},0);
+            CursorAdapter listAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, cursor, new String[]{"FIRST"},
+                    new int[]{android.R.id.text1}, 0);
             listContacts.setAdapter(listAdapter);
         } catch (SQLiteException e) {
             Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);
             toast.show();
         }
-
 
 
         //stari kod
@@ -72,6 +71,10 @@ public class ContactsActivity extends ListActivity  {
         navigationView.setCheckedItem(R.id.nav_contacts);
         navigationView.setNavigationItemSelectedListener(this);*/
 
+    }
+
+    public void onClickFAB(View view) {
+        startActivity(new Intent(this, ContactActivity.class));
     }
 
     @Override
@@ -133,6 +136,10 @@ public class ContactsActivity extends ListActivity  {
                 break;
             case R.id.nav_logout:
                 intent = new Intent(this, LoginActivity.class);
+                           Data.account = null;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.commit();
                 break;
             default:
                 intent = new Intent(this, ContactsActivity.class);
