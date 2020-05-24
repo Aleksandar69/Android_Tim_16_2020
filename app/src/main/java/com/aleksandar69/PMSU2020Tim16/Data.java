@@ -37,4 +37,6 @@ public class Data {
 
     public static int totalEmailsServer;
     public static int totalEmailsDB;
+    //contacts
+    public static final String CONTACT_ID_EXTRA = "contactID";
 }

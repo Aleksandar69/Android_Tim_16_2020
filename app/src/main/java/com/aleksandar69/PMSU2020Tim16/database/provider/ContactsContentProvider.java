@@ -11,24 +11,24 @@ import android.text.TextUtils;
 
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 
-public class MessagesContentProvider extends ContentProvider {
-    private static final String AUTHORITY = "com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentProvider";
-    private static final String MESSAGES_TABLE = "EMAILS";
-    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + MESSAGES_TABLE);
+import static com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentProvider.MESSAGES;
+import static com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentProvider.MESSAGE_ID;
 
-    public static final int MESSAGES = 1;
-    public static final int MESSAGE_ID = 2;
+public class ContactsContentProvider extends ContentProvider {
+    private static final String AUTHORITY = "com.aleksandar69.PMSU2020Tim16.database.provider.ContactsContentProvider";
+    private static final String CONTACTS_TABLE = "CONTACTS";
+    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + CONTACTS_TABLE);
+
+    public static final int CONTACTS = 1;
+    public static final int CONTACT_ID = 2;
 
     private MessagesDBHandler myDB;
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        URI_MATCHER.addURI(AUTHORITY, MESSAGES_TABLE, MESSAGES);
-        URI_MATCHER.addURI(AUTHORITY, MESSAGES_TABLE +"/#", MESSAGE_ID);
-    }
-
-    public MessagesContentProvider() {
+        URI_MATCHER.addURI(AUTHORITY, CONTACTS_TABLE, CONTACTS);
+        URI_MATCHER.addURI(AUTHORITY, CONTACTS_TABLE +"/#", CONTACT_ID);
     }
 
     @Override
@@ -40,21 +40,21 @@ public class MessagesContentProvider extends ContentProvider {
         int rowsDeleted = 0;
 
         switch (uriType) {
-            case MESSAGES:
+            case CONTACTS:
                 rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES,
                         selection,
                         selectionArgs);
                 break;
 
-            case MESSAGE_ID:
+            case CONTACT_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
-                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES,
-                            MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id,
+                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_CONTACTS,
+                            MessagesDBHandler.COLUMN_ID_CONTACTS + "=" + id,
                             null);
                 } else {
-                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES,
-                            MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id + " and " + selection,
+                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_CONTACTS,
+                            MessagesDBHandler.COLUMN_ID_CONTACTS + "=" + id + " and " + selection,
                             selectionArgs);
                 }
                 break;
@@ -64,6 +64,10 @@ public class MessagesContentProvider extends ContentProvider {
         }
         getContext().getContentResolver().notifyChange(uri, null);
         return rowsDeleted;
+    }
+
+    public ContactsContentProvider() {
+
     }
 
 
@@ -82,15 +86,15 @@ public class MessagesContentProvider extends ContentProvider {
 
         long id = 0;
         switch (uriType) {
-            case MESSAGES:
-                id = sqlDB.insert(MessagesDBHandler.TABLE_MESSAGES,
+            case CONTACTS:
+                id = sqlDB.insert(MessagesDBHandler.TABLE_CONTACTS,
                         null, values);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        return Uri.parse(MESSAGES_TABLE + "/" + id);
+        return Uri.parse(CONTACTS_TABLE + "/" + id);
     }
 
 
@@ -105,16 +109,16 @@ public class MessagesContentProvider extends ContentProvider {
                         String[] selectionArgs, String sortOrder) {
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(MessagesDBHandler.TABLE_MESSAGES);
+        queryBuilder.setTables(MessagesDBHandler.TABLE_CONTACTS);
 
         int uriType = URI_MATCHER.match(uri);
 
         switch (uriType) {
-            case MESSAGE_ID:
-                queryBuilder.appendWhere(MessagesDBHandler.COLUMN_ID_EMAILS + "="
+            case CONTACT_ID:
+                queryBuilder.appendWhere(MessagesDBHandler.COLUMN_ID_CONTACTS + "="
                         + uri.getLastPathSegment());
                 break;
-            case MESSAGES:
+            case CONTACTS:
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
@@ -135,25 +139,25 @@ public class MessagesContentProvider extends ContentProvider {
         int rowsUpdated = 0;
 
         switch (uriType) {
-            case MESSAGES:
+            case CONTACTS:
                 rowsUpdated =
-                        sqlDB.update(MessagesDBHandler.TABLE_MESSAGES,
+                        sqlDB.update(MessagesDBHandler.TABLE_CONTACTS,
                                 values,
                                 selection,
                                 selectionArgs);
                 break;
-            case MESSAGE_ID:
+            case CONTACT_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
                     rowsUpdated =
-                            sqlDB.update(MessagesDBHandler.TABLE_MESSAGES,
+                            sqlDB.update(MessagesDBHandler.TABLE_CONTACTS,
                                     values,
-                                    MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id,
+                                    MessagesDBHandler.COLUMN_ID_CONTACTS + "=" + id,
                                     null);
                 } else {
                     rowsUpdated =
-                            sqlDB.update(MessagesDBHandler.TABLE_MESSAGES, values,
-                                    MessagesDBHandler.COLUMN_ID_EMAILS + "=" + id +
+                            sqlDB.update(MessagesDBHandler.TABLE_CONTACTS, values,
+                                    MessagesDBHandler.COLUMN_ID_CONTACTS + "=" + id +
                                             " and " + selection, selectionArgs);
                 }
                 break;

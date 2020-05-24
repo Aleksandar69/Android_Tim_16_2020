@@ -17,12 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.R;
-import com.aleksandar69.PMSU2020Tim16.database.ContactsDBHandler;
-import com.aleksandar69.PMSU2020Tim16.models.Contact;
-
-import org.w3c.dom.Text;
-
-import java.sql.SQLException;
+import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 
 public class ContactActivity extends AppCompatActivity {
 
@@ -36,7 +31,7 @@ public class ContactActivity extends AppCompatActivity {
         int contactNo = (Integer) getIntent().getExtras().get(CONTACT_NUMBER);
         
         try{
-            SQLiteOpenHelper contactDBhelper = new ContactsDBHandler(this);
+            SQLiteOpenHelper contactDBhelper = new MessagesDBHandler(this);
             SQLiteDatabase db = contactDBhelper.getReadableDatabase();
             Cursor cursor = db.query(
                     "CONTACT",
