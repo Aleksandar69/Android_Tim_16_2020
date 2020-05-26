@@ -41,6 +41,7 @@ import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContactsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,ListView.OnItemClickListener {
@@ -68,37 +69,40 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
             elena.setLast("Krunic");
             elena.setDisplay("Elena krunic");
             elena.setEmail("elenakrunic@gmail.com");
-            elena.setImageSourceID(null);
+            elena.setImageSourceID(1);
             handler.addContacts(elena);
 
-            Contact pera = new Contact();
-            elena.set_id(1);
-            elena.setFirst("pera");
-            elena.setLast("Krunic");
-            elena.setDisplay("Elena krunic");
-            elena.setEmail("elenakrunic@gmail.com");
-            elena.setImageSourceID(null);
-            handler.addContacts(pera);
+            Contact pero = new Contact();
+            pero.set_id(2);
+            pero.setFirst("Pero");
+            pero.setLast("Djetlic");
+            pero.setDisplay("Pero Djetlic");
+            pero.setEmail("peroD@gmail.com");
+            pero.setImageSourceID(2);
+            handler.addContacts(pero);
 
-            Contact mera = new Contact();
-            elena.set_id(1);
-            elena.setFirst("mera");
-            elena.setLast("Krunic");
-            elena.setDisplay("Elena krunic");
-            elena.setEmail("elenakrunic@gmail.com");
-            elena.setImageSourceID(null);
-            handler.addContacts(mera);
+            Contact patak = new Contact();
+            patak.set_id(3);
+            patak.setFirst("Patak");
+            patak.setLast("Daca");
+            patak.setDisplay("Patak Daca");
+            patak.setEmail("patakDaca@gmail.com");
+            patak.setImageSourceID(3);
+            handler.addContacts(patak);
 
-            Log.d("Elena", "ID-evi za tri kontakta su : " + elena.get_id() + pera.get_id()+ mera.get_id());
+            Log.d("Elena", "ID-evi kontakata su uspjesno dodati u bazu podataka");
 
             //fetch contacts
             List<Contact> allContacts = handler.getAllContactsList();
-            for(Contact contact: allContacts) {
-                Log.d("Elena", "Id" + contact.get_id() + "\n" + "FirstName" + contact.getFirst() + "\n"
-                + "LastName" + contact.getLast() + "\n" + "Display"
-                        + contact.getDisplay() + "\n" + "Email" + contact.getEmail()
-                + "\n" + "Image Resource ID " + contact.getImageSourceID() + "\n");
+            for(Contact contact : allContacts) {
+                Log.d("Elena", "ID" + contact.get_id() + "\n" +
+                        "First name " + contact.getFirst() + "\n"
+                + "Last name" + contact.getLast() + "\n"
+                + "Display name " + contact.getDisplay() + "\n"
+                + "Email " + contact.getEmail() + "\n"
+                + "Image resource ID " + contact.getImageSourceID());
             }
+
 
         } catch (SQLiteException e) {
             Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);

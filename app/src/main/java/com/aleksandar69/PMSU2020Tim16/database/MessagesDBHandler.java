@@ -28,7 +28,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 120;
+    public static final int DATABASE_VERSION = 124;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //contacts
@@ -122,9 +122,9 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             "FOREIGN KEY(" + COLUMN_EMAIL_TAG_ID_FK + ") REFERENCES EMAILS(_id)" + ")";
 
     private static String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS +
-            "(" + COLUMN_ID_CONTACTS + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "(" + COLUMN_ID_CONTACTS + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_FIRST + " TEXT, " + COLUMN_LAST + " TEXT, " +
-            COLUMN_DISPLAY + " TEXT, " + COLUMN_CONTACT_EMAIL + "TEXT , " + COLUMN_IMAGE_RESOURCE + " INTEGER " +")";
+            COLUMN_DISPLAY + " TEXT, " + COLUMN_CONTACT_EMAIL + " TEXT , " + COLUMN_IMAGE_RESOURCE + " INTEGER " +")";
 
 
     public MessagesDBHandler(Context context/*, String name, SQLiteDatabase.CursorFactory factory, int version*/) {
@@ -570,11 +570,10 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         contactsValues.put(COLUMN_CONTACT_EMAIL, contact.getEmail());
         contactsValues.put(COLUMN_IMAGE_RESOURCE, contact.getImageSourceID());
 
-        db.insert(Data.TABLE_CONTACTS,null, contactsValues);
-        Log.d("Elena", "Succesfully inserted contacts ");
+        db.insert(TABLE_CONTACTS,null,contactsValues);
+        Log.d("Elena","Kontakt je uspjesno dodan");
+        //  myContentResolver.insert(ContactsContentProvider.CONTENT_URI,contactsValues);
         db.close();
-
-        //myContentResolver.insert(ContactsContentProvider.CONTENT_URI,contactsValues);
     }
 
     public Contact findContact(int contactId) {
