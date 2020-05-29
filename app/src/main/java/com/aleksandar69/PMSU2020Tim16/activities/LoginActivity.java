@@ -52,10 +52,10 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
 
-        registerTV = (TextView) findViewById(R.id.register);
-        testView = (ListView) findViewById(R.id.test_accounts);
-        usernameText = (EditText) findViewById(R.id.username_field);
-        passwordText = (EditText) findViewById(R.id.password_field);
+        registerTV = findViewById(R.id.register);
+        testView = findViewById(R.id.test_accounts);
+        usernameText = findViewById(R.id.username_field);
+        passwordText = findViewById(R.id.password_field);
         dbHandler = new MessagesDBHandler(this);
         mProgressDialog = new ProgressDialog(this);
 

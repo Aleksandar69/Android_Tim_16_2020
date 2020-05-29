@@ -1,42 +1,33 @@
 package com.aleksandar69.PMSU2020Tim16.activities;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.app.ListActivity;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteException;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.CursorAdapter;
-import android.widget.SearchView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.R;
-import com.aleksandar69.PMSU2020Tim16.adapters.ContactsCursorAdapter;
+import com.aleksandar69.PMSU2020Tim16.adapters.RecyclerViewContactsAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
 import com.google.android.material.navigation.NavigationView;
@@ -45,23 +36,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContactsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,ListView.OnItemClickListener {
-
-    ListView contacts;
-    SharedPreferences sharedPreferences;
-    MessagesDBHandler handler;
-
-    private Cursor cursor;
-
+    private RecyclerView recyclerView;
+    private RecyclerViewContactsAdapter recyclerViewContactsAdapter;
+    private ArrayList<Contact> contactArrayList;
+    private ArrayAdapter<String> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
-        contacts = (ListView)findViewById(R.id.lista_kontakti2);
+        //inicijalizacija recycler-a
+        recyclerView = findViewById(R.id.recycler_v);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        try{
-          handler = new MessagesDBHandler(this);
+        MessagesDBHandler handler = new MessagesDBHandler(ContactsActivity.this);
+
           //dodavanje kontakta u DB
             Contact elena = new Contact();
             elena.set_id(1);
@@ -70,70 +61,47 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
             elena.setDisplay("Elena krunic");
             elena.setEmail("elenakrunic@gmail.com");
             elena.setImageSourceID(1);
+
             handler.addContacts(elena);
 
-            Contact pero = new Contact();
-            pero.set_id(2);
-            pero.setFirst("Pero");
-            pero.setLast("Djetlic");
-            pero.setDisplay("Pero Djetlic");
-            pero.setEmail("peroD@gmail.com");
-            pero.setImageSourceID(2);
-            handler.addContacts(pero);
+            contactArrayList = new ArrayList<>();
 
-            Contact patak = new Contact();
-            patak.set_id(3);
-            patak.setFirst("Patak");
-            patak.setLast("Daca");
-            patak.setDisplay("Patak Daca");
-            patak.setEmail("patakDaca@gmail.com");
-            patak.setImageSourceID(3);
-            handler.addContacts(patak);
-
-            Log.d("Elena", "ID-evi kontakata su uspjesno dodati u bazu podataka");
-
-            //fetch contacts
-            List<Contact> allContacts = handler.getAllContactsList();
-            for(Contact contact : allContacts) {
+            List<Contact> contactList = handler.getAllContactsList();
+            for(Contact contact : contactList) {
                 Log.d("Elena", "ID" + contact.get_id() + "\n" +
                         "First name " + contact.getFirst() + "\n"
                 + "Last name" + contact.getLast() + "\n"
                 + "Display name " + contact.getDisplay() + "\n"
                 + "Email " + contact.getEmail() + "\n"
                 + "Image resource ID " + contact.getImageSourceID());
+
+                contactArrayList.add(contact);
             }
 
+            recyclerViewContactsAdapter = new RecyclerViewContactsAdapter(ContactsActivity.this, contactArrayList);
+            recyclerView.setAdapter(recyclerViewContactsAdapter);
 
-        } catch (SQLiteException e) {
-            Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);
-            toast.show();
-        }
-
+            Log.d("Elena", "U bazi imate "+ handler.getCount() + " kontakata");
 
         //sve vezano za toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.contacts_toolbar);
+
+        Toolbar toolbar = findViewById(R.id.contacts_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(android.R.drawable.ic_input_get);
         actionBar.setTitle("Contacts");
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.nav_contacts);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //popuni listu
-       // sharedPreferences = getSharedPreferences(LoginActivity.myPreferance, Context.MODE_PRIVATE);
-
-        populateList();
-
-        handleIntent(getIntent());
-
     }
 
+    /*
     public void populateList() {
         cursor = handler.getAllContacts();
         ContactsCursorAdapter contactsAdapter = new ContactsCursorAdapter(this,cursor);
@@ -141,7 +109,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         contacts.setAdapter(contactsAdapter);
 
     }
-
+*/
     public void onProfileClicked(View view) {
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
@@ -149,7 +117,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        populateList();
+  //      populateList();
         getMenuInflater().inflate(R.menu.menu_contacts, menu);
 
        //ImageView closeButton = (ImageView) searchView.findViewById(R.id.search_close_btn);
@@ -206,7 +174,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
         startActivity(intent);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
 
@@ -215,7 +183,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
 
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -271,7 +239,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         onSearchRequested();
     }
 
-
+/*
     private void handleIntent(Intent intent){
         if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
@@ -292,5 +260,5 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         handleIntent(intent);
         super.onNewIntent(intent);
     }
-
+*/
 }

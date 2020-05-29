@@ -16,7 +16,7 @@ public class CreateFolderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_folder);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_create_folder);
+        Toolbar toolbar = findViewById(R.id.toolbar_create_folder);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();

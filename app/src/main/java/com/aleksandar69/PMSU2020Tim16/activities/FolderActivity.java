@@ -17,7 +17,7 @@ public class FolderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_folder);
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_folder);
+        Toolbar toolbar = findViewById(R.id.toolbar_folder);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();

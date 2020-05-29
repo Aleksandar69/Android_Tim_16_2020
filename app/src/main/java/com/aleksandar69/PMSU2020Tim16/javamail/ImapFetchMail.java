@@ -139,7 +139,7 @@ public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
                             tags.append(matcher.group(1));
                         }
 
-                        List<String> tagList = Arrays.asList(tags.toString().split(";[ ]*"));
+                        String[] tagList = tags.toString().split(";[ ]*");
 
                         for (String s : tagList
                         ) {

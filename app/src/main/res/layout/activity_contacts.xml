@@ -15,41 +15,15 @@
     <androidx.drawerlayout.widget.DrawerLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/drawer_layout">
+        android:id="@+id/drawer_layout"> -->
 
-    <LinearLayout
-            android:id="@+id/main_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
 
-        <ListView
-            android:id="@+id/lista_kontakti2"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_v"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation = "vertical"
             />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Contacts Activity"
-            style="@style/TextAppearance.AppCompat.Large"
-            />
-
-           <ListView
-               android:id="@+id/contacts_list_view"
-               android:layout_width="match_parent"
-               android:layout_height="wrap_content"
-               android:layout_marginTop="10sp"
-               android:divider="@android:color/transparent"
-               android:choiceMode="singleChoice"
-               android:clickable="true"
-               android:dividerHeight="10.0sp"
-               android:scrollbars="vertical" />
-
-        </LinearLayout>
 
 
         <com.google.android.material.navigation.NavigationView
@@ -62,5 +36,4 @@
             />
 
     </androidx.drawerlayout.widget.DrawerLayout>
-
 </LinearLayout>
