@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,13 +61,13 @@ public class EmailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_email);
 
-        tvFrom = (TextView) findViewById(R.id.from_tv);
-        tvSubject = (TextView) findViewById(R.id.subject_tv);
-        tvContent = (TextView) findViewById(R.id.content);
-        tvCC = (TextView) findViewById(R.id.cc_tv);
-        tvTo = (TextView) findViewById(R.id.to_tv);
-        buttonAttach = (Button) findViewById(R.id.attachments);
-        tvTags = (TextView) findViewById(R.id.tag_tv);
+        tvFrom = findViewById(R.id.from_tv);
+        tvSubject = findViewById(R.id.subject_tv);
+        tvContent = findViewById(R.id.content);
+        tvCC = findViewById(R.id.cc_tv);
+        tvTo = findViewById(R.id.to_tv);
+        buttonAttach = findViewById(R.id.attachments);
+        tvTags = findViewById(R.id.tag_tv);
 
 
         emailsDb = new MessagesDBHandler(this);
@@ -80,7 +81,7 @@ public class EmailActivity extends AppCompatActivity {
 
         loadEmail();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.email_toolbar);
+        Toolbar toolbar = findViewById(R.id.email_toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -149,10 +150,7 @@ public class EmailActivity extends AppCompatActivity {
 
     private String decodeBase64(String coded) {
         byte[] valueDecoded = new byte[0];
-        try {
-            valueDecoded = Base64.decode(coded.getBytes("UTF-8"), Base64.DEFAULT);
-        } catch (UnsupportedEncodingException e) {
-        }
+        valueDecoded = Base64.decode(coded.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
         return new String(valueDecoded);
     }
 

@@ -48,15 +48,15 @@ public class ContactActivity extends AppCompatActivity {
                 String emailText = cursor.getString(3);
                 int photoId = cursor.getInt(4);
 
-                TextView firstName = (TextView) findViewById(R.id.tv_ime);
+                TextView firstName = findViewById(R.id.tv_ime);
                 firstName.setText(firstText);
-                TextView lastName = (TextView) findViewById(R.id.tv_prezime);
+                TextView lastName = findViewById(R.id.tv_prezime);
                 lastName.setText(lastText);
                // TextView display = (TextView) findViewById(R.id.displayNameTV);
               //  display.setText(displayText);
-                TextView email = (TextView) findViewById(R.id.tv_email);
+                TextView email = findViewById(R.id.tv_email);
                 email.setText(emailText);
-                ImageView photo = (ImageView) findViewById(R.id.slicica);
+                ImageView photo = findViewById(R.id.slicica);
                 photo.setImageResource(photoId);
             }
             cursor.close();
@@ -80,7 +80,7 @@ public class ContactActivity extends AppCompatActivity {
         TextView email = (TextView) findViewById(R.id.tv_email);
         email.setText(contact.getEmail()); */
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_contact);
+        Toolbar toolbar = findViewById(R.id.toolbar_contact);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();

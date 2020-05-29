@@ -32,7 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.register_toolbar);
+        Toolbar toolbar = findViewById(R.id.register_toolbar);
         setSupportActionBar(toolbar);
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -40,10 +40,10 @@ public class RegisterActivity extends AppCompatActivity {
 
         // smtpAddressinput = (TextInputEditText) findViewById(R.id.smtpTV);
         // portinput = (TextInputEditText) findViewById(R.id.portTV);
-        usernameinput = (TextInputEditText) findViewById(R.id.usernameTV);
-        passwordinput = (TextInputEditText) findViewById(R.id.passwordTV);
-        displayNameinput = (TextInputEditText) findViewById(R.id.displayNameTV);
-        eMailinput = (TextInputEditText) findViewById(R.id.eMailTV);
+        usernameinput = findViewById(R.id.usernameTV);
+        passwordinput = findViewById(R.id.passwordTV);
+        displayNameinput = findViewById(R.id.displayNameTV);
+        eMailinput = findViewById(R.id.eMailTV);
 
     }
 

@@ -61,7 +61,7 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emails);
 
-        emails = (ListView) findViewById(R.id.emails_list_view);
+        emails = findViewById(R.id.emails_list_view);
         pullToRefresh = findViewById(R.id.pullToRefresh);
 
 
@@ -73,20 +73,20 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         }
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.emails_toolbar);
+        Toolbar toolbar = findViewById(R.id.emails_toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Inbox");
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.open_drawer, R.string.close_drawer);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         // populateListFromDB();
@@ -252,14 +252,14 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         //searchView.setSearchableInfo(searchManager.getSearchableInfo( new ComponentName(this, SearchResultActivity.class)));
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-        ImageView closeButton = (ImageView) searchView.findViewById(R.id.search_close_btn);
+        ImageView closeButton = searchView.findViewById(R.id.search_close_btn);
 
         closeButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 populateList();
-                EditText et = (EditText) findViewById(R.id.search_src_text);
+                EditText et = findViewById(R.id.search_src_text);
                 et.setText("");
             }
         });
@@ -327,14 +327,14 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
 
         startActivity(intent);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
 
     }
 
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {

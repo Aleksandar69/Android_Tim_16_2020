@@ -73,13 +73,13 @@ public class CreateEmailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_email);
 
-        toEditBox = (TextInputEditText) findViewById(R.id.email_to);
-        ccEditBox = (TextInputEditText) findViewById(R.id.email_cc);
-        bccEditBox = (TextInputEditText) findViewById(R.id.email_bcc);
-        subjectEditBox = (TextInputEditText) findViewById(R.id.email_subject);
-        contentEditBox = (EditText) findViewById(R.id.email_content);
-        attachedFiles = (TextView) findViewById(R.id.attached_files);
-        tagsEditBox = (TextInputEditText) findViewById(R.id.tags_edit);
+        toEditBox = findViewById(R.id.email_to);
+        ccEditBox = findViewById(R.id.email_cc);
+        bccEditBox = findViewById(R.id.email_bcc);
+        subjectEditBox = findViewById(R.id.email_subject);
+        contentEditBox = findViewById(R.id.email_content);
+        attachedFiles = findViewById(R.id.attached_files);
+        tagsEditBox = findViewById(R.id.tags_edit);
 
         tags = new StringBuffer();
         dbHandler = new MessagesDBHandler(this);
@@ -88,7 +88,7 @@ public class CreateEmailActivity extends AppCompatActivity {
 
         uriList = new ArrayList<>();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.create_email);
+        Toolbar toolbar = findViewById(R.id.create_email);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();

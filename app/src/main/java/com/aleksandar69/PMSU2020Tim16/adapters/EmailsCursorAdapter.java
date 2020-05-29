@@ -35,11 +35,11 @@ public class EmailsCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        TextView columnFrom = (TextView) view.findViewById(R.id.columnFrom);
-        TextView columnSubject = (TextView) view.findViewById(R.id.columnSubject);
-        TextView columnContent = (TextView) view.findViewById(R.id.columnContent);
-        TextView columnDate = (TextView) view.findViewById(R.id.columnDate);
-        TextView columnTags = (TextView) view.findViewById(R.id.tags_listview);
+        TextView columnFrom = view.findViewById(R.id.columnFrom);
+        TextView columnSubject = view.findViewById(R.id.columnSubject);
+        TextView columnContent = view.findViewById(R.id.columnContent);
+        TextView columnDate = view.findViewById(R.id.columnDate);
+        TextView columnTags = view.findViewById(R.id.tags_listview);
 
         String messageFrom = cursor.getString(cursor.getColumnIndex("messagefrom"));
         String messageSubject = cursor.getString(cursor.getColumnIndex("subject"));
@@ -52,7 +52,7 @@ public class EmailsCursorAdapter extends CursorAdapter {
 
         Random random = new Random();
 
-        List<String> tagList = Arrays.asList(messageTags.toString().split(";[ ]*"));
+        String[] tagList = messageTags.split(";[ ]*");
 
         Random random2 = new Random();
 
