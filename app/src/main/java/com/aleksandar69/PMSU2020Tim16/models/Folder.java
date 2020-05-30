@@ -1,5 +1,8 @@
 package com.aleksandar69.PMSU2020Tim16.models;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 
@@ -7,14 +10,19 @@ public class Folder {
 
     private int id;
     private String name;
-    private List<Message> messages;
+    //private List<String> messages;
 
-
-    public Folder(int id, String name, List<Message> messages) {
+    public Folder(int id, String name) {
         this.id = id;
         this.name = name;
-        this.messages = messages;
+
     }
+
+
+    public Folder() {
+
+    }
+
 
     public int getId() {
         return id;
@@ -32,11 +40,8 @@ public class Folder {
         this.name = name;
     }
 
-    public List<Message> getMessages() {
-        return messages;
-    }
+    //public List<String> getMessages() {return messages;}
 
-    public void setMessages(List<Message> messages) {
-        this.messages = messages;
-    }
+    //public void setMessages(List<String> messages) {this.messages = messages;}
+
 }
