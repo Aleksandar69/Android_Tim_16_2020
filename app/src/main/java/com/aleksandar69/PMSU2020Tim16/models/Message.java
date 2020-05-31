@@ -22,6 +22,7 @@ public class Message {
     private String subject;
     private String content;
     private int logged_user_id;
+    private int folder_id;
     private boolean unread;
     private List<Attachment> attachments;
     private List<Tag> tags;
@@ -210,4 +211,9 @@ public class Message {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public int getFolder_id() { return folder_id;
+    }
+
+    public void setFolder_id(int folder_id) { this.folder_id = folder_id;}
 }

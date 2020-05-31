@@ -19,6 +19,7 @@ import com.aleksandar69.PMSU2020Tim16.models.Attachment;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
 import com.aleksandar69.PMSU2020Tim16.models.Message;
 import com.aleksandar69.PMSU2020Tim16.models.Tag;
+import com.aleksandar69.PMSU2020Tim16.models.Folder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +31,14 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public static final int DATABASE_VERSION = 155;
     public static final String DATABASE_NAME = "EMAILDB";
+
+    //folders
+
+    public static final String TABLE_FOLDERS = "FOLDERS";
+    public static final String COLUMN_ID_FOLDER = "_id";
+    public static final String COLUMN_NAME = "name";
+    //public static final String COLUMN_NUMBER_OF_MESSAGES = "messages";
+
 
     //contacts
     public static final String TABLE_CONTACTS = "CONTACT";
@@ -58,6 +67,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     private static final String COLUMN_ACCOUNTS_FK = "accounts_id";
     private static final String COLUMN_ISUNREAD = "isunreadmessage";
     private static final String COLUMN_TAGS = "tagsinmail";
+    //private static final String COLUMN_ID_FOLDERS_FK = "folder_id";
 
     //accounts
 
@@ -101,6 +111,8 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             COLUMN_ISUNREAD + " INTEGER NOT NULL DEFAULT 1 CHECK(isunreadmessage IN (0,1)), " +
             COLUMN_TAGS + " TEXT, " +
             "FOREIGN KEY(" + COLUMN_ACCOUNTS_FK + ") REFERENCES ACCOUNTS(_id) " + ")";
+            //"FOREIGN KEY(" + COLUMN_ID_FOLDERS_FK + ") REFERENCES FOLDERS(_id)" +
+
 
     private static String CREATE_ACCOUNTS_TABLE = "CREATE TABLE " + TABLE_ACCOUNTS +
             "(" + COLUMN_ID_ACCOUNTS + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -126,6 +138,13 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             COLUMN_FIRST + " TEXT, " + COLUMN_LAST + " TEXT, " +
             COLUMN_DISPLAY + " TEXT, " + COLUMN_CONTACT_EMAIL + " TEXT , " + COLUMN_IMAGE_RESOURCE + " INTEGER " + ")";
 
+    // CREATE FOLDERS
+    private static String CREATE_FOLDERS_TABLE = "CREATE TABLE " + TABLE_FOLDERS +
+            "(" + COLUMN_ID_FOLDER + " INTEGER PRIMARY KEY, " + COLUMN_NAME + " TEXT " + ")";
+            //+ COLUMN_NUMBER_OF_MESSAGES + "INTEGER"
+
+
+
 
     public MessagesDBHandler(Context context/*, String name, SQLiteDatabase.CursorFactory factory, int version*/) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -134,12 +153,14 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(CREATE_FOLDERS_TABLE);
         db.execSQL(CREATE_MESSAGES_TABLE);
         db.execSQL(CREATE_ACCOUNTS_TABLE);
         db.execSQL(CREATE_ATTACHMENT_TABLE);
         Log.d("Elena", "Pokrenuto kreiranje tabela");
         db.execSQL(CREATE_TAG_TABLE);
         db.execSQL(CREATE_CONTACTS_TABLE);
+
 
     }
 
@@ -151,10 +172,34 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTACHMENTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TAGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOLDERS);
+
+
         onCreate(db);
 
     }
 
+    //////////////////////////FOLDERS //////////////////////////////
+    public void addFolder(Folder folder){
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ID_FOLDER, folder.getId());
+        values.put(COLUMN_NAME, folder.getName());
+
+
+        //myContentResolver.insert(FoldersContentProvider.CONTENT_URI, values);
+    }
+
+
+
+    public int getMessagesInFolderCount(int folderID){
+        //String countQuery = "SELECT  * FROM " + TABLE_FOLDER + " WHERE " + COLUMN_ID_FOLDER + " = " + folderID ;
+        //SQLiteDatabase db = this.getReadableDatabase();
+        //Cursor cursor = db.rawQuery(countQuery, null);
+        //int count = cursor.getCount();
+        //cursor.close();
+        //return count;
+        return 0;
+    }
 
     /////////////////////////// MESSAGES /////////////////////////////////
 
@@ -169,6 +214,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         values.put(COLUMN_SUBJECT, message.getSubject());
         values.put(COLUMN_CONTENT, message.getContent());
         values.put(COLUMN_ACCOUNTS_FK, message.getLogged_user_id());
+        //values.put(COLUMN_ID_FOLDERS_FK, message.getFolder_id());
         // values.put(COLUMN_ISUNREAD,message.isUnread());
         if (message.isUnread() == true) {
             values.put(COLUMN_ISUNREAD, 1);
