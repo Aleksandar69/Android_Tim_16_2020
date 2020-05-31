@@ -41,6 +41,7 @@ import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.adapters.EmailsCursorAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.aleksandar69.PMSU2020Tim16.javamail.ImapFetchMail;
+import com.aleksandar69.PMSU2020Tim16.models.Folder;
 import com.aleksandar69.PMSU2020Tim16.services.EmailSyncService;
 import com.aleksandar69.PMSU2020Tim16.services.EmailsJobSchedulerSyncService;
 import com.google.android.material.navigation.NavigationView;
@@ -73,6 +74,7 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         }
 
 
+
         Toolbar toolbar = findViewById(R.id.emails_toolbar);
         setSupportActionBar(toolbar);
 
@@ -88,6 +90,22 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        // Dodavanje pocetnih foldera koji svaki korisnik dobija prilikom uspesnog logovanja
+        Folder f1 = new Folder();
+        Folder f2 = new Folder();
+        Folder f3 = new Folder();
+        f1.setId(1);
+        f1.setName("Drafts");
+        f2.setId(2);
+        f2.setName("Trash");
+        f3.setId(3);
+        f3.setName("Important");
+        handler.addFolder(f1);
+        handler.addFolder(f2);
+        handler.addFolder(f3);
+
 
         // populateListFromDB();
 

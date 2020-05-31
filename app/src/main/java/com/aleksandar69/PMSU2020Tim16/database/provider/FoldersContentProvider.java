@@ -29,6 +29,8 @@ public class FoldersContentProvider extends ContentProvider {
         URI_MATCHER.addURI(AUTHORITY, FOLDERS_TABLE +"/#", FOLDER_ID);
     }
 
+    public FoldersContentProvider(){}
+
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         // Implement this to handle requests to delete one or more rows.

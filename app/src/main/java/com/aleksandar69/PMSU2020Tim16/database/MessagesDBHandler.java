@@ -12,6 +12,7 @@ import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.database.provider.AccountsContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.AttachmentsContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.ContactsContentProvider;
+import com.aleksandar69.PMSU2020Tim16.database.provider.FoldersContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.TagsContentProvider;
 import com.aleksandar69.PMSU2020Tim16.models.Account;
@@ -29,7 +30,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 155;
+    public static final int DATABASE_VERSION = 158;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -37,7 +38,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     public static final String TABLE_FOLDERS = "FOLDERS";
     public static final String COLUMN_ID_FOLDER = "_id";
     public static final String COLUMN_NAME = "name";
-    //public static final String COLUMN_NUMBER_OF_MESSAGES = "messages";
+
 
 
     //contacts
@@ -67,7 +68,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     private static final String COLUMN_ACCOUNTS_FK = "accounts_id";
     private static final String COLUMN_ISUNREAD = "isunreadmessage";
     private static final String COLUMN_TAGS = "tagsinmail";
-    //private static final String COLUMN_ID_FOLDERS_FK = "folder_id";
+    private static final String COLUMN_ID_FOLDERS_FK = "folder_id";
 
     //accounts
 
@@ -102,14 +103,19 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     private ContentResolver myContentResolver;
 
+    private static String CREATE_FOLDERS_TABLE = "CREATE TABLE " + TABLE_FOLDERS +
+            "(" + COLUMN_ID_FOLDER + " INTEGER PRIMARY KEY, " + COLUMN_NAME + " TEXT " + ")";
+
     private static String CREATE_MESSAGES_TABLE = "CREATE TABLE " + TABLE_MESSAGES +
             "(" + COLUMN_ID_EMAILS + " INTEGER PRIMARY KEY, " +
             COLUMN_FROM + " TEXT, " + COLUMN_TO + " TEXT, " + COLUMN_CC + " TEXT, " +
             COLUMN_BCC + " TEXT, " + COLUMN_SUBJECT + " TEXT, " +
             COLUMN_CONTENT + " TEXT, " + COLUMN_DATETIME + " TEXT, " +
             COLUMN_ACCOUNTS_FK + " INTEGER, " +
+            COLUMN_ID_FOLDERS_FK + " INTEGER, " +
             COLUMN_ISUNREAD + " INTEGER NOT NULL DEFAULT 1 CHECK(isunreadmessage IN (0,1)), " +
             COLUMN_TAGS + " TEXT, " +
+            "FOREIGN KEY(" + COLUMN_ID_FOLDERS_FK + ") REFERENCES FOLDERS(_id), " +
             "FOREIGN KEY(" + COLUMN_ACCOUNTS_FK + ") REFERENCES ACCOUNTS(_id) " + ")";
             //"FOREIGN KEY(" + COLUMN_ID_FOLDERS_FK + ") REFERENCES FOLDERS(_id)" +
 
@@ -139,9 +145,8 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             COLUMN_DISPLAY + " TEXT, " + COLUMN_CONTACT_EMAIL + " TEXT , " + COLUMN_IMAGE_RESOURCE + " INTEGER " + ")";
 
     // CREATE FOLDERS
-    private static String CREATE_FOLDERS_TABLE = "CREATE TABLE " + TABLE_FOLDERS +
-            "(" + COLUMN_ID_FOLDER + " INTEGER PRIMARY KEY, " + COLUMN_NAME + " TEXT " + ")";
-            //+ COLUMN_NUMBER_OF_MESSAGES + "INTEGER"
+    //private static String CREATE_FOLDERS_TABLE = "CREATE TABLE " + TABLE_FOLDERS +
+    //       "(" + COLUMN_ID_FOLDER + " INTEGER PRIMARY KEY, " + COLUMN_NAME + " TEXT " + ")";
 
 
 
@@ -186,19 +191,18 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         values.put(COLUMN_NAME, folder.getName());
 
 
-        //myContentResolver.insert(FoldersContentProvider.CONTENT_URI, values);
+        myContentResolver.insert(FoldersContentProvider.CONTENT_URI, values);
     }
 
 
 
     public int getMessagesInFolderCount(int folderID){
-        //String countQuery = "SELECT  * FROM " + TABLE_FOLDER + " WHERE " + COLUMN_ID_FOLDER + " = " + folderID ;
-        //SQLiteDatabase db = this.getReadableDatabase();
-        //Cursor cursor = db.rawQuery(countQuery, null);
-        //int count = cursor.getCount();
-        //cursor.close();
-        //return count;
-        return 0;
+        String countQuery = "SELECT  * FROM " + TABLE_MESSAGES + " WHERE " + COLUMN_ID_FOLDERS_FK + " = " + folderID ;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
     }
 
     /////////////////////////// MESSAGES /////////////////////////////////

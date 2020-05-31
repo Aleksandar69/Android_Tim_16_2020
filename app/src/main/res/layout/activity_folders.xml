@@ -27,12 +27,12 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="FOLDERS ACTIVITY"
-                android:layout_gravity="center"
-                style="@style/TextAppearance.AppCompat.Large"/>
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="FOLDERS ACTIVITY"-->
+<!--                android:layout_gravity="center"-->
+<!--                style="@style/TextAppearance.AppCompat.Large"/>-->
 
             <Button
                 android:layout_width="wrap_content"
