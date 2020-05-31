@@ -1,16 +1,19 @@
 package com.aleksandar69.PMSU2020Tim16.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aleksandar69.PMSU2020Tim16.R;
+import com.aleksandar69.PMSU2020Tim16.activities.ContactActivity;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
 
 import java.util.List;
@@ -62,7 +65,28 @@ public class RecyclerViewContactsAdapter extends RecyclerView.Adapter<RecyclerVi
 
         @Override
         public void onClick(View v) {
+            int position = this.getAdapterPosition();
+            Contact contact = contactList.get(position);
+            String first = contact.getFirst();
+            String last = contact.getLast();
+            String display = contact.getDisplay();
+            String email = contact.getEmail();
+            //int photoId = contact.getImageSourceID();
 
+            Toast.makeText(context, "The position is " + String.valueOf(position) +
+                    ",First name is " + first +
+                    ",Last name is " + last +
+                    ",Display " + display +
+                    ",Email is " + email,Toast.LENGTH_LONG).show();
+
+            Intent intent = new Intent(context, ContactActivity.class);
+            intent.putExtra("RFirst" ,first);
+            intent.putExtra("RLast",last);
+            intent.putExtra("RDisplay", display);
+            intent.putExtra("REmail",email);
+            //intent.putExtra("RPhoto", photoId);
+
+            context.startActivity(intent);
         }
     }
 }

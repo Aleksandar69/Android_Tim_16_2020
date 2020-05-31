@@ -61,10 +61,19 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
             elena.setDisplay("Elena krunic");
             elena.setEmail("elenakrunic@gmail.com");
             elena.setImageSourceID(1);
-
             handler.addContacts(elena);
 
-            contactArrayList = new ArrayList<>();
+            Contact pera = new Contact();
+            pera.set_id(2);
+            pera.setFirst("Pera");
+            pera.setLast("Krunic");
+            pera.setDisplay("Pera krunic");
+            pera.setEmail("perakrunic@gmail.com");
+            pera.setImageSourceID(2);
+            handler.addContacts(pera);
+
+
+        contactArrayList = new ArrayList<>();
 
             List<Contact> contactList = handler.getAllContactsList();
             for(Contact contact : contactList) {
