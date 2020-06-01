@@ -30,7 +30,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 158;
+    public static final int DATABASE_VERSION = 177;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -144,11 +144,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             COLUMN_FIRST + " TEXT, " + COLUMN_LAST + " TEXT, " +
             COLUMN_DISPLAY + " TEXT, " + COLUMN_CONTACT_EMAIL + " TEXT , " + COLUMN_IMAGE_RESOURCE + " INTEGER " + ")";
 
-    // CREATE FOLDERS
-    //private static String CREATE_FOLDERS_TABLE = "CREATE TABLE " + TABLE_FOLDERS +
-    //       "(" + COLUMN_ID_FOLDER + " INTEGER PRIMARY KEY, " + COLUMN_NAME + " TEXT " + ")";
-
-
 
 
     public MessagesDBHandler(Context context/*, String name, SQLiteDatabase.CursorFactory factory, int version*/) {
@@ -165,8 +160,8 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         Log.d("Elena", "Pokrenuto kreiranje tabela");
         db.execSQL(CREATE_TAG_TABLE);
         db.execSQL(CREATE_CONTACTS_TABLE);
-
-
+        db.execSQL("insert into " + TABLE_FOLDERS + "(" + COLUMN_ID_FOLDER + "," + COLUMN_NAME + ") values(1,'Drafts')");
+        db.execSQL("insert into " + TABLE_FOLDERS + "(" + COLUMN_ID_FOLDER + "," + COLUMN_NAME + ") values(2,'Trash')");
     }
 
     @Override
@@ -186,13 +181,33 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     //////////////////////////FOLDERS //////////////////////////////
     public void addFolder(Folder folder){
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_ID_FOLDER, folder.getId());
-        values.put(COLUMN_NAME, folder.getName());
+        //if(CheckFolderInDB(folder.getName()) == false) {
+            ContentValues values = new ContentValues();
+            //values.put(COLUMN_ID_FOLDER, folder.getId());
+            values.put(COLUMN_NAME, folder.getName());
+            myContentResolver.insert(FoldersContentProvider.CONTENT_URI, values);
+        //}
 
-
-        myContentResolver.insert(FoldersContentProvider.CONTENT_URI, values);
     }
+
+
+
+//    public boolean CheckFolderInDB(String name) {
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        try{
+//            String Query = "Select * from " + TABLE_FOLDERS + " where " + COLUMN_NAME + " = " + name;
+//
+//            Cursor cursor = db.rawQuery(Query, null);
+//            if(cursor.getCount() <= 0){
+//                cursor.close();
+//                return false;
+//            }
+//            cursor.close();
+//        }
+//
+//        catch (Exception e){}
+//        return true;
+//    }
 
 
 
@@ -218,7 +233,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         values.put(COLUMN_SUBJECT, message.getSubject());
         values.put(COLUMN_CONTENT, message.getContent());
         values.put(COLUMN_ACCOUNTS_FK, message.getLogged_user_id());
-        //values.put(COLUMN_ID_FOLDERS_FK, message.getFolder_id());
+        values.put(COLUMN_ID_FOLDERS_FK, message.getFolder_id());
         // values.put(COLUMN_ISUNREAD,message.isUnread());
         if (message.isUnread() == true) {
             values.put(COLUMN_ISUNREAD, 1);

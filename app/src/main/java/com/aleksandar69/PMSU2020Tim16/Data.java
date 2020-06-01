@@ -40,4 +40,6 @@ public class Data {
     //contacts
     public static final String CONTACT_ID_EXTRA = "contactID";
     public static final String TABLE_CONTACTS = "CONTACT";
+
+    public static  final String FOLDERS_ID_EXTRA = "foldersID";
 }

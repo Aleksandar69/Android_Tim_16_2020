@@ -92,21 +92,6 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        // Dodavanje pocetnih foldera koji svaki korisnik dobija prilikom uspesnog logovanja
-        Folder f1 = new Folder();
-        Folder f2 = new Folder();
-        Folder f3 = new Folder();
-        f1.setId(1);
-        f1.setName("Drafts");
-        f2.setId(2);
-        f2.setName("Trash");
-        f3.setId(3);
-        f3.setName("Important");
-        handler.addFolder(f1);
-        handler.addFolder(f2);
-        handler.addFolder(f3);
-
-
         // populateListFromDB();
 
         //sharedPreferences = getSharedPreferences(LoginActivity.myPreferance, Context.MODE_PRIVATE);

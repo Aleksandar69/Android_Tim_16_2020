@@ -33,7 +33,7 @@ public class FoldersCursorAdapter extends CursorAdapter {
 
         String folderName = cursor.getString(cursor.getColumnIndex("name"));
         int folderID = cursor.getInt(cursor.getColumnIndex("_id"));
-        int folderNumberOfMessages = handler.getMessagesInFolderCount(folderID);
+        String folderNumberOfMessages = String.valueOf(handler.getMessagesInFolderCount(folderID));
 
         columnFolderName.setText(folderName);
         columnNumberOfMessages.setText(folderNumberOfMessages);
