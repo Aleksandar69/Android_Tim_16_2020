@@ -30,7 +30,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 177;
+    public static final int DATABASE_VERSION = 181;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -209,15 +209,37 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 //        return true;
 //    }
 
+    public Cursor getAllFolders(){
 
+        String[] projection = {COLUMN_ID_FOLDER, COLUMN_NAME};
 
-    public int getMessagesInFolderCount(int folderID){
+        Cursor cursor = myContentResolver.query(FoldersContentProvider.CONTENT_URI, projection,
+                null, null, null);
+
+        return cursor;
+    }
+
+    public String getMessagesInFolderCount(int folderID){
+
         String countQuery = "SELECT  * FROM " + TABLE_MESSAGES + " WHERE " + COLUMN_ID_FOLDERS_FK + " = " + folderID ;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         int count = cursor.getCount();
         cursor.close();
-        return count;
+
+        if(count == 0){
+            return "Nema poruka";
+        }
+        else {
+            return String.valueOf(count);
+        }
+
+//        if(count = ){
+//            return 0;
+//        }
+//        else {
+//            return count;
+//        }
     }
 
     /////////////////////////// MESSAGES /////////////////////////////////

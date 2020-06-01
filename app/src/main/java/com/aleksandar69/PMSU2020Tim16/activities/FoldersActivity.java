@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -62,6 +63,11 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(android.R.drawable.ic_input_get);
         actionBar.setTitle("Folders");
+
+
+        Cursor c = handler.getAllFolders();
+        foldersAdapter = new FoldersCursorAdapter(this, c);
+        folders.setAdapter(foldersAdapter);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
