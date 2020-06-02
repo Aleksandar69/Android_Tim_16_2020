@@ -30,7 +30,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 181;
+    public static final int DATABASE_VERSION = 196;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -142,7 +142,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     private static String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS +
             "(" + COLUMN_ID_CONTACTS + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_FIRST + " TEXT, " + COLUMN_LAST + " TEXT, " +
-            COLUMN_DISPLAY + " TEXT, " + COLUMN_CONTACT_EMAIL + " TEXT , " + COLUMN_IMAGE_RESOURCE + " INTEGER " + ")";
+            COLUMN_DISPLAY + " TEXT, " + COLUMN_CONTACT_EMAIL + " TEXT, " + COLUMN_IMAGE_RESOURCE + " INTEGER" + ")";
 
 
 
@@ -650,7 +650,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     public void addContacts(Contact contact) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contactsValues = new ContentValues();
-        contactsValues.put(COLUMN_ID_CONTACTS, contact.get_id());
+       // contactsValues.put(COLUMN_ID_CONTACTS, contact.get_id());
         contactsValues.put(COLUMN_FIRST, contact.getFirst());
         contactsValues.put(COLUMN_LAST, contact.getLast());
         contactsValues.put(COLUMN_DISPLAY, contact.getDisplay());
@@ -662,6 +662,16 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         //  myContentResolver.insert(ContactsContentProvider.CONTENT_URI,contactsValues);
         db.close();
     }
+
+    public void addContacts1(Contact contact) {
+        //if(CheckFolderInDB(folder.getName()) == false) {
+        ContentValues values = new ContentValues();
+        //values.put(COLUMN_ID_FOLDER, folder.getId());
+        values.put(COLUMN_FIRST, contact.getFirst());
+        myContentResolver.insert(ContactsContentProvider.CONTENT_URI, values);
+        //}
+    }
+
 
     public Contact findContact(int contactId) {
         String[] projection = {COLUMN_ID_CONTACTS, COLUMN_FIRST, COLUMN_LAST, COLUMN_DISPLAY, COLUMN_CONTACT_EMAIL, COLUMN_IMAGE_RESOURCE};
@@ -776,7 +786,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
                 contact.setLast(cursor.getString(2));
                 contact.setDisplay(cursor.getString(3));
                 contact.setEmail(cursor.getString(4));
-                contact.setImageSourceID(Integer.parseInt(cursor.getString(5)));
+ //               contact.setImageSourceID(Integer.parseInt(cursor.getString(5))); //zato sto baca NumberFormatException, zakomentarisala sam i u ContactsActivity
                 contactList.add(contact);
             } while (cursor.moveToNext());
         }

@@ -11,6 +11,10 @@ public class Contact {
     private String email;
     private Integer imageSourceID;
 
+    public Contact(String first){
+        this.first = first;
+    }
+
     public void setLast(String last) {
         this.last = last;
     }
@@ -72,6 +76,13 @@ public class Contact {
         this.display = display;
         this.email = email;
         this.imageSourceID = imageSourceID;
+    }
+
+    public Contact(String first, String last, String display, String email) {
+        this.first = first;
+        this.last = last;
+        this.display = display;
+        this.email = email;
     }
 
     public Contact(){

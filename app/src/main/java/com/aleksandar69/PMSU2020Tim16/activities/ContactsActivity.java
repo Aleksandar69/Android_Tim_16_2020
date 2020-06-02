@@ -55,7 +55,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
           //dodavanje kontakta u DB
             Contact elena = new Contact();
-            elena.set_id(1);
+            //elena.set_id(1);
             elena.setFirst("Elena");
             elena.setLast("Krunic");
             elena.setDisplay("Elena krunic");
@@ -64,7 +64,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
             handler.addContacts(elena);
 
             Contact pera = new Contact();
-            pera.set_id(2);
+           // pera.set_id(2);
             pera.setFirst("Pera");
             pera.setLast("Krunic");
             pera.setDisplay("Pera krunic");
@@ -82,7 +82,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
                 + "Last name" + contact.getLast() + "\n"
                 + "Display name " + contact.getDisplay() + "\n"
                 + "Email " + contact.getEmail() + "\n"
-                + "Image resource ID " + contact.getImageSourceID());
+                );
 
                 contactArrayList.add(contact);
             }
