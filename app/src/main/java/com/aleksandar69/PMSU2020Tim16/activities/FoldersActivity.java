@@ -35,9 +35,7 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
 
     Cursor cursor;
     ListView folders;
-    SharedPreferences sharedPreferences;
     MessagesDBHandler handler;
-    SearchView searchView;
     SwipeRefreshLayout pullToRefresh;
     FoldersCursorAdapter foldersAdapter;
 
