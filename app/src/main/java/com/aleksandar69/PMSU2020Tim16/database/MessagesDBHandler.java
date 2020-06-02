@@ -30,7 +30,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 196;
+    public static final int DATABASE_VERSION = 198;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders

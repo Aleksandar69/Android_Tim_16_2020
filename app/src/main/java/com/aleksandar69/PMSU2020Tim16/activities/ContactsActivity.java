@@ -53,6 +53,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
         MessagesDBHandler handler = new MessagesDBHandler(ContactsActivity.this);
 
+        /*
           //dodavanje kontakta u DB
             Contact elena = new Contact();
             //elena.set_id(1);
@@ -73,6 +74,9 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
             handler.addContacts(pera);
 
 
+         */
+
+        /*
         contactArrayList = new ArrayList<>();
 
             List<Contact> contactList = handler.getAllContactsList();
@@ -87,7 +91,13 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
                 contactArrayList.add(contact);
             }
 
-            recyclerViewContactsAdapter = new RecyclerViewContactsAdapter(ContactsActivity.this, contactArrayList);
+
+         */
+            //recyclerViewContactsAdapter = new RecyclerViewContactsAdapter(ContactsActivity.this, contactArrayList);
+            //recyclerView.setAdapter(recyclerViewContactsAdapter);
+
+            List<Contact> contactList = handler.getAllContactsList();
+            recyclerViewContactsAdapter = new RecyclerViewContactsAdapter(this,contactList);
             recyclerView.setAdapter(recyclerViewContactsAdapter);
 
             Log.d("Elena", "U bazi imate "+ handler.getCount() + " kontakata");
