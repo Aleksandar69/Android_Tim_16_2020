@@ -134,8 +134,6 @@ public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
 
                         if (matcher.find()) {
 
-                            Log.d("OVDJEMATCH:", matcher.group(1));
-
                             tags.append(matcher.group(1));
                         }
 

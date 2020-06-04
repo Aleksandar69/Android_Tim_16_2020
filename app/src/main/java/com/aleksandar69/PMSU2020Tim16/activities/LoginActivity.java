@@ -195,17 +195,17 @@ public class LoginActivity extends AppCompatActivity {
         testView.setAdapter(adapter);*/
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onStart() {
-        /*Pop3FetchEmails fetchingEmails = new Pop3FetchEmails(this);
-        fetchingEmails.execute();*/
+
+        fillAccountsList();
         super.onStart();
 
     }
 
     @Override
     protected void onResume() {
+        fillAccountsList();
         super.onResume();
     }
 

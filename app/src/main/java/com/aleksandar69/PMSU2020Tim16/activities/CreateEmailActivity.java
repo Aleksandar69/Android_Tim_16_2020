@@ -29,6 +29,7 @@ import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.aleksandar69.PMSU2020Tim16.javamail.SendEmail;
 import com.aleksandar69.PMSU2020Tim16.javamail.SendMultipartEmail;
+import com.aleksandar69.PMSU2020Tim16.javamail.SendMultipartMailConcurrent;
 import com.aleksandar69.PMSU2020Tim16.models.Account;
 import com.aleksandar69.PMSU2020Tim16.models.Message;
 import com.aleksandar69.PMSU2020Tim16.models.Tag;
@@ -37,6 +38,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CreateEmailActivity extends AppCompatActivity {
 
@@ -116,8 +119,14 @@ public class CreateEmailActivity extends AppCompatActivity {
 
     public void getReplyContent(){
         String from = (String) getIntent().getExtras().get(Data.REPLY_FROM);
+        Pattern pattern = Pattern.compile("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])");
+        Matcher matcher = pattern.matcher(from.toLowerCase());
+        StringBuffer frombuff = new StringBuffer();
+        if (matcher.find()) {
+            frombuff.append(matcher.group());
+        }
         String content = (String) getIntent().getExtras().get(Data.REPLY_CONTENT);
-        toEditBox.setText(from);
+        toEditBox.setText(frombuff + ";");
         contentEditBox.setText("__________________\n\n" +  content + "\n__________________ \n\n");
 
     }
@@ -127,8 +136,22 @@ public class CreateEmailActivity extends AppCompatActivity {
         String to = (String) getIntent().getExtras().get(Data.REPLY_TO_ALL_TO);
         String content = (String) getIntent().getExtras().get(Data.REPLY_TO_ALL_CONTENT);
 
-        toEditBox.setText(from+";"+to);
+        if(from != null && !(from.equals(""))) {
+            Pattern pattern = Pattern.compile("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])");
+            Matcher matcher = pattern.matcher(from.toLowerCase());
+            if (matcher.find()) {
+                toEditBox.append(matcher.group() + ";");
+            }
+        }
 
+        if(to != null && !(to.equals(""))) {
+
+            Pattern pattern = Pattern.compile("(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])");
+            Matcher matcher = pattern.matcher(to.toLowerCase());
+            if (matcher.find()) {
+                toEditBox.append(matcher.group() + ";");
+            }
+        }
         contentEditBox.setText("__________________\n\n" +  content + "\n__________________ \n\n");
 
 
@@ -179,13 +202,15 @@ public class CreateEmailActivity extends AppCompatActivity {
 
                 tags.append(tagsEditBox.getText().toString());
 
-                if (filePath != null || !tags.toString().isEmpty()) {
-                    SendMultipartEmail sendMessage = new SendMultipartEmail(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
-                    sendMessage.execute();
-                } else {
+ /*               if (filePath != null || !tags.toString().isEmpty()) {*/
+          /*          SendMultipartEmail sendMessage = new SendMultipartEmail(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
+                    sendMessage.execute();*/
+                    SendMultipartMailConcurrent sendeMai= new SendMultipartMailConcurrent(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
+                    sendeMai.Send();
+   /*             } else {
                     SendEmail sendMessage = new SendEmail(message.getSubject(), message.getContent(), message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
                     sendMessage.execute();
-                }
+                }*/
                 startActivity(new Intent(this, EmailsActivity.class));
             default:
                 return super.onOptionsItemSelected(item);

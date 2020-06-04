@@ -20,6 +20,7 @@ import androidx.core.app.NotificationCompat;
 import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.activities.EmailsActivity;
 import com.aleksandar69.PMSU2020Tim16.javamail.ImapFetchMail;
+import com.aleksandar69.PMSU2020Tim16.javamail.ImapsFetchMailConcurrent;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class EmailsJobSchedulerSyncService extends JobService {
@@ -73,11 +74,11 @@ public class EmailsJobSchedulerSyncService extends JobService {
         return false;
     }
 
-    public void doBackgroundWork(JobParameters params) throws InterruptedException {
+    public synchronized void doBackgroundWork(JobParameters params) throws InterruptedException {
         Log.d("here", "dobackground");
         Thread thread = new Thread(new Runnable() {
             @Override
-            public void run() {
+            public synchronized void run() {
                 Log.d("here", "inRun");
 
                 if (Data.totalEmailsServer > Data.totalEmailsDB) {
@@ -85,7 +86,15 @@ public class EmailsJobSchedulerSyncService extends JobService {
                 }
 
                 ImapFetchMail imapFetchMail = new ImapFetchMail(getApplicationContext(), Data.account);
+                //imapFetchMail.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 imapFetchMail.execute();
+
+/*                ImapsFetchMailConcurrent fetch = new ImapsFetchMailConcurrent(getApplicationContext(),Data.account);
+                try {
+                    fetch.Run();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
 
             }
         });

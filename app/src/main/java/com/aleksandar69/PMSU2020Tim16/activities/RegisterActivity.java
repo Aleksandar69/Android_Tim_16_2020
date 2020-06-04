@@ -4,6 +4,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,16 +17,19 @@ import com.aleksandar69.PMSU2020Tim16.javamail.AuthenticateMail;
 import com.aleksandar69.PMSU2020Tim16.models.Account;
 import com.google.android.material.textfield.TextInputEditText;
 
+import javax.mail.MessagingException;
+
 public class RegisterActivity extends AppCompatActivity {
 
     //TextInputEditText smtpAddressinput;
     //TextInputEditText portinput;
-    TextInputEditText usernameinput;
-    TextInputEditText passwordinput;
-    TextInputEditText displayNameinput;
-    TextInputEditText eMailinput;
+    private TextInputEditText usernameinput;
+    private TextInputEditText passwordinput;
+    private TextInputEditText displayNameinput;
+    private TextInputEditText eMailinput;
 
-    MessagesDBHandler dbHandler;
+    private MessagesDBHandler dbHandler;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,52 +49,71 @@ public class RegisterActivity extends AppCompatActivity {
         displayNameinput = (TextInputEditText) findViewById(R.id.displayNameTV);
         eMailinput = (TextInputEditText) findViewById(R.id.eMailTV);
 
+
     }
 
 
-    public void makeNewAccountFromInput(View view) {
+    public void makeNewAccountFromInput(View view) throws MessagingException {
         //String smtpAdress = smtpAddressinput.getText().toString();
         //String port = portinput.getText().toString();
-        String userName = usernameinput.getText().toString();
-        String password = passwordinput.getText().toString();
-        String displayName = displayNameinput.getText().toString();
-        String email = eMailinput.getText().toString();
+
+        final String userName = usernameinput.getText().toString();
+        final String password = passwordinput.getText().toString();
+        final String displayName = displayNameinput.getText().toString();
+        final String email = eMailinput.getText().toString();
 
         Account account;
         dbHandler = new MessagesDBHandler(this);
 
         if (email.contains("@gmail.com")) {
-            String smtpPort = "465";
-            String smtphost = "smtp.gmail.com";
-            String imaphost = "imap.googlemail.com";
-
-            AuthenticateMail checkExistance = new AuthenticateMail(imaphost, email, password);
-            checkExistance.execute();
-
-                account = new Account(smtpPort, smtpPort, userName, password, displayName, email, smtphost, imaphost);
-                dbHandler.addAccount(account);
-
-            } else if (email.contains("@hotmail.com") || email.contains("outlook.com")) {
-            String smtpPort = "587";
-            String imaphost = "outlook.office365.com";
-            String smtphost = "smtp.office365.com";
-
-            AuthenticateMail checkExistance = new AuthenticateMail(imaphost, email, password);
-            checkExistance.execute();
-
-                account = new Account(smtpPort, smtpPort, userName, password, displayName, email, smtphost, imaphost);
-                dbHandler.addAccount(account);
+            final String smtpPort = "465";
+            final String smtphost = "smtp.gmail.com";
+            final String imaphost = "imap.googlemail.com";
 
 
-        } /*else if(email.contains("yahoo.com")){
-            String smtpPort = "995";
-            String smtphost = "smtp.mail.yahoo.com";
-            String imaphost = "imap.mail.yahoo.com";
+            AuthenticateMail checkExistance = (AuthenticateMail) new AuthenticateMail(imaphost, email, password, new AuthenticateMail.AsyncResponse() {
+                @Override
+                public void processFinish(Boolean isConnected) {
 
-            account = new Account(smtpPort, smtpPort, userName, password, displayName, email, smtphost, imaphost);
 
-        }*/ else {
-            Toast.makeText(this, "Please use gmail or hotmail accounts.", Toast.LENGTH_SHORT);
+                    Log.d("iConnRegisterAc", isConnected.toString());
+
+                    if (isConnected) {
+                        Account account = new Account(smtpPort, smtpPort, userName, password, displayName, email, smtphost, imaphost);
+                        dbHandler.addAccount(account);
+                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Could not connect your account, please try again.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }).execute();
+
+
+        } else if (email.contains("@hotmail.com") || email.contains("outlook.com")) {
+            final String smtpPort = "587";
+            final String imaphost = "outlook.office365.com";
+            final String smtphost = "smtp.office365.com";
+
+            AuthenticateMail checkExistance = (AuthenticateMail) new AuthenticateMail(imaphost, email, password, new AuthenticateMail.AsyncResponse() {
+                @Override
+                public void processFinish(Boolean isConnected) {
+
+                    Log.d("iConnRegisterAc", isConnected.toString());
+                    if (isConnected) {
+                        Account account = new Account(smtpPort, smtpPort, userName, password, displayName, email, smtphost, imaphost);
+                        dbHandler.addAccount(account);
+                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Incorrect username/password, please try again.", Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+            }).execute();
+
+        } else {
+            Toast.makeText(this, "Incorrect username/password, please try again.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -100,7 +123,6 @@ public class RegisterActivity extends AppCompatActivity {
             Log.e("Account error", "Can't make new account");
         }
 
-        startActivity(new Intent(this, LoginActivity.class));
 
     }
 }

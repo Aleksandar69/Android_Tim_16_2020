@@ -124,7 +124,7 @@ public class SendEmail extends AsyncTask<Void, Void, Void> {
             }
 
 
-            message.setFrom(new InternetAddress(myeMail));
+            message.setFrom(new InternetAddress(mAccount.geteMail()));
            // message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
             message.setSubject(subject);
             if(!tagList.toString().isEmpty()) {
@@ -136,7 +136,7 @@ public class SendEmail extends AsyncTask<Void, Void, Void> {
             //Transport.send(message);
 
             Transport transport = sess.getTransport(MAIL_SERVER);
-            transport.connect(SMTP_HOST_NAME, SMTP_HOST_PORT, myeMail, myPassword);
+            transport.connect(mAccount.getSmtphost() ,Integer.parseInt(mAccount.getSmtpPort()), mAccount.geteMail(), mAccount.getPassword());
             transport.sendMessage(message, message.getAllRecipients());
             transport.close();
         } catch (MessagingException e) {

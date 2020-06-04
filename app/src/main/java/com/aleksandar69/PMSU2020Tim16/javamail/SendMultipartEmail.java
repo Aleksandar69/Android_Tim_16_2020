@@ -45,14 +45,9 @@ import org.apache.commons.codec.binary.Base64;
 
 public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
 
-    //public static String myeMail = "mindsnackstore@gmail.com";
-    public static String myeMail = "clockworkaleks@gmail.com";
-    public static String myUsername = "MindSnack";
-    public static String myPassword = "TooStronk69!";
-  //  public static String recipient;
+
     public static String subject;
     public static String content;
-    //public static String filePath;
     private List<String> filePath;
     Context mContext;
     private String myToList;
@@ -60,8 +55,6 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
     private String myBCCList;
     private StringBuffer tagList;
     private static final String MAIL_SERVER = "smtp";
-    private static final String SMTP_HOST_NAME = "smtp.gmail.com";
-    private static final int SMTP_HOST_PORT = 465;
     Account account;
 
     public SendMultipartEmail(Context context, String subject, String content, List<String> filePath, String myCC, String myBCC, String myTo, String tags, Account account) {
@@ -112,16 +105,20 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
         String[] toList = new String[toListunConv.size()];
         toList = toListunConv.toArray(toList);
 
+        Log.d("ToLength",String.valueOf(toList.length));
+
 
         try {
 
             if(!(toListunConv.contains(""))){
                 InternetAddress[] toAdress = new InternetAddress[toList.length];
 
-                for(int i = 0; i < ccList.length; i++){
+                for(int i = 0; i < toList.length; i++){
                     toAdress[i] = new InternetAddress(toList[i]);
+                    Log.d("address:", toList[i].toString());
                 }
                 for(int i = 0; i < toAdress.length; i++){
+                    Log.d("addressAdress", toAdress[i].toString());
                     message.addRecipient(Message.RecipientType.TO, toAdress[i]);
                 }
 
@@ -152,7 +149,7 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
 
             }
 
-            message.setFrom(new InternetAddress(myeMail));
+            message.setFrom(new InternetAddress(account.geteMail()));
         //    message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
             message.setSubject(subject);
 
@@ -171,7 +168,7 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
             messageBodyPart.setText(content);
 
             MimeBodyPart tagBodyPart = new MimeBodyPart();
-            tagBodyPart.setText("\n\n----------\nTAGS: " + tagList.toString());
+            tagBodyPart.setText("\n\n\nTAGS: " + tagList.toString());
             tagBodyPart.setContentID("11");
             multiPart.addBodyPart(tagBodyPart);
 
@@ -196,10 +193,12 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
                     messageBodyPart2.setFileName(file.getName());
                     multiPart.addBodyPart(messageBodyPart2);
 
-                    message.setContent(multiPart);
-                    message.saveChanges();
                 }
             }
+
+
+            message.setContent(multiPart);
+            message.saveChanges();
 
             Log.d("VELICINA",String.valueOf(filePath.size()));
 
@@ -216,7 +215,7 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
            // Transport.send(message);
 
             Transport transport = sess.getTransport(MAIL_SERVER);
-            transport.connect(SMTP_HOST_NAME, SMTP_HOST_PORT, myeMail, myPassword);
+            transport.connect(account.getSmtphost() ,Integer.parseInt(account.getSmtpPort()), account.geteMail(), account.getPassword());
             transport.sendMessage(message, message.getAllRecipients());
             transport.close();
 

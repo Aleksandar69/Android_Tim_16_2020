@@ -175,13 +175,12 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
-        String email_id = cursor.getString(0);
+            Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
+            String email_id = cursor.getString(0);
 
-
-        Intent intent = new Intent(this, EmailActivity.class);
-        intent.putExtra(Data.MESS_ID_EXTRA, email_id);
-        startActivity(intent);
+            Intent intent = new Intent(this, EmailActivity.class);
+            intent.putExtra(Data.MESS_ID_EXTRA, email_id);
+            startActivity(intent);
     }
 
 

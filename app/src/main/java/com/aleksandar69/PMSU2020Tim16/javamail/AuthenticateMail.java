@@ -1,6 +1,10 @@
 package com.aleksandar69.PMSU2020Tim16.javamail;
 
+import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
+
+import com.aleksandar69.PMSU2020Tim16.models.Contact;
 
 import java.util.Properties;
 
@@ -9,47 +13,67 @@ import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
 
-public class AuthenticateMail extends AsyncTask<Void, Void, Void> {
+public class AuthenticateMail extends AsyncTask<Void, Void, Boolean> {
 
     String imapHOst;
     String eMail;
     String password;
     Store store;
+    public Boolean isconn;
+    public interface AsyncResponse {
+        void processFinish(Boolean isConnected);
+    }
 
-    public AuthenticateMail(String imapHost, String email, String password) {
+    public AsyncResponse delegate = null;
+
+
+    public AuthenticateMail(String imapHost, String email, String password, AsyncResponse delegate) {
         this.imapHOst = imapHost;
         this.eMail = email;
         this.password = password;
+        this.delegate = delegate;
 
     }
 
     @Override
-    protected Void doInBackground(Void... voids) {
+    protected Boolean doInBackground(Void... voids) {
 
         if (android.os.Debug.isDebuggerConnected())
             android.os.Debug.waitForDebugger();
 
+        Properties props = new Properties();
+        props.setProperty("mail.store.protocol", "imaps");
+        props.setProperty("mail.imap.port", "993");
+        props.setProperty("mail.imap.host", imapHOst);
+        props.setProperty("mail.imap.starttls.enable", "true");
+        props.setProperty("mail.imap.ssl.enable", "true");
+
+        Session emailSession = Session.getDefaultInstance(props);
+        store = null;
         try {
-            Properties props = new Properties();
-            props.setProperty("mail.store.protocol", "imaps");
-            props.setProperty("mail.imap.port", "993");
-            props.setProperty("mail.imap.host", imapHOst);
-            props.setProperty("mail.imap.starttls.enable", "true");
-            props.setProperty("mail.imap.ssl.enable", "true");
-
-            Session emailSession = Session.getDefaultInstance(props);
-            store = null;
-                store = emailSession.getStore("imaps");
+            store = emailSession.getStore("imaps");
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        }
 
 
+        try {
             store.connect(imapHOst, eMail, password);
-
-            Boolean isconn = store.isConnected();
-
-
         } catch (MessagingException e) {
-        e.printStackTrace();
+
+            return false;
+        }
+
+        isconn = store.isConnected();
+
+        Log.d("isconnectedAuthenticate", isconn.toString());
+
+        return true;
+
     }
-        return null;
+
+    @Override
+    protected void onPostExecute(Boolean aBoolean) {
+        delegate.processFinish(aBoolean);
     }
 }

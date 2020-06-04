@@ -25,7 +25,7 @@ import java.util.List;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 120;
+    public static final int DATABASE_VERSION = 131;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //contacts
@@ -211,7 +211,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
-                COLUMN_ACCOUNTS_FK + "=" + userId, null,COLUMN_ID_EMAILS + " ASC");
+                null , null,COLUMN_ID_EMAILS + " ASC");
 
         return cursor;
     }
@@ -221,7 +221,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
-                COLUMN_ACCOUNTS_FK + "=" + userId, null, COLUMN_ID_EMAILS + " DESC");
+                null, null, COLUMN_ID_EMAILS + " DESC");
 
         return cursor;
     }
