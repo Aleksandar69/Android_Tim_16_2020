@@ -37,8 +37,8 @@ public class SendEmail extends AsyncTask<Void, Void, Void> {
 
 
     public SendEmail(String subject, String content, String myCC, String myBCC, String myTo, String tags, Account account) {
-        this.subject = subject;
-        this.content = content;
+        SendEmail.subject = subject;
+        SendEmail.content = content;
         this.myCCList = myCC;
         this.myBCCList = myBCC;
         this.myToList = myTo;

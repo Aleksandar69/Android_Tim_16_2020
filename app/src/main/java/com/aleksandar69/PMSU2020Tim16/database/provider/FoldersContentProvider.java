@@ -11,25 +11,25 @@ import android.text.TextUtils;
 
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 
-import static com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentProvider.MESSAGES;
-import static com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentProvider.MESSAGE_ID;
+public class FoldersContentProvider extends ContentProvider {
 
-public class ContactsContentProvider extends ContentProvider {
-    private static final String AUTHORITY = "com.aleksandar69.PMSU2020Tim16.database.provider.ContactsContentProvider";
-    private static final String CONTACTS_TABLE = "CONTACTS";
-    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + CONTACTS_TABLE);
+    private static final String AUTHORITY = "com.aleksandar69.PMSU2020Tim16.database.provider.FoldersContentProvider";
+    private static final String FOLDERS_TABLE = "FOLDERS";
+    public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + FOLDERS_TABLE);
 
-    public static final int CONTACTS = 1;
-    public static final int CONTACT_ID = 2;
+    public static final int FOLDER = 1;
+    public static final int FOLDER_ID = 2;
 
     private MessagesDBHandler myDB;
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
-        URI_MATCHER.addURI(AUTHORITY, CONTACTS_TABLE, CONTACTS);
-        URI_MATCHER.addURI(AUTHORITY, CONTACTS_TABLE +"/#", CONTACT_ID);
+        URI_MATCHER.addURI(AUTHORITY, FOLDERS_TABLE, FOLDER);
+        URI_MATCHER.addURI(AUTHORITY, FOLDERS_TABLE +"/#", FOLDER_ID);
     }
+
+    public FoldersContentProvider(){}
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
@@ -40,21 +40,21 @@ public class ContactsContentProvider extends ContentProvider {
         int rowsDeleted = 0;
 
         switch (uriType) {
-            case CONTACTS:
-                rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES,
+            case FOLDER:
+                rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_FOLDERS,
                         selection,
                         selectionArgs);
                 break;
 
-            case CONTACT_ID:
+            case FOLDER_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
-                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_CONTACTS ,
-                            MessagesDBHandler.COLUMN_ID_CONTACTS + "=" + id,
+                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_FOLDERS,
+                            MessagesDBHandler.COLUMN_ID_FOLDER + "=" + id,
                             null);
                 } else {
-                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_CONTACTS,
-                            MessagesDBHandler.COLUMN_ID_CONTACTS + "=" + id + " and " + selection,
+                    rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_FOLDERS,
+                            MessagesDBHandler.COLUMN_ID_FOLDER + "=" + id + " and " + selection,
                             selectionArgs);
                 }
                 break;
@@ -65,11 +65,6 @@ public class ContactsContentProvider extends ContentProvider {
         getContext().getContentResolver().notifyChange(uri, null);
         return rowsDeleted;
     }
-
-    public ContactsContentProvider() {
-
-    }
-
 
     @Override
     public String getType(Uri uri) {
@@ -86,17 +81,16 @@ public class ContactsContentProvider extends ContentProvider {
 
         long id = 0;
         switch (uriType) {
-            case CONTACTS:
-                id = sqlDB.insert(MessagesDBHandler.TABLE_CONTACTS,
+            case FOLDER:
+                id = sqlDB.insert(MessagesDBHandler.TABLE_FOLDERS,
                         null, values);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
         getContext().getContentResolver().notifyChange(uri, null);
-        return Uri.parse(CONTACTS_TABLE + "/" + id);
+        return Uri.parse(FOLDERS_TABLE + "/" + id);
     }
-
 
     @Override
     public boolean onCreate() {
@@ -109,16 +103,16 @@ public class ContactsContentProvider extends ContentProvider {
                         String[] selectionArgs, String sortOrder) {
 
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(MessagesDBHandler.TABLE_CONTACTS);
+        queryBuilder.setTables(MessagesDBHandler.TABLE_FOLDERS);
 
         int uriType = URI_MATCHER.match(uri);
 
         switch (uriType) {
-            case CONTACT_ID:
-                queryBuilder.appendWhere(MessagesDBHandler.COLUMN_ID_CONTACTS + "="
+            case FOLDER_ID:
+                queryBuilder.appendWhere(MessagesDBHandler.COLUMN_ID_FOLDER + "="
                         + uri.getLastPathSegment());
                 break;
-            case CONTACTS:
+            case FOLDER:
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI");
@@ -139,25 +133,25 @@ public class ContactsContentProvider extends ContentProvider {
         int rowsUpdated = 0;
 
         switch (uriType) {
-            case CONTACTS:
+            case FOLDER:
                 rowsUpdated =
-                        sqlDB.update(MessagesDBHandler.TABLE_CONTACTS,
+                        sqlDB.update(MessagesDBHandler.TABLE_FOLDERS,
                                 values,
                                 selection,
                                 selectionArgs);
                 break;
-            case CONTACT_ID:
+            case FOLDER_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
                     rowsUpdated =
-                            sqlDB.update(MessagesDBHandler.TABLE_CONTACTS,
+                            sqlDB.update(MessagesDBHandler.TABLE_FOLDERS,
                                     values,
-                                    MessagesDBHandler.COLUMN_ID_CONTACTS + "=" + id,
+                                    MessagesDBHandler.COLUMN_ID_FOLDER + "=" + id,
                                     null);
                 } else {
                     rowsUpdated =
-                            sqlDB.update(MessagesDBHandler.TABLE_CONTACTS, values,
-                                    MessagesDBHandler.COLUMN_ID_CONTACTS + "=" + id +
+                            sqlDB.update(MessagesDBHandler.TABLE_FOLDERS, values,
+                                    MessagesDBHandler.COLUMN_ID_FOLDER + "=" + id +
                                             " and " + selection, selectionArgs);
                 }
                 break;
@@ -167,4 +161,6 @@ public class ContactsContentProvider extends ContentProvider {
         getContext().getContentResolver().notifyChange(uri, null);
         return rowsUpdated;
     }
+
+
 }

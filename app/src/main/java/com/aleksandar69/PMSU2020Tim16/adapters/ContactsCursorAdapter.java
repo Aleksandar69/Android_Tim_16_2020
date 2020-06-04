@@ -23,10 +23,10 @@ public class ContactsCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView columnFirst = (TextView) view.findViewById(R.id.columnFirst);
-        TextView columnLast = (TextView) view.findViewById(R.id.columnLast);
-        TextView columnDisplay = (TextView) view.findViewById(R.id.columnDisplay);
-        TextView columnEmail = (TextView) view.findViewById(R.id.columnEmail);
+        TextView columnFirst = view.findViewById(R.id.columnFirst);
+        TextView columnLast = view.findViewById(R.id.columnLast);
+        TextView columnDisplay = view.findViewById(R.id.columnDisplay);
+        TextView columnEmail = view.findViewById(R.id.columnEmail);
 
         String contactFirstName = cursor.getString(cursor.getColumnIndex("firstname"));
         String contactLastName = cursor.getString(cursor.getColumnIndex("lastname"));

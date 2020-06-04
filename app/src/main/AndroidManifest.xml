@@ -62,6 +62,12 @@
             android:enabled="true"
             android:exported="true" />
 
+        <provider
+            android:name=".database.provider.FoldersContentProvider"
+            android:authorities="com.aleksandar69.PMSU2020Tim16.database.provider.FoldersContentProvider"
+            android:enabled="true"
+            android:exported="true" />
+
         <activity android:name=".activities.LoginActivity" />
         <activity
             android:name=".activities.SettingsActivity"

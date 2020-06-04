@@ -58,8 +58,8 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
     Account account;
 
     public SendMultipartEmail(Context context, String subject, String content, List<String> filePath, String myCC, String myBCC, String myTo, String tags, Account account) {
-        this.subject = subject;
-        this.content = content;
+        SendMultipartEmail.subject = subject;
+        SendMultipartEmail.content = content;
         this.filePath = filePath;
         mContext = context;
         this.myCCList = myCC;
@@ -251,11 +251,7 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
 
     private boolean checkPermission() {
         int result = ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE);
-        if (result == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        } else {
-            return false;
-        }
+        return result == PackageManager.PERMISSION_GRANTED;
     }
 
 
