@@ -28,7 +28,6 @@ public class CreateContactActivity extends AppCompatActivity {
     private TextInputEditText emailEdit;
     MessagesDBHandler handler;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_contact);
@@ -45,10 +44,7 @@ public class CreateContactActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("Create Contact");
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_create_contact, menu);
@@ -64,14 +60,6 @@ public class CreateContactActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             case R.id.save_new_contact:
-                /*
-                Contact contact = new Contact(firstNameEdit.getText().toString(),lastNameEdit.getText().toString(),displayNameEdit.getText().toString(),
-                emailEdit.getText().toString());
-                handler.addContacts(contact);
-                startActivity(new Intent(this, ContactsActivity.class));
-
-                 */
-
                 Contact contact = new Contact();
                 contact.setFirst(firstNameEdit.getText().toString());
                 contact.setLast(lastNameEdit.getText().toString());
@@ -79,8 +67,6 @@ public class CreateContactActivity extends AppCompatActivity {
                 contact.setEmail(emailEdit.getText().toString());
                 handler.addContacts(contact);
                 startActivity(new Intent(this,ContactsActivity.class));
-
-
             default:
                 return super.onOptionsItemSelected(item);
         }

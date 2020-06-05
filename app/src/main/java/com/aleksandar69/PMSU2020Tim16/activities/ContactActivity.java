@@ -1,6 +1,7 @@
 package com.aleksandar69.PMSU2020Tim16.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -15,18 +16,27 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.R;
+import com.aleksandar69.PMSU2020Tim16.adapters.RecyclerViewContactsAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
+import com.aleksandar69.PMSU2020Tim16.models.Contact;
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.w3c.dom.Text;
 
 public class ContactActivity extends AppCompatActivity {
 
     public static final String CONTACT_NUMBER = "contactNo";
+    MessagesDBHandler handler;
+    private TextInputEditText firstNameEditt;
+    private TextInputEditText lastNameEditt;
+    private TextInputEditText displayNameEditt;
+    private TextInputEditText emailEditt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,25 +53,25 @@ public class ContactActivity extends AppCompatActivity {
         //ImageView photoI = findViewById(R.id.slicica);
         //photoI.setId(photoID);
 
-        TextView firstT = findViewById(R.id.tv_ime);
-        firstT.setText(first);
+        firstNameEditt = findViewById(R.id.new_contact_firstnamee);
+        firstNameEditt.setText(first);
 
-        TextView lastT = findViewById(R.id.tv_prezime);
-        lastT.setText(last);
+        lastNameEditt = findViewById(R.id.new_contact_lastnamee);
+        lastNameEditt.setText(last);
 
-        TextView displayT = findViewById(R.id.tv_display);
-        displayT.setText(display);
+        displayNameEditt = findViewById(R.id.new_contact_displaynamee);
+        displayNameEditt.setText(display);
 
-        TextView emailT = findViewById(R.id.tv_email);
-        emailT.setText(email);
+        emailEditt = findViewById(R.id.new_contact_displaynamee);
+        emailEditt.setText(email);
 
+        handler = new MessagesDBHandler(this);
 
         //iz dokumentacije
         //String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
         // Capture the layout's TextView and set the string as its text
         //TextView textView = findViewById(R.id.textView);
         //textView.setText(message);
-
 
         /*
         Intent intent = getIntent();
@@ -154,8 +164,55 @@ public class ContactActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        /*
+        RecyclerViewContactsAdapter adapter = new RecyclerViewContactsAdapter();
+        boolean isUpdated = handler.updateContact2(firstNameEditt.getText().toString(), lastNameEditt.getText().toString(),
+                displayNameEditt.getText().toString(), emailEditt.getText().toString());
+        if (isUpdated == true) {
+            Toast.makeText(ContactActivity.this, "Data updated", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, ContactsActivity.class));
+            adapter.notifyDataSetChanged();
+        } else {
+            Toast.makeText(ContactActivity.this, "Data is not updated", Toast.LENGTH_LONG).show();
+        }
+        return isUpdated;
+
+         */
+        RecyclerViewContactsAdapter adapter = new RecyclerViewContactsAdapter();
+        Contact contact = new Contact();
+        contact.setFirst(firstNameEditt.getText().toString());
+        contact.setLast(lastNameEditt.getText().toString());
+        contact.setDisplay(displayNameEditt.getText().toString());
+        contact.setEmail(emailEditt.getText().toString());
+        handler.updateContact(contact);
+        Toast.makeText(this,"Contact is updated",Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this,ContactsActivity.class));
+
+        adapter.notifyDataSetChanged();
+        return true;
     }
+
+
+
+      /*
+       switch(item.getItemId()) {
+        case R.id.cancel_contact_creation:
+            Intent intent = new Intent(this,ContactsActivity.class);
+            Toast.makeText(this,"Contact creation canceled", Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+            return true;
+        case R.id.save_new_contact:
+            Contact contact = new Contact();
+            contact.setFirst(firstNameEdit.getText().toString());
+            contact.setLast(lastNameEdit.getText().toString());
+            contact.setDisplay(displayNameEdit.getText().toString());
+            contact.setEmail(emailEdit.getText().toString());
+            handler.addContacts(contact);
+            startActivity(new Intent(this,ContactsActivity.class));
+              default:
+                return super.onOptionsItemSelected(item);
+*/
+
 
     @Override
     protected void onStart() {

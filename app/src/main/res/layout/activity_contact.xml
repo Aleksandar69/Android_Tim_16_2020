@@ -12,32 +12,85 @@
         android:id="@+id/toolbar_contact"
         layout="@layout/toolbar_layout"/>
 
+    <!--
     <ImageView
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:id="@+id/slicica"/>
 
-    <TextView
+    <EditText
         android:id="@+id/tv_ime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
       />
 
-    <TextView
+    <EditText
         android:id="@+id/tv_prezime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
        />
-    <TextView
+    <EditText
         android:id="@+id/tv_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 />
-    <TextView
+    <EditText
         android:id="@+id/tv_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
      />
+-->
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/new_contact_firstnamee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_first_name"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/new_contact_lastnamee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_last_name"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/new_contact_displaynamee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_display_name"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/new_contact_emaill"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_email"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 
 </LinearLayout>

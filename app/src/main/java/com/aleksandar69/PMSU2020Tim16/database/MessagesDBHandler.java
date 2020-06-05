@@ -30,7 +30,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 200;
+    public static final int DATABASE_VERSION = 240;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -647,21 +647,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     /////////////////////////// CONTACTS /////////////////////////////////
 
-    public void addContacts(Contact contact) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contactsValues = new ContentValues();
-       // contactsValues.put(COLUMN_ID_CONTACTS, contact.get_id());
-        contactsValues.put(COLUMN_FIRST, contact.getFirst());
-        contactsValues.put(COLUMN_LAST, contact.getLast());
-        contactsValues.put(COLUMN_DISPLAY, contact.getDisplay());
-        contactsValues.put(COLUMN_CONTACT_EMAIL, contact.getEmail());
-        contactsValues.put(COLUMN_IMAGE_RESOURCE, contact.getImageSourceID());
 
-        db.insert(TABLE_CONTACTS, null, contactsValues);
-        Log.d("Elena", "Kontakt je uspjesno dodan");
-        //  myContentResolver.insert(ContactsContentProvider.CONTENT_URI,contactsValues);
-        db.close();
-    }
 
     public void addContacts1(Contact contact) {
         //if(CheckFolderInDB(folder.getName()) == false) {
@@ -769,6 +755,78 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         return cursor;
     }
 
+
+
+    //filtriranje kroz kontakte
+    public Cursor filterContacts(String term) {
+        String[] projection = {COLUMN_ID_CONTACTS, COLUMN_FIRST, COLUMN_LAST, COLUMN_DISPLAY, COLUMN_CONTACT_EMAIL, COLUMN_IMAGE_RESOURCE};
+        String selection = COLUMN_FIRST + " LIKE ? OR " + COLUMN_LAST + " LIKE ?";
+        String[] selectionArgs = {"%" + term + "%", "%" + term + "%"};
+        Cursor cursor = myContentResolver.query(ContactsContentProvider.CONTENT_URI, projection, selection, selectionArgs, null);
+
+        return cursor;
+
+
+    }
+//==================ANDROID TUTORIJAL=============
+
+    public void addContacts(Contact contact) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contactsValues = new ContentValues();
+        //contactsValues.put(COLUMN_ID_CONTACTS, contact.get_id());
+        contactsValues.put(COLUMN_FIRST, contact.getFirst());
+        contactsValues.put(COLUMN_LAST, contact.getLast());
+        contactsValues.put(COLUMN_DISPLAY, contact.getDisplay());
+        contactsValues.put(COLUMN_CONTACT_EMAIL, contact.getEmail());
+        contactsValues.put(COLUMN_IMAGE_RESOURCE, contact.getImageSourceID());
+        db.insert(TABLE_CONTACTS, null, contactsValues);
+        Log.d("Elena", "Contact is inserted");
+        //  myContentResolver.insert(ContactsContentProvider.CONTENT_URI,contactsValues);
+        db.close();
+    }
+
+    public int updateContact(Contact contact) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contactValues = new ContentValues();
+        contactValues.put(COLUMN_ID_CONTACTS,contact.get_id()); //OVO ZADNJE DODALA
+        contactValues.put(COLUMN_FIRST, contact.getFirst());
+        contactValues.put(COLUMN_LAST, contact.getLast());
+        contactValues.put(COLUMN_DISPLAY, contact.getDisplay());
+        contactValues.put(COLUMN_CONTACT_EMAIL, contact.getEmail());
+        contactValues.put(COLUMN_IMAGE_RESOURCE, contact.getImageSourceID());
+        return db.update(TABLE_CONTACTS, contactValues,   "_id = ? ",
+                new String[]{String.valueOf(contact.get_id())});
+
+    }
+
+    //SA ID-IJEM, bez image resource-a
+    public boolean updateContact2(String first, String last, String display,String email) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contactValues = new ContentValues();
+        //contactValues.put(COLUMN_ID_CONTACTS,id); //OVO ZADNJE DODALA
+        contactValues.put(COLUMN_FIRST, first);
+        contactValues.put(COLUMN_LAST, last);
+        contactValues.put(COLUMN_DISPLAY, display);
+        contactValues.put(COLUMN_CONTACT_EMAIL, email);
+        //contactValues.put(COLUMN_IMAGE_RESOURCE, contact.getImageSourceID());
+        db.update(TABLE_CONTACTS,contactValues, "firstname = ? ", new String[]{ first });
+        getAllContactsList();
+        return true;
+    }
+
+    public void deleteContactByID(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_CONTACTS, COLUMN_ID_CONTACTS + "=?", new String[]{String.valueOf(id)});
+        db.close();
+    }
+
+    public int getCount() {
+        String query = "SELECT * FROM " + TABLE_CONTACTS;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query,null);
+        return cursor.getCount();
+    }
+
     //metoda za dobavljanje svih kontakata preko liste
     public List<Contact> getAllContactsList() {
         List<Contact> contactList = new ArrayList<>();
@@ -786,48 +844,10 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
                 contact.setLast(cursor.getString(2));
                 contact.setDisplay(cursor.getString(3));
                 contact.setEmail(cursor.getString(4));
- //               contact.setImageSourceID(Integer.parseInt(cursor.getString(5))); //zato sto baca NumberFormatException, zakomentarisala sam i u ContactsActivity
+                //               contact.setImageSourceID(Integer.parseInt(cursor.getString(5))); //zato sto baca NumberFormatException, zakomentarisala sam i u ContactsActivity
                 contactList.add(contact);
             } while (cursor.moveToNext());
         }
         return contactList;
-    }
-
-    //filtriranje kroz kontakte
-    public Cursor filterContacts(String term) {
-        String[] projection = {COLUMN_ID_CONTACTS, COLUMN_FIRST, COLUMN_LAST, COLUMN_DISPLAY, COLUMN_CONTACT_EMAIL, COLUMN_IMAGE_RESOURCE};
-        String selection = COLUMN_FIRST + " LIKE ? OR " + COLUMN_LAST + " LIKE ?";
-        String[] selectionArgs = {"%" + term + "%", "%" + term + "%"};
-        Cursor cursor = myContentResolver.query(ContactsContentProvider.CONTENT_URI, projection, selection, selectionArgs, null);
-
-        return cursor;
-
-
-    }
-//==================ANDROID TUTORIJAL=============
-    public int updateContact(Contact contact) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contactValues = new ContentValues();
-        contactValues.put(COLUMN_FIRST, contact.getFirst());
-        contactValues.put(COLUMN_LAST, contact.getLast());
-        contactValues.put(COLUMN_DISPLAY, contact.getDisplay());
-        contactValues.put(COLUMN_EMAIL, contact.getEmail());
-        contactValues.put(COLUMN_IMAGE_RESOURCE, contact.getImageSourceID());
-
-        return db.update(TABLE_CONTACTS, contactValues, COLUMN_ID_CONTACTS + " =? ",
-                new String[]{String.valueOf(contact.get_id())});
-    }
-
-    public void deleteContactByID(int id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_CONTACTS, COLUMN_ID_CONTACTS + "=?", new String[]{String.valueOf(id)});
-        db.close();
-    }
-
-    public int getCount() {
-        String query = "SELECT * FROM " + TABLE_CONTACTS;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query,null);
-        return cursor.getCount();
     }
 }

@@ -16,6 +16,7 @@ import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.activities.ContactActivity;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecyclerViewContactsAdapter extends RecyclerView.Adapter<RecyclerViewContactsAdapter.ViewHolder> {
@@ -26,6 +27,42 @@ public class RecyclerViewContactsAdapter extends RecyclerView.Adapter<RecyclerVi
     public RecyclerViewContactsAdapter(Context context, List<Contact> contactList) {
         this.context = context;
         this.contactList = contactList;
+    }
+
+    public RecyclerViewContactsAdapter() {
+
+    }
+
+    //stack overflow
+    /*
+    public RecyclerViewAdapter(Context context, List<Model> model) {
+    this.context = context;
+    this.model = model;
+}
+
+Then in onActivityResult do like this:
+
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == 4) {
+        listModel.clear();
+        listModel.addAll(repository.consDataBase(context));
+        recyclerViewAdapter.notifyDataSetChanged();
+    }
+}
+
+     */
+
+    public void notify(List<Contact> contactL) {
+        if (contactList != null) {
+            contactList.clear();
+            contactList.addAll(contactL);
+
+        } else {
+            contactList = contactL;
+        }
+        notifyDataSetChanged();
     }
 
     @NonNull
