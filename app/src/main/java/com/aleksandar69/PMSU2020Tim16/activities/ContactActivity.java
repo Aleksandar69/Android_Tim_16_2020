@@ -1,24 +1,14 @@
 package com.aleksandar69.PMSU2020Tim16.activities;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.R;
@@ -27,22 +17,46 @@ import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
 import com.google.android.material.textfield.TextInputEditText;
 
-import org.w3c.dom.Text;
+import java.util.List;
 
 public class ContactActivity extends AppCompatActivity {
 
+    /*
     public static final String CONTACT_NUMBER = "contactNo";
+    List<String> contact;
+    RecyclerViewContactsAdapter adapter;
     MessagesDBHandler handler;
+     */
+
     private TextInputEditText firstNameEditt;
     private TextInputEditText lastNameEditt;
     private TextInputEditText displayNameEditt;
     private TextInputEditText emailEditt;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
 
+        firstNameEditt = (TextInputEditText) findViewById(R.id.new_contact_firstnamee);
+        lastNameEditt = (TextInputEditText) findViewById(R.id.new_contact_lastnamee);
+        displayNameEditt = (TextInputEditText) findViewById(R.id.new_contact_displaynamee);
+        emailEditt = (TextInputEditText) findViewById(R.id.new_contact_emaill);
+
+        Intent intent = getIntent();
+        String first = intent.getStringExtra("efirst");
+        String last = intent.getStringExtra("elast");
+        String display = intent.getStringExtra("edisplay");
+        String email = intent.getStringExtra("eemail");
+
+        firstNameEditt.setText(String.valueOf(first));
+        lastNameEditt.setText(String.valueOf(last));
+        displayNameEditt.setText(String.valueOf(display));
+        emailEditt.setText(String.valueOf(email));
+
+        MessagesDBHandler handler = new MessagesDBHandler(this);
+        /*
         Intent intent = getIntent();
         String first = intent.getStringExtra("RFirst");
         String last = intent.getStringExtra("RLast");
@@ -136,7 +150,6 @@ public class ContactActivity extends AppCompatActivity {
         }
         /*
 
-/*
 
 
         TextView first = (TextView) findViewById(R.id.tv_ime);
@@ -164,55 +177,24 @@ public class ContactActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        /*
-        RecyclerViewContactsAdapter adapter = new RecyclerViewContactsAdapter();
-        boolean isUpdated = handler.updateContact2(firstNameEditt.getText().toString(), lastNameEditt.getText().toString(),
-                displayNameEditt.getText().toString(), emailEditt.getText().toString());
-        if (isUpdated == true) {
-            Toast.makeText(ContactActivity.this, "Data updated", Toast.LENGTH_LONG).show();
-            startActivity(new Intent(this, ContactsActivity.class));
-            adapter.notifyDataSetChanged();
-        } else {
-            Toast.makeText(ContactActivity.this, "Data is not updated", Toast.LENGTH_LONG).show();
-        }
-        return isUpdated;
-
-         */
-        RecyclerViewContactsAdapter adapter = new RecyclerViewContactsAdapter();
-        Contact contact = new Contact();
-        contact.setFirst(firstNameEditt.getText().toString());
-        contact.setLast(lastNameEditt.getText().toString());
-        contact.setDisplay(displayNameEditt.getText().toString());
-        contact.setEmail(emailEditt.getText().toString());
-        handler.updateContact(contact);
-        Toast.makeText(this,"Contact is updated",Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(this,ContactsActivity.class));
-
-        adapter.notifyDataSetChanged();
-        return true;
-    }
-
-
-
-      /*
-       switch(item.getItemId()) {
-        case R.id.cancel_contact_creation:
-            Intent intent = new Intent(this,ContactsActivity.class);
-            Toast.makeText(this,"Contact creation canceled", Toast.LENGTH_SHORT).show();
-            startActivity(intent);
-            return true;
-        case R.id.save_new_contact:
+        try {
+            /*
             Contact contact = new Contact();
-            contact.setFirst(firstNameEdit.getText().toString());
-            contact.setLast(lastNameEdit.getText().toString());
-            contact.setDisplay(displayNameEdit.getText().toString());
-            contact.setEmail(emailEdit.getText().toString());
-            handler.addContacts(contact);
+            contact.setFirst(firstNameEditt.getText().toString());
+            contact.setLast(lastNameEditt.getText().toString());
+            contact.setDisplay(displayNameEditt.getText().toString());
+            contact.setEmail(emailEditt.getText().toString());
+            handler.updateContact(contact);
+            adapter.notifyDataSetChanged();
+            Toast.makeText(this,"Contact is updated",Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this,ContactsActivity.class));
-              default:
-                return super.onOptionsItemSelected(item);
-*/
 
+             */
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     @Override
     protected void onStart() {
@@ -222,6 +204,7 @@ public class ContactActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        //adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -235,7 +218,6 @@ public class ContactActivity extends AppCompatActivity {
         //InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 
         //inputMethodManager.hideSoftInputFromWindow(myEditText.getWindowToken(), 0);
-
         super.onPause();
     }
 

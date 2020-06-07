@@ -3,10 +3,12 @@ package com.aleksandar69.PMSU2020Tim16.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
@@ -36,45 +38,67 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContactsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,ListView.OnItemClickListener {
-    private RecyclerView recyclerView;
-    private RecyclerViewContactsAdapter recyclerViewContactsAdapter;
-    private ArrayList<Contact> contactArrayList;
-    private ArrayAdapter<String> arrayAdapter;
+
+    Context context;
+    private ListView contactsList;
+    private List<Contact> contacts;
+    private MessagesDBHandler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
+        context = this;
+        handler = new MessagesDBHandler(context);
+
+        contactsList = (ListView) findViewById(R.id.recycler_v);
+
+        contacts = new ArrayList<>();
+        contacts = handler.getListOfAllContacts();
+
+        String[] firstNamesArray = new String[contacts.size()];
+        String[] lastNamesArray = new String[contacts.size()];
+
+        for(int i = 0; i<contacts.size();i++){
+            firstNamesArray[i]=contacts.get(i).getFirst();
+            lastNamesArray[i]=contacts.get(i).getLast();
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1 ,firstNamesArray);
+        contactsList.setAdapter(adapter);
+
+        contactsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //contact.setFirst(contact.getFirst());
+                //contact.setLast(contact.getLast());
+                //contact.setDisplay(contact.getDisplay());
+                //contact.setEmail(contact.getEmail());
+
+
+                Contact contact = contacts.get(position);
+                Intent intent = new Intent(ContactsActivity.this,ContactActivity.class);
+                intent.putExtra("efirst", contact.getFirst());
+                intent.putExtra("elast",contact.getLast());
+                intent.putExtra("edisplay",contact.getDisplay());
+                intent.putExtra("eemail",contact.getEmail());
+                startActivity(intent);
+
+
+                //startActivity(new Intent(context,ContactActivity.class));
+                //AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                //builder.setTitle(contact.getFirst()).setMessage(contact.getLast() + " \n"
+                //        + contact.getDisplay()
+                //        + " \n" + contact.getEmail()).show();
+            }
+        });
+
+
+        /*
         //inicijalizacija recycler-a
         recyclerView = findViewById(R.id.recycler_v);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        MessagesDBHandler handler = new MessagesDBHandler(ContactsActivity.this);
-
-        /*
-          //dodavanje kontakta u DB
-            Contact elena = new Contact();
-            //elena.set_id(1);
-            elena.setFirst("Elena");
-            elena.setLast("Krunic");
-            elena.setDisplay("Elena krunic");
-            elena.setEmail("elenakrunic@gmail.com");
-            elena.setImageSourceID(1);
-            handler.addContacts(elena);
-
-            Contact pera = new Contact();
-           // pera.set_id(2);
-            pera.setFirst("Pera");
-            pera.setLast("Krunic");
-            pera.setDisplay("Pera krunic");
-            pera.setEmail("perakrunic@gmail.com");
-            pera.setImageSourceID(2);
-            handler.addContacts(pera);
-
-
-         */
 
         /*
         contactArrayList = new ArrayList<>();
@@ -91,18 +115,16 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
                 contactArrayList.add(contact);
             }
 
-
-         */
             //recyclerViewContactsAdapter = new RecyclerViewContactsAdapter(ContactsActivity.this, contactArrayList);
             //recyclerView.setAdapter(recyclerViewContactsAdapter);
 
             List<Contact> contactList = handler.getAllContactsList();
             recyclerViewContactsAdapter = new RecyclerViewContactsAdapter(this,contactList);
             recyclerView.setAdapter(recyclerViewContactsAdapter);
+            recyclerViewContactsAdapter.notifyDataSetChanged();
 
             Log.d("Elena", "U bazi imate "+ handler.getCount() + " kontakata");
-
-        //sve vezano za toolbar
+            */
 
         Toolbar toolbar = findViewById(R.id.contacts_toolbar);
         setSupportActionBar(toolbar);
@@ -218,6 +240,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
     @Override
     protected void onResume() {
         super.onResume();
+       // recyclerViewContactsAdapter.notifyDataSetChanged();
     }
 
     @Override

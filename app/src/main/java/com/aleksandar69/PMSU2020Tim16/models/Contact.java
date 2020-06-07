@@ -78,6 +78,16 @@ public class Contact {
         this.imageSourceID = imageSourceID;
     }
 
+    public Contact(int id, String first, String last, String display, String email) {
+        this._id = id;
+        this.first = first;
+        this.last = last;
+        this.display = display;
+        this.email = email;
+       // this.imageSourceID = imageSourceID;
+    }
+
+
     public Contact(String first, String last, String display, String email) {
         this.first = first;
         this.last = last;

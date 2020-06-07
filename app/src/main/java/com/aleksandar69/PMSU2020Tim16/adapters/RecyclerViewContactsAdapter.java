@@ -29,6 +29,10 @@ public class RecyclerViewContactsAdapter extends RecyclerView.Adapter<RecyclerVi
         this.contactList = contactList;
     }
 
+    public void refreshBlockOverlay(int position) {
+        notifyItemChanged(position);
+    }
+
     public RecyclerViewContactsAdapter() {
 
     }
@@ -54,16 +58,6 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
      */
 
-    public void notify(List<Contact> contactL) {
-        if (contactList != null) {
-            contactList.clear();
-            contactList.addAll(contactL);
-
-        } else {
-            contactList = contactL;
-        }
-        notifyDataSetChanged();
-    }
 
     @NonNull
     @Override
@@ -94,8 +88,8 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
             super(itemView);
             itemView.setOnClickListener(this);
 
-            contactName = itemView.findViewById(R.id.Contact_name);
-            iconButton = itemView.findViewById(R.id.imageViewButton);
+          //  contactName = itemView.findViewById(R.id.Contact_name);
+           // iconButton = itemView.findViewById(R.id.imageViewButton);
 
             iconButton.setOnClickListener(this);
         }
@@ -127,3 +121,4 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         }
     }
 }
+
