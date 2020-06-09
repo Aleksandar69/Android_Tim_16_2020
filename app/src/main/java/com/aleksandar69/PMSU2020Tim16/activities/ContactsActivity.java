@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.R;
+import com.aleksandar69.PMSU2020Tim16.adapters.ContactsCursorAdapter;
 import com.aleksandar69.PMSU2020Tim16.adapters.RecyclerViewContactsAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
@@ -43,88 +44,42 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
     private ListView contactsList;
     private List<Contact> contacts;
     private MessagesDBHandler handler;
+    public static ArrayAdapter<String> adapter;
+    ContactsCursorAdapter cursorAdapter;
+    private ArrayList data = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
+       // ContactsCursorAdapter adapter = new ContactsCursorAdapter(this, (Cursor) cursorAdapter);
+
+        contactsList = (ListView) findViewById(R.id.recycler_v);
+        contactsList.setAdapter(adapter);
 
         context = this;
         handler = new MessagesDBHandler(context);
-
-        contactsList = (ListView) findViewById(R.id.recycler_v);
-
         contacts = new ArrayList<>();
         contacts = handler.getListOfAllContacts();
-
-        String[] firstNamesArray = new String[contacts.size()];
-        String[] lastNamesArray = new String[contacts.size()];
+        final String[] firstNamesArray = new String[contacts.size()];
 
         for(int i = 0; i<contacts.size();i++){
             firstNamesArray[i]=contacts.get(i).getFirst();
-            lastNamesArray[i]=contacts.get(i).getLast();
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1 ,firstNamesArray);
+        adapter = new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1 ,firstNamesArray);
         contactsList.setAdapter(adapter);
-
         contactsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //contact.setFirst(contact.getFirst());
-                //contact.setLast(contact.getLast());
-                //contact.setDisplay(contact.getDisplay());
-                //contact.setEmail(contact.getEmail());
-
-
-                Contact contact = contacts.get(position);
+            public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+                final Contact contact = contacts.get(position);
                 Intent intent = new Intent(ContactsActivity.this,ContactActivity.class);
                 intent.putExtra("efirst", contact.getFirst());
                 intent.putExtra("elast",contact.getLast());
                 intent.putExtra("edisplay",contact.getDisplay());
                 intent.putExtra("eemail",contact.getEmail());
                 startActivity(intent);
-
-
-                //startActivity(new Intent(context,ContactActivity.class));
-                //AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                //builder.setTitle(contact.getFirst()).setMessage(contact.getLast() + " \n"
-                //        + contact.getDisplay()
-                //        + " \n" + contact.getEmail()).show();
             }
         });
-
-
-        /*
-        //inicijalizacija recycler-a
-        recyclerView = findViewById(R.id.recycler_v);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        /*
-        contactArrayList = new ArrayList<>();
-
-            List<Contact> contactList = handler.getAllContactsList();
-            for(Contact contact : contactList) {
-                Log.d("Elena", "ID" + contact.get_id() + "\n" +
-                        "First name " + contact.getFirst() + "\n"
-                + "Last name" + contact.getLast() + "\n"
-                + "Display name " + contact.getDisplay() + "\n"
-                + "Email " + contact.getEmail() + "\n"
-                );
-
-                contactArrayList.add(contact);
-            }
-
-            //recyclerViewContactsAdapter = new RecyclerViewContactsAdapter(ContactsActivity.this, contactArrayList);
-            //recyclerView.setAdapter(recyclerViewContactsAdapter);
-
-            List<Contact> contactList = handler.getAllContactsList();
-            recyclerViewContactsAdapter = new RecyclerViewContactsAdapter(this,contactList);
-            recyclerView.setAdapter(recyclerViewContactsAdapter);
-            recyclerViewContactsAdapter.notifyDataSetChanged();
-
-            Log.d("Elena", "U bazi imate "+ handler.getCount() + " kontakata");
-            */
 
         Toolbar toolbar = findViewById(R.id.contacts_toolbar);
         setSupportActionBar(toolbar);
@@ -139,40 +94,17 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.nav_contacts);
         navigationView.setNavigationItemSelectedListener(this);
-
     }
 
-    /*
-    public void populateList() {
-        cursor = handler.getAllContacts();
-        ContactsCursorAdapter contactsAdapter = new ContactsCursorAdapter(this,cursor);
-        contacts.setOnItemClickListener(this);
-        contacts.setAdapter(contactsAdapter);
-
-    }
-*/
     public void onProfileClicked(View view) {
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-  //      populateList();
         getMenuInflater().inflate(R.menu.menu_contacts, menu);
-
-       //ImageView closeButton = (ImageView) searchView.findViewById(R.id.search_close_btn);
-
-        //closeButton.setOnClickListener(new View.OnClickListener() {
-
-          //  @Override
-            //public void onClick(View v) {
-              //  populateList();
-                //EditText editText = (EditText) findViewById(R.id.search_src_text);
-                //editText.setText("");
-            //}
-        //});
-
         return true;
     }
 
@@ -186,6 +118,12 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public static void updateList() {
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -240,7 +178,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
     @Override
     protected void onResume() {
         super.onResume();
-       // recyclerViewContactsAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
     }
 
     @Override

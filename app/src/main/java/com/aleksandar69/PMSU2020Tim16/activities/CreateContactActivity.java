@@ -70,6 +70,9 @@ public class CreateContactActivity extends AppCompatActivity {
                 String display = displayNameEdit.getText().toString();
                 String email = emailEdit.getText().toString();
 
+               // ContactsActivity.adapter.add(first);
+               // ContactsActivity.adapter.notifyDataSetChanged();
+
                 if(!TextUtils.isEmpty(first) || !TextUtils.isEmpty(last) || !TextUtils.isEmpty(display) || !TextUtils.isEmpty(email)){
                     Contact contact = new Contact(first,last,display,email);
                     handler.addContact(contact);
@@ -77,7 +80,7 @@ public class CreateContactActivity extends AppCompatActivity {
 
                 } else{
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setMessage("Please fill all the fields! ").setNegativeButton("OK",null).show();
+                    builder.setMessage("Please fill at least one field! ").setNegativeButton("OK",null).show();
                 }
                 /*
                 Contact contact = new Contact();

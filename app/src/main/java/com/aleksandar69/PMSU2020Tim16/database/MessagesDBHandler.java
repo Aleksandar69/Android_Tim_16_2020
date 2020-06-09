@@ -30,7 +30,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 286;
+    public static final int DATABASE_VERSION = 364;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -757,9 +757,49 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         Cursor cursor = myContentResolver.query(ContactsContentProvider.CONTENT_URI, projection, selection, selectionArgs, null);
 
         return cursor;
+    }
 
+
+    //update pomocu cursor-a
+//sa stack overflow-a
+/*
+    public void updateDetails(Details details){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        //Take new values from the details object provided
+        values.put(COLUMN_FIRSTNAME, details.getFirstname());
+        values.put(COLUMN_SURNAME, details.getSurname());
+        values.put(COLUMN_PHONE, details.getPhone());
+        values.put(COLUMN_EMAIL, details.getEmail());
+        values.put(COLUMN_ADDRESS1, details.getAddress1());
+        values.put(COLUMN_ADDRESS2, details.getAddress2());
+
+        //Update the details object where id matches
+        db.update(TABLE_DETAILS, values, COLUMN_ID + "='" + details._id + "'", null);
+
+        db.close();
 
     }
+
+ */
+    public void updateContact333(Contact contact) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ID_CONTACTS,contact.get_id());
+        values.put(COLUMN_FIRST, contact.getFirst());
+        values.put(COLUMN_LAST, contact.getLast());
+        values.put(COLUMN_DISPLAY, contact.getDisplay());
+        values.put(COLUMN_CONTACT_EMAIL, contact.getEmail());
+        db.update(TABLE_CONTACTS, values, COLUMN_ID_CONTACTS + "='" + contact.get_id() + "'", null);
+        db.close();
+    }
+
+
+
+
 //==================ANDROID TUTORIJAL=============
     //------------------RECYCLER VIEW-------------
 
@@ -793,7 +833,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     }
 
     //SA ID-IJEM, bez image resource-a
-    public boolean updateContact2(String first, String last, String display,String email) {
+    public boolean updateContact22(String first, String last, String display,String email) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contactValues = new ContentValues();
         //contactValues.put(COLUMN_ID_CONTACTS,id); //OVO ZADNJE DODALA
@@ -821,7 +861,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     }
 
     //metoda za dobavljanje svih kontakata preko liste
-    public List<Contact> getAllContactsList() {
+    public List getAllContactsList() {
         List<Contact> contactList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 

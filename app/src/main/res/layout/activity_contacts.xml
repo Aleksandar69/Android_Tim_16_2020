@@ -12,16 +12,17 @@
         android:id="@+id/contacts_toolbar"
         layout="@layout/toolbar_layout"/>
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recycler_v"/>
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/drawer_layout">
 
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recycler_v"/>
 
         <!--
         <androidx.recyclerview.widget.RecyclerView
