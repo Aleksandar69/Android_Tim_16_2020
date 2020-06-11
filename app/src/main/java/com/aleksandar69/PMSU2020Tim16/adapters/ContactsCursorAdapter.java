@@ -17,7 +17,7 @@ public class ContactsCursorAdapter extends CursorAdapter {
     }
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(R.layout.activity_contacts,parent,false);
+        return LayoutInflater.from(context).inflate(R.layout.row,parent,false);
 
     }
 
@@ -27,6 +27,7 @@ public class ContactsCursorAdapter extends CursorAdapter {
         TextView columnLast = view.findViewById(R.id.columnLast);
         TextView columnDisplay = view.findViewById(R.id.columnDisplay);
         TextView columnEmail = view.findViewById(R.id.columnEmail);
+
 
         String contactFirstName = cursor.getString(cursor.getColumnIndex("firstname"));
         String contactLastName = cursor.getString(cursor.getColumnIndex("lastname"));

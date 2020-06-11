@@ -32,7 +32,7 @@ public class ContactActivity extends AppCompatActivity {
     RecyclerViewContactsAdapter adapter;
     MessagesDBHandler handler;
      */
-
+    public static Contact contact1 = new Contact();
     private ArrayAdapter arrayAdapter;
     private List contactsList = new ArrayList<>();
     private TextInputEditText firstNameEditt;
@@ -62,13 +62,14 @@ public class ContactActivity extends AppCompatActivity {
         displayNameEditt.setText(String.valueOf(display));
         emailEditt.setText(String.valueOf(email));
 
+
         List<Contact> list = handler.getAllContactsList();
-        for (Contact contact1 : list) {
-            Log.d("Elena", "\n" + "Id kontakta sa ContactsActivity je: " + contact1.get_id() + "\n" +
-                    "First name kontakta sa ContactsActivity je: " + contact1.getFirst() + "\n" +
-                    "Last name kontakta sa ContactsActivity je: " + contact1.getLast() + "\n" +
-                    "Display name kontaktasa ContactsActivity je: " + contact1.getDisplay() + "\n" +
-                    "Email kontakta sa ContactsActivity je: " + contact1.getEmail() + "\n");
+        for (Contact contact: list) {
+            Log.d("Elena", "\n" + "Id kontakta sa ContactsActivity je: " + contact.get_id() + "\n" +
+                    "First name kontakta sa ContactsActivity je: " + contact.getFirst() + "\n" +
+                    "Last name kontakta sa ContactsActivity je: " + contact.getLast() + "\n" +
+                    "Display name kontaktasa ContactsActivity je: " + contact.getDisplay() + "\n" +
+                    "Email kontakta sa ContactsActivity je: " + contact.getEmail() + "\n");
         }
 
         Toolbar toolbar = findViewById(R.id.toolbar_contact);
@@ -88,6 +89,7 @@ public class ContactActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_contact:
+                startActivity(new Intent(this,ContactsActivity.class));
                 return true;
           default:
               return super.onOptionsItemSelected(item);

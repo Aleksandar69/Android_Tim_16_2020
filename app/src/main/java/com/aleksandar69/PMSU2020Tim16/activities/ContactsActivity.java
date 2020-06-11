@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.R;
+import com.aleksandar69.PMSU2020Tim16.adapters.ContactsArrayAdapter;
 import com.aleksandar69.PMSU2020Tim16.adapters.ContactsCursorAdapter;
 import com.aleksandar69.PMSU2020Tim16.adapters.RecyclerViewContactsAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
@@ -41,8 +42,8 @@ import java.util.List;
 public class ContactsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,ListView.OnItemClickListener {
 
     Context context;
-    private ListView contactsList;
-    private List<Contact> contacts;
+    private ListView contactsListView;
+    private ArrayList<Contact> contacts;
     private MessagesDBHandler handler;
     public static ArrayAdapter<String> adapter;
     ContactsCursorAdapter cursorAdapter;
@@ -52,27 +53,35 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
-       // ContactsCursorAdapter adapter = new ContactsCursorAdapter(this, (Cursor) cursorAdapter);
-
-        contactsList = (ListView) findViewById(R.id.recycler_v);
-        contactsList.setAdapter(adapter);
-
+        //inicijalizacija listview-a
+        contactsListView = (ListView) findViewById(R.id.recycler_v);
         context = this;
         handler = new MessagesDBHandler(context);
+        //inicijalizacija liste kontakata
         contacts = new ArrayList<>();
-        contacts = handler.getListOfAllContacts();
-        final String[] firstNamesArray = new String[contacts.size()];
 
+        //prikaz liste kontakata iz baze
+        contacts = handler.getListOfAllContacts();
+        /*
+        //prikazuje mi ime svakog kontakta pojedinacno
+        final String[] firstNamesArray = new String[contacts.size()];
         for(int i = 0; i<contacts.size();i++){
             firstNamesArray[i]=contacts.get(i).getFirst();
         }
         adapter = new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1 ,firstNamesArray);
         contactsList.setAdapter(adapter);
-        contactsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+         */
+
+        ContactsArrayAdapter contactsArrayAdapter = new ContactsArrayAdapter(this,R.layout.row,contacts);
+        contactsListView.setAdapter(contactsArrayAdapter);
+
+        //kad kliknem na pojedinacan kontakt, on mi se prikazuje u ContactActivity-u sa svojim vrijednostima
+        contactsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
                 final Contact contact = contacts.get(position);
                 Intent intent = new Intent(ContactsActivity.this,ContactActivity.class);
+                intent.putExtra("eid",contact.get_id());
                 intent.putExtra("efirst", contact.getFirst());
                 intent.putExtra("elast",contact.getLast());
                 intent.putExtra("edisplay",contact.getDisplay());
@@ -121,12 +130,6 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         }
     }
 
-    public static void updateList() {
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        }
-    }
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
@@ -159,8 +162,6 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
     }
 
-
-
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -178,7 +179,6 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
     @Override
     protected void onResume() {
         super.onResume();
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -201,7 +201,6 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         super.onDestroy();
     }
 
-
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
@@ -211,34 +210,4 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         intent.putExtra(Data.CONTACT_ID_EXTRA, contact_id);
         startActivity(intent);
     }
-
-
-
-
-    public void onTempButtonClickedFind(View view){
-        onSearchRequested();
-    }
-
-/*
-    private void handleIntent(Intent intent){
-        if(Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            if(query == "" || query.isEmpty()) {
-                Cursor c = handler.getAllContacts();
-                ContactsCursorAdapter contactsCursorAdapter = new ContactsCursorAdapter(this,c);
-                contacts.setAdapter(contactsCursorAdapter);
-            }
-            Cursor c = handler.filterContacts(query);
-            ContactsCursorAdapter contactsAdapter = new ContactsCursorAdapter(this,c);
-            contacts.setAdapter(contactsAdapter);
-        }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        handleIntent(intent);
-        super.onNewIntent(intent);
-    }
-*/
 }

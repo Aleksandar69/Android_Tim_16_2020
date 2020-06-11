@@ -70,9 +70,6 @@ public class CreateContactActivity extends AppCompatActivity {
                 String display = displayNameEdit.getText().toString();
                 String email = emailEdit.getText().toString();
 
-               // ContactsActivity.adapter.add(first);
-               // ContactsActivity.adapter.notifyDataSetChanged();
-
                 if(!TextUtils.isEmpty(first) || !TextUtils.isEmpty(last) || !TextUtils.isEmpty(display) || !TextUtils.isEmpty(email)){
                     Contact contact = new Contact(first,last,display,email);
                     handler.addContact(contact);
@@ -82,19 +79,6 @@ public class CreateContactActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setMessage("Please fill at least one field! ").setNegativeButton("OK",null).show();
                 }
-                /*
-                Contact contact = new Contact();
-                contact.setFirst(firstNameEdit.getText().toString());
-                contact.setLast(lastNameEdit.getText().toString());
-                contact.setDisplay(displayNameEdit.getText().toString());
-                contact.setEmail(emailEdit.getText().toString());
-
-
-                handler.addContact(contact);
-                Toast.makeText(this,"New contact created", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this,ContactsActivity.class));
-
-                 */
             default:
                 return super.onOptionsItemSelected(item);
         }

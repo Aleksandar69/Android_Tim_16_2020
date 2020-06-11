@@ -19,6 +19,18 @@ public class Contact {
         this.last = last;
     }
 
+    @Override
+    public String toString() {
+        return "Contact{" +
+                "_id=" + _id +
+                ", first='" + first + '\'' +
+                ", last='" + last + '\'' +
+                ", display='" + display + '\'' +
+                ", email='" + email + '\'' +
+                ", imageSourceID=" + imageSourceID +
+                '}';
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -41,13 +53,6 @@ public class Contact {
 
     public void set_id(int _id) {
         this._id = _id;
-    }
-
-
-
-    @Override
-    public String toString() {
-        return this.display + "\n" + this.email ;
     }
 
     public String getLast() {
