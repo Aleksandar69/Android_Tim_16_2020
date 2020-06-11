@@ -61,13 +61,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/new_contact_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/hint_email"
-            android:inputType="text" />
-
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/new_contact_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_email"
+        android:inputType="text" />
+
+    <Button
+        android:id="@+id/choose_image_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose image" />
 
 </LinearLayout>
