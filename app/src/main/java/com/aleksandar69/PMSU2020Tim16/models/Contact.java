@@ -1,15 +1,31 @@
 package com.aleksandar69.PMSU2020Tim16.models;
 
 import com.aleksandar69.PMSU2020Tim16.R;
+import com.google.gson.annotations.SerializedName;
 
 public class Contact {
 
+    @SerializedName("_id")
     private int _id;
+    @SerializedName("first")
     private String first;
+    @SerializedName("last")
     private String last;
+    @SerializedName("display")
     private String display;
+    @SerializedName("email")
     private String email;
+    @SerializedName("imageSourceID")
     private Integer imageSourceID;
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public Contact(String first){
         this.first = first;

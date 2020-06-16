@@ -30,7 +30,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 372;
+    public static final int DATABASE_VERSION = 386;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -653,6 +653,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         values.put(COLUMN_LAST,contact.getLast());
         values.put(COLUMN_DISPLAY,contact.getDisplay());
         values.put(COLUMN_CONTACT_EMAIL,contact.getEmail());
+        values.put(COLUMN_IMAGE_RESOURCE, contact.getImageSourceID());
         //poslije dodati za fotografiju i za display html
 
         db.insert(TABLE_CONTACTS,null,values);

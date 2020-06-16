@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.activities.ContactActivity;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,8 @@ public class RecyclerViewContactsAdapter extends RecyclerView.Adapter<RecyclerVi
 
     private Context context;
     private List<Contact> contactList;
+    public ImageView mImageView;
+    public TextView mFirst;
 
     public RecyclerViewContactsAdapter(Context context, List<Contact> contactList) {
         this.context = context;
@@ -37,41 +40,23 @@ public class RecyclerViewContactsAdapter extends RecyclerView.Adapter<RecyclerVi
 
     }
 
-    //stack overflow
-    /*
-    public RecyclerViewAdapter(Context context, List<Model> model) {
-    this.context = context;
-    this.model = model;
-}
-
-Then in onActivityResult do like this:
-
-@Override
-protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == 4) {
-        listModel.clear();
-        listModel.addAll(repository.consDataBase(context));
-        recyclerViewAdapter.notifyDataSetChanged();
-    }
-}
-
-     */
-
-
     @NonNull
     @Override
     public RecyclerViewContactsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row,parent,false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewContactsAdapter.ViewHolder holder, int position) {
-        Contact contact = contactList.get(position);
+        Contact currentItem = contactList.get(position);
 
-        holder.contactName.setText(contact.getFirst());
-        //holder.iconButton.setImageResource(contact.getImageSourceID());
+        String imageURL = currentItem.getUrl();
+        String first = currentItem.getFirst();
+
+        holder.contactName.setText(first);
+        Picasso.get().load(imageURL).fit().centerInside().into(holder.iconButton);
     }
 
     @Override
@@ -84,12 +69,12 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         public TextView contactName;
         public ImageView iconButton;
 
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            mImageView = itemView.findViewById(R.id.imageViewButton);
+            mFirst = itemView.findViewById(R.id.row_first);
             itemView.setOnClickListener(this);
-
-          //  contactName = itemView.findViewById(R.id.Contact_name);
-           // iconButton = itemView.findViewById(R.id.imageViewButton);
 
             iconButton.setOnClickListener(this);
         }

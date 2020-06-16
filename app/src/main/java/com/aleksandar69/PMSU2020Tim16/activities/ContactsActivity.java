@@ -62,15 +62,6 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
         //prikaz liste kontakata iz baze
         contacts = handler.getListOfAllContacts();
-        /*
-        //prikazuje mi ime svakog kontakta pojedinacno
-        final String[] firstNamesArray = new String[contacts.size()];
-        for(int i = 0; i<contacts.size();i++){
-            firstNamesArray[i]=contacts.get(i).getFirst();
-        }
-        adapter = new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1 ,firstNamesArray);
-        contactsList.setAdapter(adapter);
-         */
 
         ContactsArrayAdapter contactsArrayAdapter = new ContactsArrayAdapter(this,R.layout.row,contacts);
         contactsListView.setAdapter(contactsArrayAdapter);

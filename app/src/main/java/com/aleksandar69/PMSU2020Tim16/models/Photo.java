@@ -3,6 +3,21 @@ package com.aleksandar69.PMSU2020Tim16.models;
 public class Photo {
     private int _id;
     private String path;
+    //dodat parametar name zbog ucitavanja slike,obrisati poslije
+    private String name;
+
+    public Photo() {
+    }
+
+    public Photo(String name, String path) {
+        this.name = name;
+        this.path = path;
+    }
+
+    public Photo(int id, String path) {
+        this._id = id;
+        this.path = path;
+    }
 
     public int get_id() {
         return _id;
@@ -17,11 +32,6 @@ public class Photo {
     }
 
     public void setPath(String path) {
-        this.path = path;
-    }
-
-    public Photo(int _id, String path) {
-        this._id = _id;
         this.path = path;
     }
 

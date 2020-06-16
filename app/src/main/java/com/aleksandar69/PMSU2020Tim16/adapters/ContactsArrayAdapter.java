@@ -24,6 +24,17 @@ public class ContactsArrayAdapter extends ArrayAdapter<Contact> {
     private Context mContext;
     int mResource;
     private int lastPosition = -1;
+    private ArrayList<Contact> mExampleList;
+
+    public int getItemCount() {
+        return  mExampleList.size();
+    }
+
+    public ContactsArrayAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Contact> objects) {
+        super(context, resource, objects);
+        mContext = context;
+        mResource = resource;
+    }
 
     static class ViewHolder{
         TextView first;
@@ -36,6 +47,7 @@ public class ContactsArrayAdapter extends ArrayAdapter<Contact> {
 
         //get the name of the contact
         String first = getItem(position).getFirst();
+
 
         //create the object with the first name
         Contact contact = new Contact(first);
@@ -69,11 +81,5 @@ public class ContactsArrayAdapter extends ArrayAdapter<Contact> {
         holder.first.setText(first);
 
         return convertView;
-    }
-
-    public ContactsArrayAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Contact> objects) {
-        super(context, resource, objects);
-        mContext = context;
-        mResource = resource;
     }
 }

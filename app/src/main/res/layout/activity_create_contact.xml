@@ -13,11 +13,17 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image_contact"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="139dp"
+        android:layout_height="95dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:src="@mipmap/ic_launcher_round" />
+
+    <Button
+        android:id="@+id/choose_image_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose image" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -48,13 +54,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/new_contact_displayname"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/hint_display_name"
-            android:inputType="text" />
-
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -70,10 +69,30 @@
         android:hint="@string/hint_email"
         android:inputType="text" />
 
-    <Button
-        android:id="@+id/choose_image_button"
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/new_contact_displayname"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Choose image" />
+        android:hint="@string/hint_display_name"
+        android:inputType="text" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+
+    <Button
+        android:id="@+id/upload_image_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Upload" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show contacts"
+        android:id="@+id/text_view_show_contacts"
+        android:gravity="center"/>
 
 </LinearLayout>

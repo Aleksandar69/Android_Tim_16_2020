@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -20,9 +21,12 @@ import com.aleksandar69.PMSU2020Tim16.adapters.RecyclerViewContactsAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
 import com.google.android.material.textfield.TextInputEditText;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ContactActivity extends AppCompatActivity {
 
@@ -32,13 +36,13 @@ public class ContactActivity extends AppCompatActivity {
     RecyclerViewContactsAdapter adapter;
     MessagesDBHandler handler;
      */
-    public static Contact contact1 = new Contact();
     private ArrayAdapter arrayAdapter;
     private List contactsList = new ArrayList<>();
     private TextInputEditText firstNameEditt;
     private TextInputEditText lastNameEditt;
     private TextInputEditText displayNameEditt;
     private TextInputEditText emailEditt;
+    private CircleImageView imageView;
     MessagesDBHandler handler;
 
     @Override
@@ -51,16 +55,30 @@ public class ContactActivity extends AppCompatActivity {
         lastNameEditt = (TextInputEditText) findViewById(R.id.new_contact_lastnamee);
         displayNameEditt = (TextInputEditText) findViewById(R.id.new_contact_displaynamee);
         emailEditt = (TextInputEditText) findViewById(R.id.new_contact_emaill);
+        imageView = (CircleImageView) findViewById(R.id.image_single_contact);
 
         Intent intent = getIntent();
         String first = intent.getStringExtra("efirst");
         String last = intent.getStringExtra("elast");
         String display = intent.getStringExtra("edisplay");
         String email = intent.getStringExtra("eemail");
+        String image = intent.getStringExtra("eimage");
+
         firstNameEditt.setText(String.valueOf(first));
         lastNameEditt.setText(String.valueOf(last));
         displayNameEditt.setText(String.valueOf(display));
         emailEditt.setText(String.valueOf(email));
+
+        //saa stacka
+        /*
+        ourImageView.buildDrawingCache();
+        Bitmap passedBitmap = imageView.getDrawingCache();
+
+        Intent intent = new Intent(this, YourOtherActivity.class;
+        Intent.putExtra("passedBitmap", passedBitmap);
+
+
+         */
 
 
         List<Contact> list = handler.getAllContactsList();
