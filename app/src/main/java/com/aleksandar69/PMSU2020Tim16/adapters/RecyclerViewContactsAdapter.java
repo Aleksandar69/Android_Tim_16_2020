@@ -1,5 +1,6 @@
 package com.aleksandar69.PMSU2020Tim16.adapters;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -15,53 +16,67 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.activities.ContactActivity;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
+import com.aleksandar69.PMSU2020Tim16.models.Photo;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class RecyclerViewContactsAdapter extends RecyclerView.Adapter<RecyclerViewContactsAdapter.ViewHolder> {
 
     private Context context;
     private List<Contact> contactList;
+    //sadrzi listu upload-a
+    private List<Photo> mPhotos;
     public ImageView mImageView;
     public TextView mFirst;
 
+    //konstrutkor koji mi ucitava sliku i ime
+    //zakomentarisala sam konstruktor od maloprije
+    public RecyclerViewContactsAdapter(Context context, List<Photo> photos) {
+        this.context  = context;
+        mPhotos = photos;
+    }
+
+    /*
     public RecyclerViewContactsAdapter(Context context, List<Contact> contactList) {
         this.context = context;
         this.contactList = contactList;
     }
-
+     */
     public void refreshBlockOverlay(int position) {
         notifyItemChanged(position);
     }
 
     public RecyclerViewContactsAdapter() {
-
     }
 
     @NonNull
     @Override
     public RecyclerViewContactsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.row,parent,false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewContactsAdapter.ViewHolder holder, int position) {
+        Photo uploadCurrent = mPhotos.get(position);
+        holder.contactName.setText(uploadCurrent.getName());
+        Picasso.get().load(uploadCurrent.getPath()).placeholder(R.drawable.person_icon).fit().centerCrop().into(holder.iconButton);
+        /*
         Contact currentItem = contactList.get(position);
-
         String imageURL = currentItem.getUrl();
         String first = currentItem.getFirst();
-
         holder.contactName.setText(first);
         Picasso.get().load(imageURL).fit().centerInside().into(holder.iconButton);
+         */
     }
 
     @Override
     public int getItemCount() {
-        return contactList.size();
+        return mPhotos.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -69,11 +84,10 @@ public class RecyclerViewContactsAdapter extends RecyclerView.Adapter<RecyclerVi
         public TextView contactName;
         public ImageView iconButton;
 
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            mImageView = itemView.findViewById(R.id.imageViewButton);
-            mFirst = itemView.findViewById(R.id.row_first);
+            iconButton = itemView.findViewById(R.id.imageViewUpload);
+            contactName = itemView.findViewById(R.id.row_first);
             itemView.setOnClickListener(this);
 
             iconButton.setOnClickListener(this);

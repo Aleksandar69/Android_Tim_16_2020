@@ -3,6 +3,15 @@ package com.aleksandar69.PMSU2020Tim16.models;
 public class Photo {
     private int _id;
     private String path;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     //dodat parametar name zbog ucitavanja slike,obrisati poslije
     private String name;
 

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import com.aleksandar69.PMSU2020Tim16.Data;
@@ -22,6 +23,7 @@ import com.aleksandar69.PMSU2020Tim16.models.Message;
 import com.aleksandar69.PMSU2020Tim16.models.Tag;
 import com.aleksandar69.PMSU2020Tim16.models.Folder;
 
+import java.nio.channels.spi.AbstractInterruptibleChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +32,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 386;
+    public static final int DATABASE_VERSION = 394;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -49,6 +51,8 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     //DODATI PLAIN,HTML
     private static final String COLUMN_CONTACT_EMAIL = "emailtext";
     private static final String COLUMN_IMAGE_RESOURCE = "imageresourceid";
+
+
 
     //emails
     public static final String TABLE_MESSAGES = "EMAILS";
@@ -697,7 +701,30 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         return contactList;
     }
 
+    public void insertData(String first,String last, String display, String email, byte[] image) {
+        SQLiteDatabase db = getWritableDatabase();
+        String sql = "INSERT INTO CONTACT VALUES (NULL,?,?,?,?,?)";
+
+        SQLiteStatement statement = db.compileStatement(sql);
+        statement.clearBindings();
+
+        statement.bindString(1,first);
+        statement.bindString(2,last);
+        statement.bindString(3,display);
+        statement.bindString(4,email);
+        statement.bindBlob(5,image);
+
+        statement.executeInsert();
+    }
+
+
+    public Cursor getData(String sql) {
+        SQLiteDatabase db = getReadableDatabase();
+        return  db.rawQuery(sql,null);
+    }
+
 //    //============================AKTIVNO KORISTIM========================================================
+
 
 
     public void addContacts(Contact contact) {
@@ -944,5 +971,24 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         Cursor cursor = myContentResolver.query(ContactsContentProvider.CONTENT_URI, projection, selection, selectionArgs, null);
 
         return cursor;
+    }
+
+    //======================aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa==================
+    public void updateData(int id, String first, String last, String display, String email , byte[] image) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        String sql = "UPDATE CONTACT SET firstname = ? , lastname = ?, displaytext = ?, emailtext = ?,  imageresourceid = ? WHERE _id = ?";
+        SQLiteStatement statement = db.compileStatement(sql);
+
+        //autoincremented contakt ???
+        statement.bindDouble(0,(double) id);
+        statement.bindString(1,first);
+        statement.bindString(2, last);
+        statement.bindString(3,display);
+        statement.bindString(4, email);
+        statement.bindBlob(5, image);
+
+        statement.execute();
+        db.close();
     }
 }

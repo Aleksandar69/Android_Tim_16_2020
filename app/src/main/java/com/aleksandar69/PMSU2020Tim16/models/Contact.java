@@ -4,20 +4,14 @@ import com.aleksandar69.PMSU2020Tim16.R;
 import com.google.gson.annotations.SerializedName;
 
 public class Contact {
-
-    @SerializedName("_id")
     private int _id;
-    @SerializedName("first")
     private String first;
-    @SerializedName("last")
     private String last;
-    @SerializedName("display")
     private String display;
-    @SerializedName("email")
     private String email;
-    @SerializedName("imageSourceID")
     private Integer imageSourceID;
     private String url;
+    private byte[] image;
 
     public String getUrl() {
         return url;
@@ -98,6 +92,32 @@ public class Contact {
         this.email = email;
         this.imageSourceID = imageSourceID;
     }
+
+    public Contact(String first, String last, String display, String email, byte[] image) {
+        this.first = first;
+        this.last = last;
+        this.display = display;
+        this.email = email;
+        this.image = image;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    public Contact(int id, String first, String last, String display, String email, byte[] image) {
+        _id = id;
+        this.first = first;
+        this.last = last;
+        this.display = display;
+        this.email = email;
+        this.image = image;
+    }
+
 
     public Contact(int id, String first, String last, String display, String email) {
         this._id = id;

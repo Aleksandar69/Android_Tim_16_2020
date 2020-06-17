@@ -30,12 +30,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ContactActivity extends AppCompatActivity {
 
-    /*
-    public static final String CONTACT_NUMBER = "contactNo";
-    List<String> contact;
-    RecyclerViewContactsAdapter adapter;
-    MessagesDBHandler handler;
-     */
     private ArrayAdapter arrayAdapter;
     private List contactsList = new ArrayList<>();
     private TextInputEditText firstNameEditt;

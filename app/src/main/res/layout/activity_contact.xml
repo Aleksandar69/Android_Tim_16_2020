@@ -12,42 +12,13 @@
         android:id="@+id/toolbar_contact"
         layout="@layout/toolbar_layout"/>
 
-    <!--
-    <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:id="@+id/slicica"/>
-
-    <EditText
-        android:id="@+id/tv_ime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-      />
-
-    <EditText
-        android:id="@+id/tv_prezime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-       />
-    <EditText
-        android:id="@+id/tv_display"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-/>
-    <EditText
-        android:id="@+id/tv_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-     />
--->
-    
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image_single_contact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:src="@mipmap/ic_launcher_round" />
+        android:src="@drawable/person_icon" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -99,6 +70,12 @@
             android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/new_button_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Update" />
 
 
 </LinearLayout>

@@ -17,7 +17,7 @@
         android:layout_height="95dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:src="@mipmap/ic_launcher_round" />
+        android:src="@drawable/person_icon" />
 
     <Button
         android:id="@+id/choose_image_button"
@@ -75,13 +75,14 @@
         android:layout_height="wrap_content"
         android:hint="@string/hint_display_name"
         android:inputType="text" />
-
+<!--
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
+-->
     <Button
         android:id="@+id/upload_image_button"
         android:layout_width="match_parent"

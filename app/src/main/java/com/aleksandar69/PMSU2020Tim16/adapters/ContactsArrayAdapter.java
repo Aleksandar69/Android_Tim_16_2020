@@ -48,7 +48,6 @@ public class ContactsArrayAdapter extends ArrayAdapter<Contact> {
         //get the name of the contact
         String first = getItem(position).getFirst();
 
-
         //create the object with the first name
         Contact contact = new Contact(first);
 
