@@ -32,7 +32,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 397;
+    public static final int DATABASE_VERSION = 398;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -289,7 +289,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
-                null , null,COLUMN_ID_EMAILS + " ASC");
+                COLUMN_ID_FOLDERS_FK + "=" + 0, null,COLUMN_ID_EMAILS + " ASC");
 
         return cursor;
     }
@@ -299,7 +299,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
-                null, null, COLUMN_ID_EMAILS + " DESC");
+                COLUMN_ID_FOLDERS_FK + "=" + 0, null, COLUMN_ID_EMAILS + " DESC");
 
         return cursor;
     }
@@ -979,15 +979,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     }
 
 
-
-    public Cursor inboxEmails() {
-        String inbox = "0";
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ID_FOLDERS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
-        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
-                COLUMN_ID_FOLDERS_FK + "=" + inbox, null, null);
-        return cursor;
-    }
-
     public Cursor emailsFolder(String foldersIdExtra) {
         int id = Integer.parseInt(foldersIdExtra);
         String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ID_FOLDERS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
@@ -1015,14 +1006,4 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-
-//    public int findFolderIdByEmailId(String messIdExtra) {
-//        int id = Integer.parseInt(messIdExtra);
-//        String idQuery = " SELECT * FROM " + TABLE_MESSAGES + " WHERE " + COLUMN_ID_EMAILS + " = " + id ;
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        Cursor cursor = db.rawQuery(idQuery, null);
-//        int folderID = cursor.getInt(cursor.getColumnIndex(COLUMN_ID_FOLDERS_FK));
-//        cursor.close();
-//        return folderID;
-//    }
 }

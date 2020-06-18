@@ -194,17 +194,17 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         Data.syncTime = sharedPreferences.getString(getString(R.string.pref_syncConnectionType),"60000" );
         Data.allowSync = sharedPreferences.getBoolean(getString((R.string.pref_sync)),false);
         Data.prefSort = sharedPreferences.getString(getString(R.string.pref_sort),"ascending");
-        Cursor c = handler.inboxEmails();
+        //Cursor c = handler.inboxEmails();
 
         if(Data.prefSort.equals("ascending")){
-            c = handler.sortEmailAsc(sharedPreferences.getInt(Data.userId, -1));
+            cursor = handler.sortEmailAsc(sharedPreferences.getInt(Data.userId, -1));
         }
         else if(Data.prefSort.equals("descending")){
-            c = handler.sortEmailDesc(sharedPreferences.getInt(Data.userId, -1));
+            cursor = handler.sortEmailDesc(sharedPreferences.getInt(Data.userId, -1));
         }
 
 
-        emailsAdapter = new EmailsCursorAdapter(this, c);
+        emailsAdapter = new EmailsCursorAdapter(this, cursor);
         emails.setOnItemClickListener(this);
         emails.setAdapter(emailsAdapter);
 
