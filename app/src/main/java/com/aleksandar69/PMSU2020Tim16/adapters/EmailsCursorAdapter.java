@@ -60,6 +60,7 @@ public class EmailsCursorAdapter extends CursorAdapter {
         columnSubject.setText(messageSubject);
         columnContent.setText(messageContent);
         columnDate.setText(messageDate);
+
         for (String tag : tagList) {
             int nextInt = random.nextInt(0xffffff + 1);
             String colorCode = String.format("#%06x", nextInt);
@@ -81,7 +82,6 @@ public class EmailsCursorAdapter extends CursorAdapter {
             columnSubject.setTypeface(null, Typeface.NORMAL);
             columnContent.setTypeface(null, Typeface.NORMAL);
         }
-
     }
 
 }

@@ -241,6 +241,7 @@ public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
                 for (int id : messagesFromDBidsCopy) {
 
                     dbHandler.deleteMessage(id);
+                    //dbHandler.moveToTrash(id);
                 }
 //---------------
                 inboxFolder.close(false);

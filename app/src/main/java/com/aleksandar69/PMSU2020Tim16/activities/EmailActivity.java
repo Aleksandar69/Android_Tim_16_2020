@@ -1,11 +1,13 @@
 package com.aleksandar69.PMSU2020Tim16.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Base64;
@@ -117,6 +119,7 @@ public class EmailActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void decodeOnClick(View view) throws IOException {
 
         if (!(attachments.size() < 1)) {
@@ -148,6 +151,7 @@ public class EmailActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private String decodeBase64(String coded) {
         byte[] valueDecoded = new byte[0];
         valueDecoded = Base64.decode(coded.getBytes(StandardCharsets.UTF_8), Base64.DEFAULT);
@@ -163,13 +167,21 @@ public class EmailActivity extends AppCompatActivity {
         String cc = message.getCc();
         String date = message.getDateTime();
         String to = message.getTo();
+        int folderID = message.getFolder_id();
         switch (item.getItemId()) {
             case R.id.email_delete_button:
-                emailsDb.deleteMessage(itemId);
-                DeleteEmail deleteEmail = new DeleteEmail(this, message.get_id());
-                deleteEmail.execute();
-                startActivity(new Intent(this, EmailsActivity.class));
-                return true;
+                if (folderID == 2) {
+                    emailsDb.deleteMessage(itemId);
+                    DeleteEmail deleteEmail = new DeleteEmail(this, message.get_id());
+                    deleteEmail.execute();
+                    startActivity(new Intent(this, EmailsActivity.class));
+                    return true;
+                }
+                else {
+                    emailsDb.moveToTrash(itemId);
+                    super.onBackPressed();
+                    return true;
+                }
             case R.id.forward:
                 Intent intentForwrad = new Intent(this, CreateEmailActivity.class);
                 intentForwrad.putExtra(Data.EMAIL_FORWARD_EXTRA, content);

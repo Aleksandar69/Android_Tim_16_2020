@@ -41,5 +41,5 @@ public class Data {
     public static final String CONTACT_ID_EXTRA = "contactID";
     public static final String TABLE_CONTACTS = "CONTACT";
 
-    public static  final String FOLDERS_ID_EXTRA = "foldersID";
+    public static  final String FOLDERS_ID_EXTRA = "folder_id";
 }

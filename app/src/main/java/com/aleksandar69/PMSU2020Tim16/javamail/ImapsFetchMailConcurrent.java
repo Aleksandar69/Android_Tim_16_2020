@@ -239,6 +239,7 @@ public class ImapsFetchMailConcurrent {
                                 for (int id : messagesFromDBidsCopy) {
 
                                     dbHandler.deleteMessage(id);
+                                    //dbHandler.moveToTrash(id);
                                 }
 //---------------
                                 inboxFolder.close(false);

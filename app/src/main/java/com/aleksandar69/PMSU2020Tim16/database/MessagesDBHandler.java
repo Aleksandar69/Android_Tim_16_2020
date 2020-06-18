@@ -32,7 +32,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 394;
+    public static final int DATABASE_VERSION = 397;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -40,6 +40,14 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     public static final String TABLE_FOLDERS = "FOLDERS";
     public static final String COLUMN_ID_FOLDER = "_id";
     public static final String COLUMN_NAME = "name";
+
+    public static final String TABLE_RULE = "RULE";
+    public static final String COLUMN_ID_RULE = "_id";
+    public static final String COLUMN_CONDITION_TXT = "condition_txt";
+    public static final String COLUMN_CONDITION_ENUM = "conditon_enum";
+    public static final String COLUMN_OPERATION_TXT = "operation_txt";
+    public static final String COLUMN_OPERATION_ENUM = "operation_enum";
+    public static final String COLUMN_ID_FOLDER_FK = "folder_fk";
 
     //contacts
     public static final String TABLE_CONTACTS = "CONTACT";
@@ -106,6 +114,12 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     private static String CREATE_FOLDERS_TABLE = "CREATE TABLE " + TABLE_FOLDERS +
             "(" + COLUMN_ID_FOLDER + " INTEGER PRIMARY KEY, " + COLUMN_NAME + " TEXT " + ")";
 
+    private static String CREATE_RULE_TABLE = "CREATE TABLE " + TABLE_RULE +
+            "(" + COLUMN_ID_RULE + " INTEGER PRIMARY KEY, " + COLUMN_CONDITION_TXT + " TEXT, " +
+            COLUMN_CONDITION_ENUM + " TEXT, " + COLUMN_OPERATION_TXT + " TEXT, " +
+            COLUMN_OPERATION_ENUM + " TEXT, " + COLUMN_ID_FOLDER_FK + " INTEGER, " +
+            "FOREIGN KEY(" + COLUMN_ID_FOLDER_FK + ") REFERENCES FOLDERS(_id) " + ")";
+
     private static String CREATE_MESSAGES_TABLE = "CREATE TABLE " + TABLE_MESSAGES +
             "(" + COLUMN_ID_EMAILS + " INTEGER PRIMARY KEY, " +
             COLUMN_FROM + " TEXT, " + COLUMN_TO + " TEXT, " + COLUMN_CC + " TEXT, " +
@@ -160,6 +174,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         Log.d("Elena", "Pokrenuto kreiranje tabela");
         db.execSQL(CREATE_TAG_TABLE);
         db.execSQL(CREATE_CONTACTS_TABLE);
+        db.execSQL(CREATE_RULE_TABLE);
         db.execSQL("insert into " + TABLE_FOLDERS + "(" + COLUMN_ID_FOLDER + "," + COLUMN_NAME + ") values(1,'Drafts')");
         db.execSQL("insert into " + TABLE_FOLDERS + "(" + COLUMN_ID_FOLDER + "," + COLUMN_NAME + ") values(2,'Trash')");
     }
@@ -173,6 +188,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_TAGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOLDERS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RULE);
 
 
         onCreate(db);
@@ -181,33 +197,11 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     //////////////////////////FOLDERS //////////////////////////////
     public void addFolder(Folder folder){
-        //if(CheckFolderInDB(folder.getName()) == false) {
-            ContentValues values = new ContentValues();
-            //values.put(COLUMN_ID_FOLDER, folder.getId());
-            values.put(COLUMN_NAME, folder.getName());
-            myContentResolver.insert(FoldersContentProvider.CONTENT_URI, values);
-        //}
-
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, folder.getName());
+        myContentResolver.insert(FoldersContentProvider.CONTENT_URI, values);
     }
 
-
-
-//    public boolean CheckFolderInDB(String name) {
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        try{
-//            String Query = "Select * from " + TABLE_FOLDERS + " where " + COLUMN_NAME + " = " + name;
-//
-//            Cursor cursor = db.rawQuery(Query, null);
-//            if(cursor.getCount() <= 0){
-//                cursor.close();
-//                return false;
-//            }
-//            cursor.close();
-//        }
-//
-//        catch (Exception e){}
-//        return true;
-//    }
 
     public Cursor getAllFolders(){
 
@@ -233,13 +227,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         else {
             return String.valueOf(count);
         }
-
-//        if(count = ){
-//            return 0;
-//        }
-//        else {
-//            return count;
-//        }
     }
 
     /////////////////////////// MESSAGES /////////////////////////////////
@@ -285,7 +272,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     }
 
     public Cursor filterEmail(String term) {
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, };
 
         String selection = COLUMN_CONTENT + " LIKE ? OR " + COLUMN_SUBJECT + " LIKE ? OR " + COLUMN_TAGS + " LIKE ? OR " + COLUMN_TO + " LIKE ? OR " +
                 COLUMN_FROM + " LIKE ? OR " + COLUMN_BCC + " LIKE ? OR " + COLUMN_CC + " LIKE ?";
@@ -320,7 +307,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public Message findMessage(int messageId) {
 
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_ID_FOLDERS_FK};
         String selection = "_id = \"" + messageId + "\"";
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection, selection, null, null);
@@ -338,6 +325,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             message.setContent(cursor.getString(6));
             message.setDateTime(cursor.getString(7));
             message.setLogged_user_id(Integer.parseInt(cursor.getString(8)));
+            message.setFolder_id(Integer.parseInt(cursor.getString(11)));
             int unread = Integer.parseInt(cursor.getString(9));
             if (unread == 1) {
                 message.setUnread(true);
@@ -973,6 +961,41 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         return cursor;
     }
 
+    public Cursor findEmailByFolderID(int itemID) {
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_ID_FOLDERS_FK};
+
+
+        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
+                COLUMN_ID_FOLDERS_FK + "=" + itemID, null, null);
+
+        return cursor;
+    }
+
+    public void moveToTrash(int id) {
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ID_FOLDERS_FK, 2);
+        myContentResolver.update(MessagesContentProvider.CONTENT_URI, values, COLUMN_ID_EMAILS + "=" + id, null);
+    }
+
+
+
+    public Cursor inboxEmails() {
+        String inbox = "0";
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ID_FOLDERS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
+        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
+                COLUMN_ID_FOLDERS_FK + "=" + inbox, null, null);
+        return cursor;
+    }
+
+    public Cursor emailsFolder(String foldersIdExtra) {
+        int id = Integer.parseInt(foldersIdExtra);
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ID_FOLDERS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
+        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
+                COLUMN_ID_FOLDERS_FK + "=" + id, null, null);
+        return cursor;
+    }
+
     //======================aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa==================
     public void updateData(int id, String first, String last, String display, String email , byte[] image) {
         SQLiteDatabase db = getWritableDatabase();
@@ -991,4 +1014,15 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         statement.execute();
         db.close();
     }
+
+
+//    public int findFolderIdByEmailId(String messIdExtra) {
+//        int id = Integer.parseInt(messIdExtra);
+//        String idQuery = " SELECT * FROM " + TABLE_MESSAGES + " WHERE " + COLUMN_ID_EMAILS + " = " + id ;
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        Cursor cursor = db.rawQuery(idQuery, null);
+//        int folderID = cursor.getInt(cursor.getColumnIndex(COLUMN_ID_FOLDERS_FK));
+//        cursor.close();
+//        return folderID;
+//    }
 }

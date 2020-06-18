@@ -65,6 +65,7 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
 
         Cursor c = handler.getAllFolders();
         foldersAdapter = new FoldersCursorAdapter(this, c);
+        folders.setOnItemClickListener(this);
         folders.setAdapter(foldersAdapter);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -80,12 +81,6 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
 
     }
 
-
-
-//    public void onTestButton(View view){
-//        Intent intent = new Intent(this, FolderActivity.class);
-//        startActivity(intent);
-//    }
 
     public void onProfileClicked(View view){
         Intent intent = new Intent(this, ProfileActivity.class);

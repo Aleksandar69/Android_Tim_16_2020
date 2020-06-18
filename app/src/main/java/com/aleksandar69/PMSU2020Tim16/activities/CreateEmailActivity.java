@@ -190,10 +190,25 @@ public class CreateEmailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.email_cancel_button:
-                Intent intent = new Intent(this, EmailsActivity.class);
-                Toast.makeText(this, "Message Creation Cancelled", Toast.LENGTH_LONG).show();
-                startActivity(intent);
-                return true;
+
+                if (!toEditBox.getText().toString().equals("") || !ccEditBox.getText().toString().equals("") ||
+                        !bccEditBox.getText().toString().equals("") || !subjectEditBox.getText().toString().equals("") || !contentEditBox.getText().toString().equals("") ){
+                    Message message = new Message(toEditBox.getText().toString(),
+                            ccEditBox.getText().toString(), bccEditBox.getText().toString(), subjectEditBox.getText().toString(), contentEditBox.getText().toString());
+                    message.setLogged_user_id(mSharedPreferences.getInt(Data.userId, -1));
+                    message.setFolder_id(1);
+                    dbHandler.addMessage(message);
+                    Intent intent = new Intent(this, EmailsActivity.class);
+                    Toast.makeText(this, "Message saved as Draft", Toast.LENGTH_LONG).show();
+                    startActivity(intent);
+                    return true;
+                }
+                else{
+                    Intent intent = new Intent(this, EmailsActivity.class);
+                    Toast.makeText(this, "Message Creation Cancelled", Toast.LENGTH_LONG).show();
+                    startActivity(intent);
+                    return true;
+                }
             case R.id.email_send_button:
                 Message message = new Message(toEditBox.getText().toString(),
                         ccEditBox.getText().toString(), bccEditBox.getText().toString(), subjectEditBox.getText().toString(), contentEditBox.getText().toString());
