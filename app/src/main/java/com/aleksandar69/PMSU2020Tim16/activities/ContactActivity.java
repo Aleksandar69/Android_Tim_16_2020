@@ -1,18 +1,30 @@
 package com.aleksandar69.PMSU2020Tim16.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -23,27 +35,35 @@ import com.aleksandar69.PMSU2020Tim16.models.Contact;
 import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.aleksandar69.PMSU2020Tim16.activities.CreateContactActivity.imageViewToByte;
+
 public class ContactActivity extends AppCompatActivity {
 
-    private ArrayAdapter arrayAdapter;
-    private List contactsList = new ArrayList<>();
     private TextInputEditText firstNameEditt;
+    String selectedFirst;
+    String selectedLast;
+    String selectedDisplay;
+    String selectedEmail;
+    int selectedID;
     private TextInputEditText lastNameEditt;
     private TextInputEditText displayNameEditt;
     private TextInputEditText emailEditt;
     private CircleImageView imageView;
+    private Button btnUpdate;
     MessagesDBHandler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
-        handler = new MessagesDBHandler(this);
 
         firstNameEditt = (TextInputEditText) findViewById(R.id.new_contact_firstnamee);
         lastNameEditt = (TextInputEditText) findViewById(R.id.new_contact_lastnamee);
@@ -51,38 +71,34 @@ public class ContactActivity extends AppCompatActivity {
         emailEditt = (TextInputEditText) findViewById(R.id.new_contact_emaill);
         imageView = (CircleImageView) findViewById(R.id.image_single_contact);
 
-        Intent intent = getIntent();
-        String first = intent.getStringExtra("efirst");
-        String last = intent.getStringExtra("elast");
-        String display = intent.getStringExtra("edisplay");
-        String email = intent.getStringExtra("eemail");
-        String image = intent.getStringExtra("eimage");
-
-        firstNameEditt.setText(String.valueOf(first));
-        lastNameEditt.setText(String.valueOf(last));
-        displayNameEditt.setText(String.valueOf(display));
-        emailEditt.setText(String.valueOf(email));
-
-        //saa stacka
-        /*
-        ourImageView.buildDrawingCache();
-        Bitmap passedBitmap = imageView.getDrawingCache();
-
-        Intent intent = new Intent(this, YourOtherActivity.class;
-        Intent.putExtra("passedBitmap", passedBitmap);
+        handler = new MessagesDBHandler(this);
 
 
-         */
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ActivityCompat.requestPermissions(ContactActivity.this,
+                        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                        888);
+            }
+        });
 
-
-        List<Contact> list = handler.getAllContactsList();
-        for (Contact contact: list) {
-            Log.d("Elena", "\n" + "Id kontakta sa ContactsActivity je: " + contact.get_id() + "\n" +
-                    "First name kontakta sa ContactsActivity je: " + contact.getFirst() + "\n" +
-                    "Last name kontakta sa ContactsActivity je: " + contact.getLast() + "\n" +
-                    "Display name kontaktasa ContactsActivity je: " + contact.getDisplay() + "\n" +
-                    "Email kontakta sa ContactsActivity je: " + contact.getEmail() + "\n");
+        Intent intent2 = getIntent();
+        selectedID = intent2.getIntExtra("id", -1);
+        selectedFirst = intent2.getStringExtra("first");
+        selectedLast = intent2.getStringExtra("last");
+        selectedDisplay = intent2.getStringExtra("display");
+        selectedEmail = intent2.getStringExtra("email");
+        if(getIntent().hasExtra("byteArray")) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(
+                    getIntent().getByteArrayExtra("byteArray"),
+                    0,getIntent().getByteArrayExtra("byteArray").length); //ne moze length
+            imageView.setImageBitmap(bitmap);
         }
+        firstNameEditt.setText(selectedFirst);
+        lastNameEditt.setText(selectedLast);
+        displayNameEditt.setText(selectedDisplay);
+        emailEditt.setText(selectedEmail);
 
         Toolbar toolbar = findViewById(R.id.toolbar_contact);
         setSupportActionBar(toolbar);
@@ -91,6 +107,8 @@ public class ContactActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Contact");
     }
+
+
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_contact, menu);
@@ -101,13 +119,51 @@ public class ContactActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_contact:
+                String first =  firstNameEditt.getText().toString().trim();
+                String last = lastNameEditt.getText().toString().trim();
+                String display = displayNameEditt.getText().toString().trim();
+                String email = emailEditt.getText().toString().trim();
+                byte[] image = imageViewToByte(imageView);
+                handler.updateData9(first,last,display,email,image);
                 startActivity(new Intent(this,ContactsActivity.class));
                 return true;
-          default:
-              return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 
-}
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if(requestCode == 888) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, 888);
+            } else {
+                Toast.makeText(getApplicationContext(), "You don't have permission to access file!", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 888 && resultCode == RESULT_OK
+                && data != null && data.getData() != null) {
+            Uri imageUri = data.getData();
+            try {
+                InputStream inputStream = getContentResolver().openInputStream(imageUri);
+
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                imageView.setImageBitmap(bitmap);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     @Override
     protected void onStart() {
         super.onStart();
@@ -142,4 +198,5 @@ public class ContactActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
     }
+
 }
