@@ -35,20 +35,7 @@ import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
-import com.aleksandar69.PMSU2020Tim16.models.Contact;
-import com.aleksandar69.PMSU2020Tim16.models.Photo;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StorageTask;
-import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -73,7 +60,7 @@ public class CreateContactActivity extends AppCompatActivity {
     private TextInputEditText lastNameEdit;
     private TextInputEditText displayNameEdit;
     private TextInputEditText emailEdit;
-    MessagesDBHandler handler;
+    public static MessagesDBHandler handler;
     private TextView showContacts;
     private Uri imageUri;
 
@@ -177,25 +164,17 @@ public class CreateContactActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setMessage("Please fill at least one field! ").setNegativeButton("OK",null).show();
                 }
-
-                Toast.makeText(CreateContactActivity.this, "Added successfully", Toast.LENGTH_SHORT).show();
-
+                Toast.makeText(CreateContactActivity.this, "Added successfully", Toast.LENGTH_SHORT).show()
                  */
-
                 //PROVJERA ZA UNOS
                 /*
                 if(!TextUtils.isEmpty(first) || !TextUtils.isEmpty(last) || !TextUtils.isEmpty(display) || !TextUtils.isEmpty(email)){
                     Contact contact = new Contact(first,last,display,email);
-
-
                     handler.addContact(contact);
-
-
                     startActivity(new Intent(context,ContactsActivity.class));
                 } else{
 
                 }
-
                  */
             default:
                 return super.onOptionsItemSelected(item);
@@ -203,24 +182,13 @@ public class CreateContactActivity extends AppCompatActivity {
     }
 
     public static byte[] imageViewToByte(ImageView image) {
-        Bitmap bitmap = ((BitmapDrawable)imageEdit.getDrawable()).getBitmap();
+        Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG,100,stream);
         byte[] byteArray= stream.toByteArray();
         return byteArray;
     }
 
-    /*
-
-    private void pickImageFromGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        startActivityForResult(intent,IMAGE_PICK_CODE);
-    }
-
-
-     */
-    //handle result of runtime permission
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -232,9 +200,8 @@ public class CreateContactActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
-        && data != null && data.getData() != null) {
+                && data != null && data.getData() != null) {
             imageUri = data.getData();
-
             try {
                 InputStream inputStream = getContentResolver().openInputStream(imageUri);
 
@@ -243,9 +210,7 @@ public class CreateContactActivity extends AppCompatActivity {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-
             // Picasso.get().load(imageUri).into(imageEdit);
-
         }
     }
 

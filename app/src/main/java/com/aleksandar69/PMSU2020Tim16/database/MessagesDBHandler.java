@@ -8,8 +8,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.Data;
+import com.aleksandar69.PMSU2020Tim16.activities.ContactActivity;
 import com.aleksandar69.PMSU2020Tim16.database.provider.AccountsContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.AttachmentsContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.ContactsContentProvider;
@@ -32,7 +34,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 397;
+    public static final int DATABASE_VERSION = 415;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -1003,26 +1005,43 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         String sql = "UPDATE CONTACT SET firstname = ? , lastname = ?, displaytext = ?, emailtext = ?,  imageresourceid = ? WHERE _id = ?";
         SQLiteStatement statement = db.compileStatement(sql);
 
-        //autoincremented contakt ???
-        statement.bindDouble(0,(double) id);
-        statement.bindString(1,first);
-        statement.bindString(2, last);
-        statement.bindString(3,display);
-        statement.bindString(4, email);
-        statement.bindBlob(5, image);
+        statement.bindDouble(1,(double)id);
+        statement.bindString(2,first);
+        statement.bindString(3, last);
+        statement.bindString(4,display);
+        statement.bindString(5, email);
+        statement.bindBlob(6, image);
 
         statement.execute();
         db.close();
     }
 
+//mitch tutorijal
+   public Cursor getItemID(String first) {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "Select * from " + TABLE_CONTACTS + " Where firstname" +  " = '" + first + "'";
 
-//    public int findFolderIdByEmailId(String messIdExtra) {
-//        int id = Integer.parseInt(messIdExtra);
-//        String idQuery = " SELECT * FROM " + TABLE_MESSAGES + " WHERE " + COLUMN_ID_EMAILS + " = " + id ;
-//        SQLiteDatabase db = this.getReadableDatabase();
-//        Cursor cursor = db.rawQuery(idQuery, null);
-//        int folderID = cursor.getInt(cursor.getColumnIndex(COLUMN_ID_FOLDERS_FK));
-//        cursor.close();
-//        return folderID;
-//    }
+        Cursor data = db.rawQuery(query,null);
+        return  data;
+    }
+
+    public Cursor getData() {
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_CONTACTS;
+        Cursor data = db.rawQuery(query, null);
+        return data;
+    }
+
+    Context context;
+    //bez update slike
+    public void updateData9(String first, String last, String display, String email,byte[]image) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        //cv.put(COLUMN_FIRST,first);
+        cv.put(COLUMN_LAST, last);
+        cv.put(COLUMN_DISPLAY, display);
+        cv.put(COLUMN_CONTACT_EMAIL, email);
+        long result = db.update(TABLE_CONTACTS,cv,"firstname=?", new String[]{(first)});
+
+    }
 }
