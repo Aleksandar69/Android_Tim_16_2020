@@ -19,9 +19,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <provider
             android:name=".database.provider.TagsContentProvider"
             android:authorities="com.aleksandar69.PMSU2020Tim16.database.provider.TagsContentProvider"
+            android:enabled="true"
+            android:exported="true">
+
+        </provider>
+
+        <provider
+            android:name=".database.provider.ContactsContentProvider"
+            android:authorities="com.aleksandar69.PMSU2020Tim16.database.provider.ContactsContentProvider"
             android:enabled="true"
             android:exported="true">
 

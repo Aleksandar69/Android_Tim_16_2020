@@ -34,7 +34,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 415;
+    public static final int DATABASE_VERSION = 421;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -156,7 +156,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             "FOREIGN KEY(" + COLUMN_EMAIL_TAG_ID_FK + ") REFERENCES EMAILS(_id)" + ")";
 
     private static String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS +
-            "(" + COLUMN_ID_CONTACTS + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "(" + COLUMN_ID_CONTACTS + " INTEGER PRIMARY KEY, " +
             COLUMN_FIRST + " TEXT, " + COLUMN_LAST + " TEXT, " +
             COLUMN_DISPLAY + " TEXT, " + COLUMN_CONTACT_EMAIL + " TEXT, " + COLUMN_IMAGE_RESOURCE + " INTEGER" + ")";
 
@@ -1042,6 +1042,16 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         cv.put(COLUMN_DISPLAY, display);
         cv.put(COLUMN_CONTACT_EMAIL, email);
         long result = db.update(TABLE_CONTACTS,cv,"firstname=?", new String[]{(first)});
-
     }
+
+    public void updateData10(int contactID ,String first, String last, String display, String email){
+        int id = contactID;
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_FIRST, first);
+        values.put(COLUMN_LAST, last);
+        values.put(COLUMN_DISPLAY, display);
+        values.put(COLUMN_CONTACT_EMAIL, email);
+        myContentResolver.update(ContactsContentProvider.CONTENT_URI, values, COLUMN_ID_CONTACTS + "=" + id, null);
+    }
+
 }

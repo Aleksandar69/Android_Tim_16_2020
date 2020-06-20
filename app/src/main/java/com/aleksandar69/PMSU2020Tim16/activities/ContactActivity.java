@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.adapters.RecyclerViewContactsAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
@@ -59,11 +60,15 @@ public class ContactActivity extends AppCompatActivity {
     private CircleImageView imageView;
     private Button btnUpdate;
     MessagesDBHandler handler;
+    private String contactId;
+    private int contactIdInt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+
+        contactIdInt = Integer.parseInt(String.valueOf(selectedID));
 
         firstNameEditt = (TextInputEditText) findViewById(R.id.new_contact_firstnamee);
         lastNameEditt = (TextInputEditText) findViewById(R.id.new_contact_lastnamee);
@@ -95,6 +100,7 @@ public class ContactActivity extends AppCompatActivity {
                     0,getIntent().getByteArrayExtra("byteArray").length); //ne moze length
             imageView.setImageBitmap(bitmap);
         }
+
         firstNameEditt.setText(selectedFirst);
         lastNameEditt.setText(selectedLast);
         displayNameEditt.setText(selectedDisplay);
@@ -124,7 +130,7 @@ public class ContactActivity extends AppCompatActivity {
                 String display = displayNameEditt.getText().toString().trim();
                 String email = emailEditt.getText().toString().trim();
                 byte[] image = imageViewToByte(imageView);
-                handler.updateData9(first,last,display,email,image);
+                handler.updateData10(selectedID,first,last,display,email);
                 startActivity(new Intent(this,ContactsActivity.class));
                 return true;
             default:

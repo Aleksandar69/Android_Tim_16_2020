@@ -16,7 +16,7 @@ import static com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentPr
 
 public class ContactsContentProvider extends ContentProvider {
     private static final String AUTHORITY = "com.aleksandar69.PMSU2020Tim16.database.provider.ContactsContentProvider";
-    private static final String CONTACTS_TABLE = "CONTACTS";
+    private static final String CONTACTS_TABLE = "CONTACT";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + CONTACTS_TABLE);
 
     public static final int CONTACTS = 1;
