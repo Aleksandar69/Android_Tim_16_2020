@@ -41,7 +41,7 @@ public class ContactsContentProvider extends ContentProvider {
 
         switch (uriType) {
             case CONTACTS:
-                rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_MESSAGES,
+                rowsDeleted = sqlDB.delete(MessagesDBHandler.TABLE_CONTACTS,
                         selection,
                         selectionArgs);
                 break;

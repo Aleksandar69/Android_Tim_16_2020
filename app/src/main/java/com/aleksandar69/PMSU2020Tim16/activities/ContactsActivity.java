@@ -525,12 +525,15 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        /*
         Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
         String contact_id = cursor.getString(0);
 
         Intent intent = new Intent(this,ContactActivity.class);
         intent.putExtra(Data.CONTACT_ID_EXTRA, contact_id);
         startActivity(intent);
+
+         */
     }
 
     public class CustomAdapter extends BaseAdapter {
@@ -635,7 +638,6 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
                 }
 
             });
-
             return row;
         }
     }

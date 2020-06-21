@@ -34,7 +34,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 421;
+    public static final int DATABASE_VERSION = 425;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -61,9 +61,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     //DODATI PLAIN,HTML
     private static final String COLUMN_CONTACT_EMAIL = "emailtext";
     private static final String COLUMN_IMAGE_RESOURCE = "imageresourceid";
-
-
-
+    private static final String COLUMN_NEW_IMAGE = "newimage";
     //emails
     public static final String TABLE_MESSAGES = "EMAILS";
 
@@ -159,7 +157,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             "(" + COLUMN_ID_CONTACTS + " INTEGER PRIMARY KEY, " +
             COLUMN_FIRST + " TEXT, " + COLUMN_LAST + " TEXT, " +
             COLUMN_DISPLAY + " TEXT, " + COLUMN_CONTACT_EMAIL + " TEXT, " + COLUMN_IMAGE_RESOURCE + " INTEGER" + ")";
-
 
 
     public MessagesDBHandler(Context context/*, String name, SQLiteDatabase.CursorFactory factory, int version*/) {
@@ -639,33 +636,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
 
 //============================AKTIVNO KORISTIM========================================================
-    public void addContact(Contact contact) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-
-        values.put(COLUMN_FIRST,contact.getFirst());
-        values.put(COLUMN_LAST,contact.getLast());
-        values.put(COLUMN_DISPLAY,contact.getDisplay());
-        values.put(COLUMN_CONTACT_EMAIL,contact.getEmail());
-        values.put(COLUMN_IMAGE_RESOURCE, contact.getImageSourceID());
-        //poslije dodati za fotografiju i za display html
-
-        db.insert(TABLE_CONTACTS,null,values);
-        db.close();
-    }
-
-
-    public void updateContact333(Contact contact) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_ID_CONTACTS,contact.get_id());
-        values.put(COLUMN_FIRST, contact.getFirst());
-        values.put(COLUMN_LAST, contact.getLast());
-        values.put(COLUMN_DISPLAY, contact.getDisplay());
-        values.put(COLUMN_CONTACT_EMAIL, contact.getEmail());
-        db.update(TABLE_CONTACTS, values, COLUMN_ID_CONTACTS + "='" + contact.get_id() + "'", null);
-        db.close();
-    }
 
     //metoda za dobavljanje svih kontakata preko liste
     public List getAllContactsList() {
@@ -691,21 +661,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         return contactList;
     }
 
-    public void insertData(String first,String last, String display, String email, byte[] image) {
-        SQLiteDatabase db = getWritableDatabase();
-        String sql = "INSERT INTO CONTACT VALUES (NULL,?,?,?,?,?)";
-
-        SQLiteStatement statement = db.compileStatement(sql);
-        statement.clearBindings();
-
-        statement.bindString(1,first);
-        statement.bindString(2,last);
-        statement.bindString(3,display);
-        statement.bindString(4,email);
-        statement.bindBlob(5,image);
-
-        statement.executeInsert();
-    }
 
 
     public Cursor getData(String sql) {
@@ -714,52 +669,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     }
 
 //    //============================AKTIVNO KORISTIM========================================================
-
-
-
-    public void addContacts(Contact contact) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contactsValues = new ContentValues();
-        //contactsValues.put(COLUMN_ID_CONTACTS, contact.get_id());
-        contactsValues.put(COLUMN_FIRST, contact.getFirst());
-        contactsValues.put(COLUMN_LAST, contact.getLast());
-        contactsValues.put(COLUMN_DISPLAY, contact.getDisplay());
-        contactsValues.put(COLUMN_CONTACT_EMAIL, contact.getEmail());
-        contactsValues.put(COLUMN_IMAGE_RESOURCE, contact.getImageSourceID());
-        db.insert(TABLE_CONTACTS, null, contactsValues);
-        Log.d("Elena", "Contact is inserted");
-        //  myContentResolver.insert(ContactsContentProvider.CONTENT_URI,contactsValues);
-        db.close();
-    }
-
-    public int updateContact(Contact contact) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contactValues = new ContentValues();
-        contactValues.put(COLUMN_ID_CONTACTS,contact.get_id()); //OVO ZADNJE DODALA
-        contactValues.put(COLUMN_FIRST, contact.getFirst());
-        contactValues.put(COLUMN_LAST, contact.getLast());
-        contactValues.put(COLUMN_DISPLAY, contact.getDisplay());
-        contactValues.put(COLUMN_CONTACT_EMAIL, contact.getEmail());
-        contactValues.put(COLUMN_IMAGE_RESOURCE, contact.getImageSourceID());
-        return db.update(TABLE_CONTACTS, contactValues,   "_id = ? ",
-                new String[]{String.valueOf(contact.get_id())});
-
-    }
-
-    //SA ID-IJEM, bez image resource-a
-    public boolean updateContact22(String first, String last, String display,String email) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contactValues = new ContentValues();
-        //contactValues.put(COLUMN_ID_CONTACTS,id); //OVO ZADNJE DODALA
-        contactValues.put(COLUMN_FIRST, first);
-        contactValues.put(COLUMN_LAST, last);
-        contactValues.put(COLUMN_DISPLAY, display);
-        contactValues.put(COLUMN_CONTACT_EMAIL, email);
-        //contactValues.put(COLUMN_IMAGE_RESOURCE, contact.getImageSourceID());
-        db.update(TABLE_CONTACTS,contactValues, "firstname = ? ", new String[]{ first });
-        getAllContactsList();
-        return true;
-    }
 
     public void deleteContactByID(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -818,44 +727,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         }
         return contacts;
     }
-
-    public int updateContact2(Contact contact) {
-        SQLiteDatabase db = getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_FIRST,contact.getFirst());
-        values.put(COLUMN_LAST,contact.getLast());
-        values.put(COLUMN_DISPLAY,contact.getDisplay());
-        values.put(COLUMN_CONTACT_EMAIL,contact.getEmail());
-
-        return db.update(TABLE_CONTACTS,values,null,null);
-    }
-
-
-    public void deleteContact2(Contact contact) {
-        SQLiteDatabase db = getWritableDatabase();
-        db.delete(TABLE_CONTACTS,
-                COLUMN_ID_CONTACTS + " = ?",
-                new String[]{String.valueOf(contact.get_id())});
-        db.close();
-    }
-
-    public int getContactCount() {
-        SQLiteDatabase db = getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_CONTACTS;
-        Cursor cursor = db.rawQuery(query,null);
-        return cursor.getCount();
-    }
-
-    public void addContacts1(Contact contact) {
-        //if(CheckFolderInDB(folder.getName()) == false) {
-        ContentValues values = new ContentValues();
-        //values.put(COLUMN_ID_FOLDER, folder.getId());
-        values.put(COLUMN_FIRST, contact.getFirst());
-        myContentResolver.insert(ContactsContentProvider.CONTENT_URI, values);
-        //}
-    }
-
 
     public Contact findContact(int contactId) {
         String[] projection = {COLUMN_ID_CONTACTS, COLUMN_FIRST, COLUMN_LAST, COLUMN_DISPLAY, COLUMN_CONTACT_EMAIL, COLUMN_IMAGE_RESOURCE};
@@ -965,8 +836,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public Cursor findEmailByFolderID(int itemID) {
         String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_ID_FOLDERS_FK};
-
-
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
                 COLUMN_ID_FOLDERS_FK + "=" + itemID, null, null);
 
@@ -979,7 +848,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         values.put(COLUMN_ID_FOLDERS_FK, 2);
         myContentResolver.update(MessagesContentProvider.CONTENT_URI, values, COLUMN_ID_EMAILS + "=" + id, null);
     }
-
 
 
     public Cursor inboxEmails() {
@@ -1023,18 +891,18 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
         Cursor data = db.rawQuery(query,null);
         return  data;
-    }
+        }
 
-    public Cursor getData() {
+        public Cursor getData() {
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_CONTACTS;
         Cursor data = db.rawQuery(query, null);
         return data;
-    }
+        }
 
-    Context context;
-    //bez update slike
-    public void updateData9(String first, String last, String display, String email,byte[]image) {
+        Context context;
+        //bez update slike
+        public void updateData9(String first, String last, String display, String email,byte[]image) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         //cv.put(COLUMN_FIRST,first);
@@ -1042,16 +910,47 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         cv.put(COLUMN_DISPLAY, display);
         cv.put(COLUMN_CONTACT_EMAIL, email);
         long result = db.update(TABLE_CONTACTS,cv,"firstname=?", new String[]{(first)});
-    }
+         }
 
-    public void updateData10(int contactID ,String first, String last, String display, String email){
+    //insert + update
+       public void updateData10(int contactID ,String first, String last, String display, String email){
         int id = contactID;
         ContentValues values = new ContentValues();
         values.put(COLUMN_FIRST, first);
         values.put(COLUMN_LAST, last);
         values.put(COLUMN_DISPLAY, display);
         values.put(COLUMN_CONTACT_EMAIL, email);
+       // values.put(COLUMN_NEW_IMAGE,image);
         myContentResolver.update(ContactsContentProvider.CONTENT_URI, values, COLUMN_ID_CONTACTS + "=" + id, null);
-    }
+        }
+
+      public boolean deleteContact10(int id) {
+        boolean result = false;
+        int rowsDeleted = myContentResolver.delete(ContactsContentProvider.CONTENT_URI, COLUMN_ID_CONTACTS + " = " + id, null);
+        if (rowsDeleted > 0)
+            result = true;
+
+        return result;
+
+       }
+
+
+        public void insertData(String first,String last, String display, String email, byte[] image) {
+        SQLiteDatabase db = getWritableDatabase();
+        String sql = "INSERT INTO CONTACT VALUES (NULL,?,?,?,?,?)";
+
+        SQLiteStatement statement = db.compileStatement(sql);
+        statement.clearBindings();
+
+        statement.bindString(1,first);
+        statement.bindString(2,last);
+        statement.bindString(3,display);
+        statement.bindString(4,email);
+        statement.bindBlob(5,image);
+
+        statement.executeInsert();
+        }
+
+
 
 }

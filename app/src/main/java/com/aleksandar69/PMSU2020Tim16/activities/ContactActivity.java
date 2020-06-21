@@ -32,6 +32,7 @@ import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.adapters.RecyclerViewContactsAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
+import com.aleksandar69.PMSU2020Tim16.javamail.DeleteEmail;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
 import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.picasso.Picasso;
@@ -58,7 +59,7 @@ public class ContactActivity extends AppCompatActivity {
     private TextInputEditText displayNameEditt;
     private TextInputEditText emailEditt;
     private CircleImageView imageView;
-    private Button btnUpdate;
+    private Button btnDelete;
     MessagesDBHandler handler;
     private String contactId;
     private int contactIdInt;
@@ -75,9 +76,9 @@ public class ContactActivity extends AppCompatActivity {
         displayNameEditt = (TextInputEditText) findViewById(R.id.new_contact_displaynamee);
         emailEditt = (TextInputEditText) findViewById(R.id.new_contact_emaill);
         imageView = (CircleImageView) findViewById(R.id.image_single_contact);
+        btnDelete = (Button) findViewById(R.id.delete_button);
 
         handler = new MessagesDBHandler(this);
-
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,6 +107,14 @@ public class ContactActivity extends AppCompatActivity {
         displayNameEditt.setText(selectedDisplay);
         emailEditt.setText(selectedEmail);
 
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               handler.deleteContact10(selectedID);
+                startActivity(new Intent(ContactActivity.this,ContactsActivity.class));
+            }
+        });
+
         Toolbar toolbar = findViewById(R.id.toolbar_contact);
         setSupportActionBar(toolbar);
 
@@ -113,8 +122,6 @@ public class ContactActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Contact");
     }
-
-
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_contact, menu);
@@ -136,7 +143,6 @@ public class ContactActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
