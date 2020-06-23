@@ -146,7 +146,7 @@ public class ContactActivity extends AppCompatActivity {
                     displayNameEditt.setError("Unesite ime koje zelite da se prikazuje! ");
                     displayNameEditt.requestFocus();
                 } else if (!email.matches(emailPattern)) {
-                    Toast.makeText(getApplicationContext(), "Email adresa nije validna!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Email adresa nije validna! Unesite ponovo!", Toast.LENGTH_SHORT).show();
                     //emailEditt.setError("Niste unijeli email!");
                     //emailEditt.requestFocus();
                 } else if (image == null && image.length < 0) {

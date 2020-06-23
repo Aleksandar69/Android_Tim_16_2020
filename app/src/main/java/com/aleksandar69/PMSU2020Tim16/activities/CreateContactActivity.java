@@ -149,7 +149,7 @@ public class CreateContactActivity extends AppCompatActivity {
                     displayNameEdit.setError("Unesite ime koje zelite da se prikazuje! ");
                     displayNameEdit.requestFocus();
                 } else if (!email.matches(emailPattern)) {
-                    Toast.makeText(getApplicationContext(), "Email adresa nije validna!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Email adresa nije validna! Unesite ponovo!", Toast.LENGTH_SHORT).show();
                     //emailEdit.setError("Niste unijeli email!");
                     //emailEdit.requestFocus();
                 }
