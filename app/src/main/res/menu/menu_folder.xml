@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/folder_delete_button"
+        android:icon="@drawable/baseline_delete_white_24dp"
+        android:orderInCategory="1"
+        android:title="@string/delete_message"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/edit_folder"
         android:title="@string/edit_folder_menu"
         android:icon="@drawable/baseline_edit_white_24dp"

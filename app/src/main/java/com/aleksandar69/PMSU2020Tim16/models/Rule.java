@@ -6,12 +6,33 @@ import com.aleksandar69.PMSU2020Tim16.enums.Operation;
 public class Rule {
     private int id;
     private Condition condition;
+    private String conditonTxt;
     private Operation operation;
+    private int folder_id;
 
-    public Rule(int id, Condition condition, Operation operation) {
+    public Rule(Condition condition,String conditonTxt ,Operation operation) {
+        this.condition = condition;
+        this.conditonTxt = conditonTxt;
+        this.operation = operation;
+    }
+
+    public Rule(int id, Condition condition,String conditonTxt ,Operation operation) {
         this.id = id;
         this.condition = condition;
+        this.conditonTxt = conditonTxt;
         this.operation = operation;
+    }
+
+    public Rule(){
+
+    }
+
+    public int getFolder_id() {
+        return folder_id;
+    }
+
+    public void setFolder_id(int folder_id) {
+        this.folder_id = folder_id;
     }
 
     public int getId() {
@@ -28,6 +49,14 @@ public class Rule {
 
     public void setCondition(Condition condition) {
         this.condition = condition;
+    }
+
+    public String getConditonTxt() {
+        return conditonTxt;
+    }
+
+    public void setConditonTxt(String conditonTxt) {
+        this.conditonTxt = conditonTxt;
     }
 
     public Operation getOperation() {

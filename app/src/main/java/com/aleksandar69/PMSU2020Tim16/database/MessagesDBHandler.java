@@ -17,11 +17,15 @@ import com.aleksandar69.PMSU2020Tim16.database.provider.AttachmentsContentProvid
 import com.aleksandar69.PMSU2020Tim16.database.provider.ContactsContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.FoldersContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.MessagesContentProvider;
+import com.aleksandar69.PMSU2020Tim16.database.provider.RuleContentProvider;
 import com.aleksandar69.PMSU2020Tim16.database.provider.TagsContentProvider;
+import com.aleksandar69.PMSU2020Tim16.enums.Condition;
+import com.aleksandar69.PMSU2020Tim16.enums.Operation;
 import com.aleksandar69.PMSU2020Tim16.models.Account;
 import com.aleksandar69.PMSU2020Tim16.models.Attachment;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
 import com.aleksandar69.PMSU2020Tim16.models.Message;
+import com.aleksandar69.PMSU2020Tim16.models.Rule;
 import com.aleksandar69.PMSU2020Tim16.models.Tag;
 import com.aleksandar69.PMSU2020Tim16.models.Folder;
 
@@ -34,7 +38,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 425;
+    public static final int DATABASE_VERSION = 427;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -46,8 +50,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     public static final String TABLE_RULE = "RULE";
     public static final String COLUMN_ID_RULE = "_id";
     public static final String COLUMN_CONDITION_TXT = "condition_txt";
-    public static final String COLUMN_CONDITION_ENUM = "conditon_enum";
-    public static final String COLUMN_OPERATION_TXT = "operation_txt";
+    public static final String COLUMN_CONDITION_ENUM = "condition_enum";
     public static final String COLUMN_OPERATION_ENUM = "operation_enum";
     public static final String COLUMN_ID_FOLDER_FK = "folder_fk";
 
@@ -116,7 +119,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     private static String CREATE_RULE_TABLE = "CREATE TABLE " + TABLE_RULE +
             "(" + COLUMN_ID_RULE + " INTEGER PRIMARY KEY, " + COLUMN_CONDITION_TXT + " TEXT, " +
-            COLUMN_CONDITION_ENUM + " TEXT, " + COLUMN_OPERATION_TXT + " TEXT, " +
+            COLUMN_CONDITION_ENUM + " TEXT, " +
             COLUMN_OPERATION_ENUM + " TEXT, " + COLUMN_ID_FOLDER_FK + " INTEGER, " +
             "FOREIGN KEY(" + COLUMN_ID_FOLDER_FK + ") REFERENCES FOLDERS(_id) " + ")";
 
@@ -885,24 +888,24 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     }
 
 //mitch tutorijal
-   public Cursor getItemID(String first) {
+    public Cursor getItemID(String first) {
         SQLiteDatabase db = getWritableDatabase();
         String query = "Select * from " + TABLE_CONTACTS + " Where firstname" +  " = '" + first + "'";
 
         Cursor data = db.rawQuery(query,null);
         return  data;
-        }
+    }
 
-        public Cursor getData() {
+    public Cursor getData() {
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_CONTACTS;
         Cursor data = db.rawQuery(query, null);
         return data;
-        }
+    }
 
         Context context;
         //bez update slike
-        public void updateData9(String first, String last, String display, String email,byte[]image) {
+    public void updateData9(String first, String last, String display, String email,byte[]image) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         //cv.put(COLUMN_FIRST,first);
@@ -910,10 +913,10 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         cv.put(COLUMN_DISPLAY, display);
         cv.put(COLUMN_CONTACT_EMAIL, email);
         long result = db.update(TABLE_CONTACTS,cv,"firstname=?", new String[]{(first)});
-         }
+    }
 
     //insert + update
-       public void updateData10(int contactID ,String first, String last, String display, String email){
+    public void updateData10(int contactID ,String first, String last, String display, String email){
         int id = contactID;
         ContentValues values = new ContentValues();
         values.put(COLUMN_FIRST, first);
@@ -922,9 +925,9 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         values.put(COLUMN_CONTACT_EMAIL, email);
        // values.put(COLUMN_NEW_IMAGE,image);
         myContentResolver.update(ContactsContentProvider.CONTENT_URI, values, COLUMN_ID_CONTACTS + "=" + id, null);
-        }
+    }
 
-      public boolean deleteContact10(int id) {
+    public boolean deleteContact10(int id) {
         boolean result = false;
         int rowsDeleted = myContentResolver.delete(ContactsContentProvider.CONTENT_URI, COLUMN_ID_CONTACTS + " = " + id, null);
         if (rowsDeleted > 0)
@@ -932,10 +935,10 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
         return result;
 
-       }
+    }
 
 
-        public void insertData(String first,String last, String display, String email, byte[] image) {
+    public void insertData(String first,String last, String display, String email, byte[] image) {
         SQLiteDatabase db = getWritableDatabase();
         String sql = "INSERT INTO CONTACT VALUES (NULL,?,?,?,?,?)";
 
@@ -949,7 +952,223 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         statement.bindBlob(5,image);
 
         statement.executeInsert();
+    }
+
+
+
+    public void deleteFolder(int folderID) {
+        myContentResolver.delete(FoldersContentProvider.CONTENT_URI, COLUMN_ID_FOLDER + " = " + folderID, null);
+        deleteRule(folderID);
+    }
+
+    private void deleteRule(int folderID) {
+        myContentResolver.delete(RuleContentProvider.CONTENT_URI, COLUMN_ID_FOLDER_FK + " = " + folderID, null);
+    }
+
+
+    public Rule findRule(int id) {
+        String[] projection = {COLUMN_ID_RULE, COLUMN_CONDITION_TXT, COLUMN_CONDITION_ENUM , COLUMN_OPERATION_ENUM, COLUMN_ID_FOLDER_FK};
+        String selection = "folder_fk = \"" + id + "\"";
+
+        Cursor cursor = myContentResolver.query(RuleContentProvider.CONTENT_URI, projection, selection, null, null);
+
+        Rule rule = new Rule();
+        if (cursor.moveToFirst()){
+            cursor.moveToFirst();
+            rule.setId(Integer.parseInt(cursor.getString(0)));
+            rule.setConditonTxt(cursor.getString(1));
+            rule.setCondition(Condition.valueOf(cursor.getString(2)));
+            rule.setOperation(Operation.valueOf(cursor.getString(3)));
+            rule.setFolder_id(Integer.parseInt(cursor.getString(4)));
+            cursor.close();
         }
+        else {
+            rule = null;
+        }
+        return rule;
+    }
+
+
+    public Folder findFolder(int id) {
+
+        String[] projection = {COLUMN_ID_FOLDER, COLUMN_NAME};
+        String selection = "_id = \"" + id + "\"";
+
+        Cursor cursor = myContentResolver.query(FoldersContentProvider.CONTENT_URI, projection, selection, null, null);
+
+        Folder folder = new Folder();
+        if(cursor.moveToFirst()){
+            cursor.moveToFirst();
+            folder.setId(Integer.parseInt(cursor.getString(0)));
+            folder.setName(cursor.getString(1));
+            cursor.close();
+        }
+        else {
+            folder = null;
+        }
+        return folder;
+    }
+
+    public void addRule(String enum1, String conTxt, String enum2, int folderID) {
+        
+        ContentValues values = new ContentValues();
+
+        values.put(COLUMN_CONDITION_ENUM, enum1);
+        values.put(COLUMN_CONDITION_TXT, conTxt);
+        values.put(COLUMN_OPERATION_ENUM, enum2);
+        values.put(COLUMN_ID_FOLDER_FK, folderID);
+        
+        myContentResolver.insert(RuleContentProvider.CONTENT_URI, values);
+    }
+
+    public Folder findFolderID(String folderName) {
+
+//        String countQuery = " SELECT " + COLUMN_ID_FOLDER + " FROM " + TABLE_FOLDERS + " WHERE " + COLUMN_NAME + " = " + folderName ;
+//        SQLiteDatabase db = this.getReadableDatabase();
+//        Cursor cursor = db.rawQuery(countQuery, null);
+//        int id = Integer.parseInt(String.valueOf(cursor));
+//        return id;
+        String[] projection = {COLUMN_ID_FOLDER, COLUMN_NAME};
+        String selection = "name = \"" + folderName + "\"";
+
+        Cursor cursor = myContentResolver.query(FoldersContentProvider.CONTENT_URI, projection, selection, null, null);
+
+        Folder folder = new Folder();
+        if(cursor.moveToFirst()){
+            cursor.moveToFirst();
+            folder.setId(Integer.parseInt(cursor.getString(0)));
+            folder.setName(cursor.getString(1));
+            cursor.close();
+        }
+        else {
+            folder = null;
+        }
+        return folder;
+
+
+    }
+
+
+    public void updateRule(String enum1, String enum2, String conTxt, int id) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_CONDITION_ENUM, enum1);
+        values.put(COLUMN_OPERATION_ENUM, enum2);
+        values.put(COLUMN_CONDITION_TXT, conTxt);
+
+        myContentResolver.update(RuleContentProvider.CONTENT_URI, values, COLUMN_ID_FOLDER_FK + "=" + id, null);
+    }
+
+
+    public void updateFolder(int id, String name) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, name);
+        myContentResolver.update(FoldersContentProvider.CONTENT_URI, values, COLUMN_ID_FOLDER + "=" + id, null);
+    }
+
+    public List<Rule> queryAllRules() {
+
+        String[] projection = {COLUMN_ID_RULE, COLUMN_CONDITION_TXT, COLUMN_CONDITION_ENUM , COLUMN_OPERATION_ENUM, COLUMN_ID_FOLDER_FK};
+        String selection = null;
+
+        Cursor cursor = myContentResolver.query(RuleContentProvider.CONTENT_URI, projection, null, null, null);
+
+        List<Rule> rules = new ArrayList<>();
+
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            Rule rule = new Rule();
+            rule.setId(Integer.parseInt(cursor.getString(0)));
+            rule.setConditonTxt(cursor.getString(1));
+            rule.setCondition(Condition.valueOf(cursor.getString(2)));
+            rule.setOperation(Operation.valueOf(cursor.getString(3)));
+            rule.setFolder_id(Integer.parseInt(cursor.getString(4)));
+            rules.add(rule);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return rules;
+    }
+
+    public void runRule(){
+        List<Message> messaages;
+        messaages = queryAllMessages(Data.account.get_id());
+        List<Rule> rules;
+        rules = queryAllRules();
+        int i;
+        int l;
+
+        for (i = 0 ; i < rules.size(); i++){
+            Rule rule = rules.get(i);
+            Condition c = rule.getCondition();
+            Operation o = rule.getOperation();
+            String t = rule.getConditonTxt();
+            int idFolder = rule.getFolder_id();
+            for(l = 0; l < messaages.size(); l++){
+                Message message = messaages.get(l);
+                if(message.getFolder_id() == 0){
+                    int idMessage = message.get_id();
+                    String to = message.getTo();
+                    String from = message.getFrom();
+                    String cc = message.getCc();
+                    String subject = message.getSubject();
+
+                    if(c == Condition.CC && o == Operation.COPY && cc.contains(t)){
+                        message.set_id(0);
+                        message.setFolder_id(idFolder);
+                        addMessage(message);
+                    }
+                    else if(c == Condition.CC && o == Operation.DELETE  && cc.contains(t)){
+                        deleteMessage(idMessage);
+                    }
+                    else if(c == Condition.CC && o == Operation.MOVE  && cc.contains(t)){
+                        moveToFolder(idMessage, idFolder);
+                    }
+                    else if(c == Condition.TO && o == Operation.COPY && to.equals(t)){
+                        message.set_id(0);
+                        message.setFolder_id(idFolder);
+                        addMessage(message);
+                    }
+                    else if(c == Condition.TO && o == Operation.DELETE && to.equals(t)){
+                        deleteMessage(idMessage);
+                    }
+                    else if(c == Condition.TO && o == Operation.MOVE && to.equals(t)){
+                        moveToFolder(idMessage, idFolder);
+                    }
+                    else if(c == Condition.FROM && o == Operation.COPY && from.equals(t)){
+                        message.set_id(0);
+                        message.setFolder_id(idFolder);
+                        addMessage(message);
+                    }
+                    else if(c == Condition.FROM && o == Operation.DELETE && from.equals(t)){
+                        deleteMessage(idMessage);
+                    }
+                    else if(c == Condition.FROM && o == Operation.MOVE && from.equals(t)){
+                        moveToFolder(idMessage, idFolder);
+                    }
+                    else if(c == Condition.SUBJECT && o == Operation.COPY && subject.contains(t)){
+                        message.set_id(0);
+                        message.setFolder_id(idFolder);
+                        addMessage(message);
+                    }
+                    else if(c == Condition.SUBJECT && o == Operation.DELETE && subject.contains(t)){
+                        deleteMessage(idMessage);
+                    }
+                    else if(c == Condition.SUBJECT && o == Operation.MOVE && subject.contains(t)){
+                        moveToFolder(idMessage, idFolder);
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void moveToFolder(int idMessage, int idFolder) {
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ID_FOLDERS_FK, idFolder);
+        myContentResolver.update(MessagesContentProvider.CONTENT_URI, values, COLUMN_ID_EMAILS + "=" + idMessage, null);
+    }
 
 
 

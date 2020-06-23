@@ -62,6 +62,7 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emails);
 
+
         emails = findViewById(R.id.emails_list_view);
         pullToRefresh = findViewById(R.id.pullToRefresh);
 
@@ -188,7 +189,6 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
 
 
     public void populateList() {
-
         // cursor = handler.getAllMessages(sharedPreferences.getInt(LoginActivity.userId, -1));
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         Data.syncTime = sharedPreferences.getString(getString(R.string.pref_syncConnectionType),"60000" );
@@ -207,6 +207,7 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         emailsAdapter = new EmailsCursorAdapter(this, cursor);
         emails.setOnItemClickListener(this);
         emails.setAdapter(emailsAdapter);
+        handler.runRule();
 
     }
 

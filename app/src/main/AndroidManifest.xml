@@ -29,6 +29,14 @@
         </provider>
 
         <provider
+            android:name=".database.provider.RuleContentProvider"
+            android:authorities="com.aleksandar69.PMSU2020Tim16.database.provider.RuleContentProvider"
+            android:enabled="true"
+            android:exported="true">
+
+        </provider>
+
+        <provider
             android:name=".database.provider.ContactsContentProvider"
             android:authorities="com.aleksandar69.PMSU2020Tim16.database.provider.ContactsContentProvider"
             android:enabled="true"

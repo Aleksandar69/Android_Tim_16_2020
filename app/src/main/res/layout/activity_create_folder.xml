@@ -15,8 +15,7 @@
         style="@style/TextAppearance.AppCompat.Large"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:text="Create Folder" />
+        />
 
 
     <com.google.android.material.textfield.TextInputLayout
@@ -46,7 +45,7 @@
     <Spinner
         android:id="@+id/spinner1"
         android:layout_width="200dp"
-        android:layout_height="30dp"
+        android:layout_height="40dp"
         android:background="@android:drawable/btn_dropdown"
         android:spinnerMode="dropdown"/>
 
@@ -55,17 +54,18 @@
         android:layout_height="wrap_content"
         app:errorEnabled="true"/>
 
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/folder_operation"
-        android:layout_width="200dp"
+    <TextView
+        style="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Operation"
-        android:inputType="text"/>
+
+        android:text="Operation" />
+
 
     <Spinner
         android:id="@+id/spinner2"
         android:layout_width="200dp"
-        android:layout_height="30dp"
+        android:layout_height="40dp"
         android:background="@android:drawable/btn_dropdown"
         android:spinnerMode="dropdown"/>
 

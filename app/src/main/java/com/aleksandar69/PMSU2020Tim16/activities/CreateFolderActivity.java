@@ -5,38 +5,95 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.icu.text.CaseMap;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
+import com.aleksandar69.PMSU2020Tim16.enums.Condition;
+import com.aleksandar69.PMSU2020Tim16.enums.Operation;
 import com.aleksandar69.PMSU2020Tim16.models.Folder;
+import com.aleksandar69.PMSU2020Tim16.models.Rule;
 import com.google.android.material.textfield.TextInputEditText;
 
 public class CreateFolderActivity extends AppCompatActivity {
 
-    private TextInputEditText nameEditBox;
-    MessagesDBHandler dbHandler;
 
+    private TextView tvName;
+    private TextView tvConditionTxt;
+    private TextView tvConditionE;
+    private TextView tvOperationE;
+
+    private TextInputEditText etName;
+    private TextInputEditText etConditonTxt;
+    private TextInputEditText etConditionE;
+    private TextInputEditText etOperationE;
+    private Spinner spinerCondition;
+    private Spinner spinerOperation;
+
+    private int id;
+    private String folderId;
+    //private TextInputEditText nameEditBox;
+    MessagesDBHandler dbHandler;
+    private Folder folder;
+    private Rule rule;
+
+    @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_folder);
 
-        nameEditBox = findViewById(R.id.folder_name);
+        try {
+            folderId = (String) getIntent().getExtras().get(Data.FOLDERS_ID_EXTRA);
+            id = Integer.parseInt(folderId);
+        }
+        catch (NullPointerException e){
+        }
+
+
+
+        //nameEditBox = findViewById(R.id.folder_name);
+        etName = findViewById(R.id.folder_name);
+        etConditonTxt = findViewById(R.id.folder_condition);
+        //etConditionE = findViewById(R.id.spinner1);
+        //etOperationE = findViewById(R.id.spinner2);
+
+        tvName = findViewById(R.id.folder_name);
+        tvConditionTxt = findViewById(R.id.folder_condition);
+        //tvConditionE = findViewById(R.id.spinner1);
+        //tvOperationE = findViewById(R.id.spinner2);
+
+        spinerCondition = findViewById(R.id.spinner1);
+        spinerCondition.setAdapter(new ArrayAdapter<Condition>(this, android.R.layout.simple_spinner_item, Condition.values()));
+        spinerOperation = findViewById(R.id.spinner2);
+        spinerOperation.setAdapter(new ArrayAdapter<Operation>(this, android.R.layout.simple_spinner_item, Operation.values()));
 
         dbHandler = new MessagesDBHandler(this);
+
+
+        if (id != 0){
+            folder = dbHandler.findFolder(id);
+            rule = dbHandler.findRule(id);
+            tvName.setText(folder.getName());
+            tvConditionTxt.setText(rule.getConditonTxt());
+        }
 
         Toolbar toolbar = findViewById(R.id.toolbar_create_folder);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        setTitle("Create Folder");
+        setTitle("Create/Edit Folder");
 
     }
 
@@ -45,22 +102,44 @@ public class CreateFolderActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_create_folder, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item){
+
+        String enum1 = spinerCondition.getSelectedItem().toString();
+        String enum2 = spinerOperation.getSelectedItem().toString();
+        String folderName = etName.getText().toString();
+
         switch (item.getItemId()) {
             case R.id.folder_cancel:
                 Intent intent = new Intent(this, FoldersActivity.class);
-                Toast.makeText(this, "Folder Creation Cancelled", Toast.LENGTH_LONG).show();
                 startActivity(intent);
                 return true;
             case R.id.folder_save:
-                Folder folder = new Folder(nameEditBox.getText().toString());
-                dbHandler.addFolder(folder);
-                startActivity(new Intent(this, FoldersActivity.class));
+
+                if (id == 0){
+                    Folder folder = new Folder(folderName);
+                    dbHandler.addFolder(folder);
+                    Folder newFolder = dbHandler.findFolderID(folderName);
+                    dbHandler.addRule(enum1, etConditonTxt.getText().toString(), enum2, newFolder.getId());
+                    startActivity(new Intent(this, FoldersActivity.class));
+                    return true;
+                }
+                else {
+                    String name = tvName.getText().toString().trim();
+                    String conTxt = tvConditionTxt.getText().toString().trim();
+                    dbHandler.updateFolder(id,name);
+                    dbHandler.updateRule(enum1,enum2,conTxt,id);
+                    super.onBackPressed();
+                    return true;
+
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
     @Override
     protected void onStart() {

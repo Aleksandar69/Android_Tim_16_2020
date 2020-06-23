@@ -327,6 +327,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
     String folderID;
     EmailsCursorAdapter emailsAdapter;
     SwipeRefreshLayout pullToRefresh;
+    int idID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -335,6 +336,8 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
 
         emails = findViewById(R.id.emails_list_view);
         pullToRefresh = findViewById(R.id.pullToRefresh);
+        folderID = (String) getIntent().getExtras().get(Data.FOLDERS_ID_EXTRA);
+        idID = Integer.parseInt(folderID);
 
 
         try {
@@ -363,15 +366,6 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        // populateListFromDB();
-
-        //sharedPreferences = getSharedPreferences(LoginActivity.myPreferance, Context.MODE_PRIVATE);
-
- /*        Data.syncTime= sharedPreferences.getString(getString(R.string.pref_sync_list),"60000" );
-        Data.allowSync = sharedPreferences.getBoolean(getString(R.string.pref_sync),false);
-
-        Log.d("SYNCTIME:", Data.syncTime);
-       Log.d("ALLOWSYNC", Data.allowSync.toString());*/
 
         populateList();
 
@@ -428,19 +422,11 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
         super.onNewIntent(intent);
     }
 
-    public void onTempButtonClickedFind(View view) {
-        onSearchRequested();
-    }
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-/*            if (query == "" || query.isEmpty()) {
-                Cursor c = handler.getAllMessages2();
-                EmailsCursorAdapter emailsAdapter = new EmailsCursorAdapter(this, c);
-                emails.setAdapter(emailsAdapter);
 
-            }*/
             Cursor c = handler.filterEmail(query);
             emailsAdapter = new EmailsCursorAdapter(this, c);
             emails.setAdapter(emailsAdapter);
@@ -460,18 +446,6 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
 
     public void populateList() {
 
-//        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        Data.syncTime = sharedPreferences.getString(getString(R.string.pref_syncConnectionType),"60000" );
-//        Data.allowSync = sharedPreferences.getBoolean(getString((R.string.pref_sync)),false);
-//        Data.prefSort = sharedPreferences.getString(getString(R.string.pref_sort),"ascending");
-//
-//        if(Data.prefSort.equals("ascending")){
-//            cursor = handler.sortEmailAsc(sharedPreferences.getInt(Data.userId, -1));
-//        }
-//        else if(Data.prefSort.equals("descending")){
-//            cursor = handler.sortEmailDesc(sharedPreferences.getInt(Data.userId, -1));
-//        }
-        folderID = (String) getIntent().getExtras().get(Data.FOLDERS_ID_EXTRA);
         Cursor c = handler.emailsFolder(folderID);
         emailsAdapter = new EmailsCursorAdapter(this, c);
         emails.setOnItemClickListener(this);
@@ -496,8 +470,21 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.folder_delete_button:
+                if(idID == 1 || idID == 2){
+                    Toast.makeText(this, "Ne mozete obrisati ovaj folder", Toast.LENGTH_LONG).show();
+                }
+                else{
+                    handler.deleteFolder(idID);
+                    startActivity(new Intent(this, FoldersActivity.class));
+                    return true;
+                }
+                return true;
+
             case R.id.edit_folder:
                 Intent intent = new Intent(this, CreateFolderActivity.class);
+                intent.putExtra(Data.FOLDERS_ID_EXTRA, folderID);
+
                 Toast.makeText(this, "Edit folder selected", Toast.LENGTH_LONG).show();
                 startActivity(intent);
                 return true;
