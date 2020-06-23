@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,9 +75,13 @@ public class CreateFolderActivity extends AppCompatActivity {
         //tvOperationE = findViewById(R.id.spinner2);
 
         spinerCondition = findViewById(R.id.spinner1);
-        spinerCondition.setAdapter(new ArrayAdapter<Condition>(this, android.R.layout.simple_spinner_item, Condition.values()));
+        SpinnerAdapter conAdapter = new ArrayAdapter<Condition>(this, android.R.layout.simple_spinner_item, Condition.values());
+        spinerCondition.setAdapter(conAdapter);
+        //spinerCondition.setAdapter(new ArrayAdapter<Condition>(this, android.R.layout.simple_spinner_item, Condition.values()));
         spinerOperation = findViewById(R.id.spinner2);
-        spinerOperation.setAdapter(new ArrayAdapter<Operation>(this, android.R.layout.simple_spinner_item, Operation.values()));
+        SpinnerAdapter opeAdapter = new ArrayAdapter<Operation>(this, android.R.layout.simple_spinner_item, Operation.values());
+        //spinerOperation.setAdapter(new ArrayAdapter<Operation>(this, android.R.layout.simple_spinner_item, Operation.values()));
+        spinerOperation.setAdapter(opeAdapter);
 
         dbHandler = new MessagesDBHandler(this);
 
@@ -86,6 +91,8 @@ public class CreateFolderActivity extends AppCompatActivity {
             rule = dbHandler.findRule(id);
             tvName.setText(folder.getName());
             tvConditionTxt.setText(rule.getConditonTxt());
+            spinerCondition.setSelection(((ArrayAdapter) conAdapter).getPosition(rule.getCondition()));
+            spinerOperation.setSelection(((ArrayAdapter) opeAdapter).getPosition(rule.getOperation()));
         }
 
         Toolbar toolbar = findViewById(R.id.toolbar_create_folder);
