@@ -1119,7 +1119,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
                         addMessage(message);
                     }
                     else if(c == Condition.CC && o == Operation.DELETE  && cc.contains(t)){
-                        deleteMessage(idMessage);
+                        moveToFolder(idMessage, idFolder);
                     }
                     else if(c == Condition.CC && o == Operation.MOVE  && cc.contains(t)){
                         moveToFolder(idMessage, idFolder);
@@ -1130,7 +1130,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
                         addMessage(message);
                     }
                     else if(c == Condition.TO && o == Operation.DELETE && to.equals(t)){
-                        deleteMessage(idMessage);
+                        moveToFolder(idMessage, idFolder);
                     }
                     else if(c == Condition.TO && o == Operation.MOVE && to.equals(t)){
                         moveToFolder(idMessage, idFolder);
@@ -1141,7 +1141,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
                         addMessage(message);
                     }
                     else if(c == Condition.FROM && o == Operation.DELETE && from.equals(t)){
-                        deleteMessage(idMessage);
+                        moveToFolder(idMessage, idFolder);
                     }
                     else if(c == Condition.FROM && o == Operation.MOVE && from.equals(t)){
                         moveToFolder(idMessage, idFolder);
@@ -1152,7 +1152,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
                         addMessage(message);
                     }
                     else if(c == Condition.SUBJECT && o == Operation.DELETE && subject.contains(t)){
-                        deleteMessage(idMessage);
+                        moveToFolder(idMessage, idFolder);
                     }
                     else if(c == Condition.SUBJECT && o == Operation.MOVE && subject.contains(t)){
                         moveToFolder(idMessage, idFolder);

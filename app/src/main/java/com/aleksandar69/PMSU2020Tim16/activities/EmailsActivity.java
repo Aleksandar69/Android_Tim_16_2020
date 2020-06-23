@@ -207,7 +207,10 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         emailsAdapter = new EmailsCursorAdapter(this, cursor);
         emails.setOnItemClickListener(this);
         emails.setAdapter(emailsAdapter);
-        handler.runRule();
+        try {
+            handler.runRule();
+        }
+        catch (NullPointerException e){}
 
     }
 
