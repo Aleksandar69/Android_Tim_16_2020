@@ -28,11 +28,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.adapters.RecyclerViewContactsAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
-import com.aleksandar69.PMSU2020Tim16.javamail.DeleteEmail;
 import com.aleksandar69.PMSU2020Tim16.models.Contact;
 import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.picasso.Picasso;
@@ -45,8 +43,6 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.aleksandar69.PMSU2020Tim16.activities.CreateContactActivity.imageViewToByte;
-
 public class ContactActivity extends AppCompatActivity {
 
     private TextInputEditText firstNameEditt;
@@ -55,11 +51,11 @@ public class ContactActivity extends AppCompatActivity {
     String selectedDisplay;
     String selectedEmail;
     int selectedID;
+    Button deleteButton;
     private TextInputEditText lastNameEditt;
     private TextInputEditText displayNameEditt;
     private TextInputEditText emailEditt;
     private CircleImageView imageView;
-    private Button btnDelete;
     MessagesDBHandler handler;
     private String contactId;
     private int contactIdInt;
@@ -76,18 +72,9 @@ public class ContactActivity extends AppCompatActivity {
         displayNameEditt = (TextInputEditText) findViewById(R.id.new_contact_displaynamee);
         emailEditt = (TextInputEditText) findViewById(R.id.new_contact_emaill);
         imageView = (CircleImageView) findViewById(R.id.image_single_contact);
-        btnDelete = (Button) findViewById(R.id.delete_button);
+        deleteButton = (Button) findViewById(R.id.delete_button);
 
         handler = new MessagesDBHandler(this);
-
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ActivityCompat.requestPermissions(ContactActivity.this,
-                        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-                        888);
-            }
-        });
 
         Intent intent2 = getIntent();
         selectedID = intent2.getIntExtra("id", -1);
@@ -101,16 +88,24 @@ public class ContactActivity extends AppCompatActivity {
                     0,getIntent().getByteArrayExtra("byteArray").length); //ne moze length
             imageView.setImageBitmap(bitmap);
         }
-
         firstNameEditt.setText(selectedFirst);
         lastNameEditt.setText(selectedLast);
         displayNameEditt.setText(selectedDisplay);
         emailEditt.setText(selectedEmail);
 
-        btnDelete.setOnClickListener(new View.OnClickListener() {
+        imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               handler.deleteContact10(selectedID);
+                ActivityCompat.requestPermissions(ContactActivity.this,
+                        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
+                        888);
+            }
+        });
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handler.deleteContact10(selectedID);
                 startActivity(new Intent(ContactActivity.this,ContactsActivity.class));
             }
         });
@@ -122,6 +117,8 @@ public class ContactActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Contact");
     }
+
+
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_contact, menu);
@@ -136,14 +133,39 @@ public class ContactActivity extends AppCompatActivity {
                 String last = lastNameEditt.getText().toString().trim();
                 String display = displayNameEditt.getText().toString().trim();
                 String email = emailEditt.getText().toString().trim();
-                byte[] image = imageViewToByte(imageView);
-                handler.updateData10(selectedID,first,last,display,email);
-                startActivity(new Intent(this,ContactsActivity.class));
+                String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+                byte[] image = CreateContactActivity.imageViewToByte(imageView);
+
+                if(first.isEmpty() || first.length() < 3) {
+                    firstNameEditt.setError("Ime mora da sadrzi najmanje tri slova! ");
+                    firstNameEditt.requestFocus();
+                } else if (last.isEmpty() || last.length() < 3) {
+                    lastNameEditt.setError("Prezime mora da sadrzi najmanje tri slova! ");
+                    lastNameEditt.requestFocus();
+                } else if (display.isEmpty()) {
+                    displayNameEditt.setError("Unesite ime koje zelite da se prikazuje! ");
+                    displayNameEditt.requestFocus();
+                } else if (!email.matches(emailPattern)) {
+                    Toast.makeText(getApplicationContext(), "Email adresa nije validna!", Toast.LENGTH_SHORT).show();
+                    //emailEditt.setError("Niste unijeli email!");
+                    //emailEditt.requestFocus();
+                } else if (image == null && image.length < 0) {
+                    Toast.makeText(ContactActivity.this,  "Postavite fotografiju! ", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    handler.updateData10(selectedID,first,last,display,email);
+                    Toast.makeText(this, "Uspjesno ste izmijenili kontakt! ", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(ContactActivity.this,ContactsActivity.class));
+                }
+
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+
     }
+
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 

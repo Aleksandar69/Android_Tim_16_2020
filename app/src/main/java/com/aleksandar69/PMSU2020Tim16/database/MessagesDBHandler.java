@@ -38,7 +38,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 427;
+    public static final int DATABASE_VERSION = 446;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -156,11 +156,19 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             COLUMN_TAG_TEXT + " TEXT, " + COLUMN_EMAIL_TAG_ID_FK + " INTEGER, " +
             "FOREIGN KEY(" + COLUMN_EMAIL_TAG_ID_FK + ") REFERENCES EMAILS(_id)" + ")";
 
+
     private static String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS +
             "(" + COLUMN_ID_CONTACTS + " INTEGER PRIMARY KEY, " +
             COLUMN_FIRST + " TEXT, " + COLUMN_LAST + " TEXT, " +
             COLUMN_DISPLAY + " TEXT, " + COLUMN_CONTACT_EMAIL + " TEXT, " + COLUMN_IMAGE_RESOURCE + " INTEGER" + ")";
 
+
+    /*
+    private static String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS +
+            "(" + COLUMN_ID_CONTACTS + " INTEGER PRIMARY KEY, " +
+            COLUMN_FIRST + " TEXT, " + COLUMN_LAST + " TEXT, " +
+            COLUMN_DISPLAY + " TEXT, " + COLUMN_CONTACT_EMAIL + " TEXT, " + COLUMN_NEW_IMAGE + " BLOB" + ")";
+     */
 
     public MessagesDBHandler(Context context/*, String name, SQLiteDatabase.CursorFactory factory, int version*/) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -176,6 +184,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         Log.d("Elena", "Pokrenuto kreiranje tabela");
         db.execSQL(CREATE_TAG_TABLE);
         db.execSQL(CREATE_CONTACTS_TABLE);
+        //db.execSQL("ALTER TABLE CONTACT ADD COLUMN PICTURE BLOB");
         db.execSQL(CREATE_RULE_TABLE);
         db.execSQL("insert into " + TABLE_FOLDERS + "(" + COLUMN_ID_FOLDER + "," + COLUMN_NAME + ") values(1,'Drafts')");
         db.execSQL("insert into " + TABLE_FOLDERS + "(" + COLUMN_ID_FOLDER + "," + COLUMN_NAME + ") values(2,'Trash')");
@@ -637,10 +646,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     /////////////////////////// CONTACTS /////////////////////////////////
 
-
-//============================AKTIVNO KORISTIM========================================================
-
-    //metoda za dobavljanje svih kontakata preko liste
     public List getAllContactsList() {
         List<Contact> contactList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -663,15 +668,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         }
         return contactList;
     }
-
-
-
-    public Cursor getData(String sql) {
-        SQLiteDatabase db = getReadableDatabase();
-        return  db.rawQuery(sql,null);
-    }
-
-//    //============================AKTIVNO KORISTIM========================================================
 
     public void deleteContactByID(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -837,39 +833,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public Cursor findEmailByFolderID(int itemID) {
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_ID_FOLDERS_FK};
-        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
-                COLUMN_ID_FOLDERS_FK + "=" + itemID, null, null);
-
-        return cursor;
-    }
-
-    public void moveToTrash(int id) {
-
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_ID_FOLDERS_FK, 2);
-        myContentResolver.update(MessagesContentProvider.CONTENT_URI, values, COLUMN_ID_EMAILS + "=" + id, null);
-    }
-
-
-    public Cursor inboxEmails() {
-        String inbox = "0";
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ID_FOLDERS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
-        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
-                COLUMN_ID_FOLDERS_FK + "=" + inbox, null, null);
-        return cursor;
-    }
-
-    public Cursor emailsFolder(String foldersIdExtra) {
-        int id = Integer.parseInt(foldersIdExtra);
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ID_FOLDERS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
-        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
-                COLUMN_ID_FOLDERS_FK + "=" + id, null, null);
-        return cursor;
-    }
-
-    //======================aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa==================
     public void updateData(int id, String first, String last, String display, String email , byte[] image) {
         SQLiteDatabase db = getWritableDatabase();
 
@@ -896,6 +859,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         return  data;
     }
 
+
     public Cursor getData() {
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_CONTACTS;
@@ -903,20 +867,8 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         return data;
     }
 
-        Context context;
-        //bez update slike
-    public void updateData9(String first, String last, String display, String email,byte[]image) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        //cv.put(COLUMN_FIRST,first);
-        cv.put(COLUMN_LAST, last);
-        cv.put(COLUMN_DISPLAY, display);
-        cv.put(COLUMN_CONTACT_EMAIL, email);
-        long result = db.update(TABLE_CONTACTS,cv,"firstname=?", new String[]{(first)});
-    }
-
-    //insert + update
-    public void updateData10(int contactID ,String first, String last, String display, String email){
+    //Draganov update bez slike
+       public void updateData10(int contactID ,String first, String last, String display, String email){
         int id = contactID;
         ContentValues values = new ContentValues();
         values.put(COLUMN_FIRST, first);
@@ -937,7 +889,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     }
 
-
+    //ovo mi radi dodavanje podataka
     public void insertData(String first,String last, String display, String email, byte[] image) {
         SQLiteDatabase db = getWritableDatabase();
         String sql = "INSERT INTO CONTACT VALUES (NULL,?,?,?,?,?)";
@@ -953,6 +905,11 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
         statement.executeInsert();
     }
+
+
+
+
+
 
 
 
@@ -1010,14 +967,14 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     }
 
     public void addRule(String enum1, String conTxt, String enum2, int folderID) {
-        
+
         ContentValues values = new ContentValues();
 
         values.put(COLUMN_CONDITION_ENUM, enum1);
         values.put(COLUMN_CONDITION_TXT, conTxt);
         values.put(COLUMN_OPERATION_ENUM, enum2);
         values.put(COLUMN_ID_FOLDER_FK, folderID);
-        
+
         myContentResolver.insert(RuleContentProvider.CONTENT_URI, values);
     }
 
@@ -1170,6 +1127,28 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         myContentResolver.update(MessagesContentProvider.CONTENT_URI, values, COLUMN_ID_EMAILS + "=" + idMessage, null);
     }
 
+    public void moveToTrash(int id) {
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ID_FOLDERS_FK, 2);
+        myContentResolver.update(MessagesContentProvider.CONTENT_URI, values, COLUMN_ID_EMAILS + "=" + id, null);
+    }
 
 
+
+    public Cursor inboxEmails() {
+        String inbox = "0";
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ID_FOLDERS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
+        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
+                COLUMN_ID_FOLDERS_FK + "=" + inbox, null, null);
+        return cursor;
+    }
+
+    public Cursor emailsFolder(String foldersIdExtra) {
+        int id = Integer.parseInt(foldersIdExtra);
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ID_FOLDERS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
+        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
+                COLUMN_ID_FOLDERS_FK + "=" + id, null, null);
+        return cursor;
+    }
 }

@@ -60,6 +60,10 @@
     <string name="hint_display_name">Display Name</string>
     <string name="hint_email">Email</string>
 
+    <string name = "first_name">First name</string>
+    <string name="slicica"></string>
+    <string name="delete_contact">DELETE</string>
+
     <string name="save_new_contact">Save New Contact</string>
     <string name="cancel_contact_creation">Cancel Contact Creation</string>
 

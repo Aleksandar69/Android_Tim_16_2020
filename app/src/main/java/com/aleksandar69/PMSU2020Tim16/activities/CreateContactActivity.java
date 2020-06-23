@@ -136,26 +136,29 @@ public class CreateContactActivity extends AppCompatActivity {
                 String last = lastNameEdit.getText().toString().trim();
                 String display = displayNameEdit.getText().toString().trim();
                 String email = emailEdit.getText().toString().trim();
+                String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
                 byte[] image = imageViewToByte(imageEdit);
 
-                if(first == null) {
-                    Toast.makeText(CreateContactActivity.this, "Please, insert first name", Toast.LENGTH_SHORT).show();
+                if(first.isEmpty() || first.length() < 3) {
+                    firstNameEdit.setError("Ime mora da sadrzi najmanje tri slova! ");
+                    firstNameEdit.requestFocus();
+                } else if (last.isEmpty() || last.length() < 3) {
+                    lastNameEdit.setError("Prezime mora da sadrzi najmanje tri slova! ");
+                    lastNameEdit.requestFocus();
+                } else if (display.isEmpty()) {
+                    displayNameEdit.setError("Unesite ime koje zelite da se prikazuje! ");
+                    displayNameEdit.requestFocus();
+                } else if (!email.matches(emailPattern)) {
+                    Toast.makeText(getApplicationContext(), "Email adresa nije validna!", Toast.LENGTH_SHORT).show();
+                    //emailEdit.setError("Niste unijeli email!");
+                    //emailEdit.requestFocus();
                 }
-                else if (last == null) {
-                    Toast.makeText(CreateContactActivity.this, "Please, insert last name", Toast.LENGTH_SHORT).show();
-                }
-                else if (display == null) {
-                    Toast.makeText(CreateContactActivity.this, "Please, insert display name", Toast.LENGTH_SHORT).show();
-                }
-                else if (email == null) {
-                    Toast.makeText(CreateContactActivity.this, "Please, insert email", Toast.LENGTH_SHORT).show();
-                }
-                else if (image == null) {
-                    Toast.makeText(CreateContactActivity.this, "Please, insert image ", Toast.LENGTH_SHORT).show();
-                } else {
+                else {
                     handler.insertData(first,last,display,email,image);
-                    Toast.makeText(CreateContactActivity.this, "Contact successfully added !", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Kontakt je uspjesno kreiran", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(CreateContactActivity.this,ContactsActivity.class));
                 }
+
                 /*
                 if(!TextUtils.isEmpty(first) || !TextUtils.isEmpty(last) || !TextUtils.isEmpty(display) ||
                 !TextUtils.isEmpty(email) || image !=null) {
@@ -166,7 +169,6 @@ public class CreateContactActivity extends AppCompatActivity {
                 }
                 Toast.makeText(CreateContactActivity.this, "Added successfully", Toast.LENGTH_SHORT).show()
                  */
-                //PROVJERA ZA UNOS
                 /*
                 if(!TextUtils.isEmpty(first) || !TextUtils.isEmpty(last) || !TextUtils.isEmpty(display) || !TextUtils.isEmpty(email)){
                     Contact contact = new Contact(first,last,display,email);
@@ -238,7 +240,6 @@ public class CreateContactActivity extends AppCompatActivity {
         bm.compress(Bitmap.CompressFormat.JPEG,100,baos);
         byte[] b = baos.toByteArray();
         String encImage = Base64.encodeToString(b, Base64.DEFAULT);
-        //Base64.de
         return encImage;
 
     }

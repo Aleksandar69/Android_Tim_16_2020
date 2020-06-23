@@ -21,7 +21,7 @@
 
     <Button
         android:id="@+id/choose_image_button"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Choose image" />
 
@@ -50,17 +50,19 @@
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!--    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </com.google.android.material.textfield.TextInputLayout>
+-->
+<!--
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
     </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    </com.google.android.material.textfield.TextInputLayout>
+    -->
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/new_contact_email"
@@ -83,17 +85,12 @@
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
 
 -->
-    <Button
-        android:id="@+id/upload_image_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Upload" />
 
     <TextView
+        android:id="@+id/text_view_show_contacts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Show contacts"
-        android:id="@+id/text_view_show_contacts"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:text="Show contacts" />
 
 </LinearLayout>

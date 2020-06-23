@@ -434,9 +434,11 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         }
     }
 
+/*
+
     private void updateContactsList() {
         //get data from sqlite
-        Cursor cursor = CreateContactActivity.handler.getData("SELECT * FROM CONTACT");
+        Cursor cursor = handler.getData("SELECT * FROM " + );
         list.clear();
         while(cursor.moveToNext()) {
             int id = cursor.getInt(0);
@@ -451,6 +453,8 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         adapter.notifyDataSetChanged();
     }
 
+
+ */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
@@ -525,15 +529,12 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        /*
         Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
         String contact_id = cursor.getString(0);
 
         Intent intent = new Intent(this,ContactActivity.class);
         intent.putExtra(Data.CONTACT_ID_EXTRA, contact_id);
         startActivity(intent);
-
-         */
     }
 
     public class CustomAdapter extends BaseAdapter {
@@ -638,6 +639,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
                 }
 
             });
+
             return row;
         }
     }

@@ -76,7 +76,7 @@
         android:id="@+id/delete_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Delete contact" />
+        android:text="@string/delete_contact" />
 
 
 </LinearLayout>
