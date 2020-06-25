@@ -26,6 +26,7 @@ public class Message {
     private boolean unread;
     private List<Attachment> attachments;
     private List<Tag> tags;
+    private int idOnServer;
     /*    private int attachmentId;*/
 
     public Message() {
@@ -39,6 +40,7 @@ public class Message {
         attachments = new ArrayList<>();
         tags = new ArrayList<>();
     }
+
 
 
     public Message(String from, String to, String cc, String bcc, String subject, String content) {
@@ -92,6 +94,14 @@ public class Message {
     @Override
     public String toString() {
         return "\nTO: " + to + "\nFROM: " + from + "\nCC: " + cc + "\nBCC: " + bcc + "\nSUBJECT: " + subject + "\nCONTENT: " + content + "\n Date: " + dateTime;
+    }
+
+    public int getIdOnServer() {
+        return idOnServer;
+    }
+
+    public void setIdOnServer(int idOnServer) {
+        this.idOnServer = idOnServer;
     }
 
     public static Date fromUTC(String dateStr) {

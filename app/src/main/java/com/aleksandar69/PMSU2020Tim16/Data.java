@@ -2,6 +2,9 @@ package com.aleksandar69.PMSU2020Tim16;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 
 import androidx.preference.PreferenceManager;
 
@@ -42,4 +45,18 @@ public class Data {
     public static final String TABLE_CONTACTS = "CONTACT";
 
     public static  final String FOLDERS_ID_EXTRA = "folder_id";
+
+    public static String profileImageFilePath = null;
+    public static Bitmap bitmap = null;
+
+    public static Bitmap StringToBitMap(String encodedString){
+        try {
+            byte [] encodeByte= Base64.decode(encodedString,Base64.DEFAULT);
+            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        } catch(Exception e) {
+            e.getMessage();
+            return null;
+        }
+    }
 }

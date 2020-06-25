@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,6 +35,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.preference.PreferenceManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.Data;
@@ -42,9 +44,12 @@ import com.aleksandar69.PMSU2020Tim16.adapters.EmailsCursorAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.aleksandar69.PMSU2020Tim16.javamail.ImapFetchMail;
 import com.aleksandar69.PMSU2020Tim16.models.Folder;
+import com.aleksandar69.PMSU2020Tim16.models.Message;
 import com.aleksandar69.PMSU2020Tim16.services.EmailSyncService;
 import com.aleksandar69.PMSU2020Tim16.services.EmailsJobSchedulerSyncService;
 import com.google.android.material.navigation.NavigationView;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EmailsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ListView.OnItemClickListener {
 
@@ -56,6 +61,8 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
     EditText searchViewET;
     EmailsCursorAdapter emailsAdapter;
     SwipeRefreshLayout pullToRefresh;
+    private TextView displayNameNav;
+    private TextView emailNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +99,17 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        View header = navigationView.getHeaderView(0);
+        CircleImageView imageView23 = (CircleImageView) header.findViewById(R.id.imageViewNav);
+        Bitmap bitmapImage = Data.StringToBitMap(Data.account.getImageBitmap());
+        if(bitmapImage!=null) {
+            imageView23.setImageBitmap(bitmapImage);
+        }
 
+        displayNameNav = (TextView) header.findViewById(R.id.displayNameNav);
+        emailNav = (TextView) header.findViewById(R.id.emailNav);
+        displayNameNav.setText(Data.account.getDisplayName());
+        emailNav.setText(Data.account.geteMail());
         // populateListFromDB();
 
         //sharedPreferences = getSharedPreferences(LoginActivity.myPreferance, Context.MODE_PRIVATE);
@@ -197,10 +214,10 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         //Cursor c = handler.inboxEmails();
 
         if(Data.prefSort.equals("ascending")){
-            cursor = handler.sortEmailAsc(sharedPreferences.getInt(Data.userId, -1));
+            cursor = handler.sortEmailByDateAsc(sharedPreferences.getInt(Data.userId, -1));
         }
         else if(Data.prefSort.equals("descending")){
-            cursor = handler.sortEmailDesc(sharedPreferences.getInt(Data.userId, -1));
+            cursor = handler.sortEmailByDateDesc(sharedPreferences.getInt(Data.userId, -1));
         }
 
 
@@ -284,17 +301,6 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
                 Toast.makeText(this, "Create email selected", Toast.LENGTH_LONG).show();
                 startActivity(intent);
                 return true;
-/*            case R.id.sort_by_asc:
-                Cursor cursor = handler.sortEmailAsc();emailsAdapter = new EmailsCursorAdapter(this, cursor);
-                emails.setOnItemClickListener(this);
-                emails.setAdapter(emailsAdapter);
-                return true;
-            case R.id.sort_by_desc:
-                Cursor cursordesc = handler.sortEmailDesc();
-                emailsAdapter = new EmailsCursorAdapter(this, cursordesc);
-                emails.setOnItemClickListener(this);
-                emails.setAdapter(emailsAdapter);
-                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -352,7 +358,8 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onStart() {
-        populateList();
+      populateList();
+
         handleIntent(getIntent());
         if(Data.allowSync == true) {
             startSyncService();
@@ -360,6 +367,7 @@ public class EmailsActivity extends AppCompatActivity implements NavigationView.
         else if(Data.allowSync == false){
             StopSyncingService();
         }
+
 
         super.onStart();
     }

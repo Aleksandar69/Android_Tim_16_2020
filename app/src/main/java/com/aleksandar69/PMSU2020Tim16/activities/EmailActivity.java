@@ -192,6 +192,7 @@ public class EmailActivity extends AppCompatActivity {
                 intentForwrad.putExtra(Data.FORWARD_TO_EXTRA, to);
                 Data.isForward = true;
                 startActivity(intentForwrad);
+                Toast.makeText(this, "Forward message", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.reply_button:
                 Intent intentReply = new Intent(this, CreateEmailActivity.class);
@@ -199,6 +200,7 @@ public class EmailActivity extends AppCompatActivity {
                 intentReply.putExtra(Data.REPLY_CONTENT, content);
                 Data.isReply = true;
                 startActivity(intentReply);
+                Toast.makeText(this, "Reply to Message", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.reply_to_all_button:
                 Intent intentReplyToAll = new Intent(this, CreateEmailActivity.class);
@@ -207,6 +209,7 @@ public class EmailActivity extends AppCompatActivity {
                 intentReplyToAll.putExtra(Data.REPLY_TO_ALL_CONTENT, content);
                 Data.isReplyToAll = true;
                 startActivity(intentReplyToAll);
+                Toast.makeText(this, "Reply to All", Toast.LENGTH_LONG).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -225,7 +228,7 @@ public class EmailActivity extends AppCompatActivity {
 
         for (Tag tag: tagList
         ) {
-            tags.append(tag.getName());
+            tags.append(tag.getName() + " ");
         }
 
         tvTags.setText(tags.toString());

@@ -27,10 +27,12 @@
                 android:layout_alignParentTop="true"
                 android:layout_gravity="center_horizontal"
                 android:text="@string/message_from"
+                android:background="@drawable/back"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <TextView
                 android:id="@+id/from_tv"
+                android:background="@drawable/back"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -47,6 +49,8 @@
 
             <TextView
                 android:id="@+id/subject"
+                android:background="@drawable/back"
+
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -57,6 +61,7 @@
 
             <TextView
                 android:id="@+id/subject_tv"
+                android:background="@drawable/back"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -74,6 +79,7 @@
                 android:id="@+id/to"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
+                android:background="@drawable/back"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
@@ -82,6 +88,7 @@
 
             <TextView
                 android:id="@+id/to_tv"
+                android:background="@drawable/back"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -97,6 +104,7 @@
 
             <TextView
                 android:id="@+id/cc"
+                android:background="@drawable/back"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -107,6 +115,7 @@
 
             <TextView
                 android:id="@+id/cc_tv"
+                android:background="@drawable/back"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
@@ -128,9 +137,9 @@
 
                 <TextView
                     android:id="@id/content"
+                    android:background="@drawable/back"
                     android:layout_width="match_parent"
                     android:layout_height="540dp"
-                    android:layout_marginTop="20dp"
                     android:foregroundGravity="center_horizontal"
                     android:hint="@string/message_content"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
@@ -188,17 +197,22 @@
 
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal">
 
             <Button
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:textSize="13dp"
+                android:background="#4700b3"
                 android:id="@+id/attachments"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
+                android:layout_height="40dp"
+                android:layout_centerInParent="true"
+                android:layout_alignParentBottom="true"
                 android:onClick="decodeOnClick"
-                android:text="Click me to convert" />
+                android:gravity="center_vertical"
+                android:layout_centerHorizontal="true"
+                android:text="Download attachments" />
 
         </RelativeLayout>
 

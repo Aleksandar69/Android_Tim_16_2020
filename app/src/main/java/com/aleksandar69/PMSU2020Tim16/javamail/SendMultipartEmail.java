@@ -73,8 +73,6 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... voids) {
 
-        if (android.os.Debug.isDebuggerConnected())
-            android.os.Debug.waitForDebugger();
 
         Properties props = new Properties();
 
@@ -148,6 +146,9 @@ public class SendMultipartEmail extends AsyncTask<Void, Void, Void> {
                 }
 
             }
+
+            if (android.os.Debug.isDebuggerConnected())
+                android.os.Debug.waitForDebugger();
 
             message.setFrom(new InternetAddress(account.geteMail()));
         //    message.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));

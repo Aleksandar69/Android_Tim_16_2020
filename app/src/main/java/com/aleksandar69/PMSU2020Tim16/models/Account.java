@@ -13,6 +13,7 @@ public class Account {
     private String eMail;
     private String smtphost;
     private String imapHost;
+    private String imageBitmap;
 
     public Account() {
 
@@ -31,6 +32,14 @@ public class Account {
 
     public String geteMail() {
         return eMail;
+    }
+
+    public String getImageBitmap() {
+        return imageBitmap;
+    }
+
+    public void setImageBitmap(String imageBitmap) {
+        this.imageBitmap = imageBitmap;
     }
 
     public void seteMail(String eMail) {

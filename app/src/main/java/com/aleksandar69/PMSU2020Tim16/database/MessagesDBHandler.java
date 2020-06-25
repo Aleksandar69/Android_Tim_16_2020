@@ -30,15 +30,20 @@ import com.aleksandar69.PMSU2020Tim16.models.Tag;
 import com.aleksandar69.PMSU2020Tim16.models.Folder;
 
 import java.nio.channels.spi.AbstractInterruptibleChannel;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 446;
+    public static final int DATABASE_VERSION = 488;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -80,6 +85,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     private static final String COLUMN_ISUNREAD = "isunreadmessage";
     private static final String COLUMN_TAGS = "tagsinmail";
     private static final String COLUMN_ID_FOLDERS_FK = "folder_id";
+    private static final String COLUMN_MESSAGE_ON_SERVER_ID = "message_on_server_id";
 
     //accounts
 
@@ -95,6 +101,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
     private static final String COLUMN_EMAIL = "email";
     private static final String COLUMN_SMTPHOST = "smtphost";
     private static final String COLUMN_IMAPHOST = "imaphost";
+    private static final String COLUMN_BITMAP = "bitmap";
 
     //attachments
 
@@ -124,14 +131,14 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             "FOREIGN KEY(" + COLUMN_ID_FOLDER_FK + ") REFERENCES FOLDERS(_id) " + ")";
 
     private static String CREATE_MESSAGES_TABLE = "CREATE TABLE " + TABLE_MESSAGES +
-            "(" + COLUMN_ID_EMAILS + " INTEGER PRIMARY KEY, " +
+            "(" + COLUMN_ID_EMAILS + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             COLUMN_FROM + " TEXT, " + COLUMN_TO + " TEXT, " + COLUMN_CC + " TEXT, " +
             COLUMN_BCC + " TEXT, " + COLUMN_SUBJECT + " TEXT, " +
             COLUMN_CONTENT + " TEXT, " + COLUMN_DATETIME + " TEXT, " +
             COLUMN_ACCOUNTS_FK + " INTEGER, " +
             COLUMN_ID_FOLDERS_FK + " INTEGER, " +
             COLUMN_ISUNREAD + " INTEGER NOT NULL DEFAULT 1 CHECK(isunreadmessage IN (0,1)), " +
-            COLUMN_TAGS + " TEXT, " +
+            COLUMN_TAGS + " TEXT, " + COLUMN_MESSAGE_ON_SERVER_ID + " INTEGER, " +
             "FOREIGN KEY(" + COLUMN_ID_FOLDERS_FK + ") REFERENCES FOLDERS(_id), " +
             "FOREIGN KEY(" + COLUMN_ACCOUNTS_FK + ") REFERENCES ACCOUNTS(_id) " + ")";
             //"FOREIGN KEY(" + COLUMN_ID_FOLDERS_FK + ") REFERENCES FOLDERS(_id)" +
@@ -142,7 +149,8 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             COLUMN_SMTPADDRESS + " TEXT, " + COLUMN_PORT + " TEXT, " +
             COLUMN_USERNAME + " TEXT, " + COLUMN_PASSWORD + " TEXT, " +
             COLUMN_DISPLAYNAME + " TEXT, " + COLUMN_EMAIL + " TEXT, " +
-            COLUMN_SMTPHOST + " TEXT, " + COLUMN_IMAPHOST + " TEXT" +
+            COLUMN_SMTPHOST + " TEXT, " + COLUMN_IMAPHOST + " TEXT, " +
+            COLUMN_BITMAP + " TEXT" +
             ")";
 
     private static String CREATE_ATTACHMENT_TABLE = "CREATE TABLE " + TABLE_ATTACHMENTS +
@@ -244,7 +252,6 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public void addMessage(Message message) {
         ContentValues values = new ContentValues();
-        values.put(COLUMN_ID_EMAILS, message.get_id());
         values.put(COLUMN_FROM, message.getFrom());
         values.put(COLUMN_TO, message.getTo());
         values.put(COLUMN_CC, message.getCc());
@@ -265,9 +272,11 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             tagsStr.append(tag.getName() + ";");
         }
         values.put(COLUMN_TAGS, tagsStr.toString());
+        values.put(COLUMN_MESSAGE_ON_SERVER_ID, message.getIdOnServer());
 
         myContentResolver.insert(MessagesContentProvider.CONTENT_URI, values);
     }
+
 
     public void updateisRead(Message message) {
 
@@ -282,8 +291,58 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         myContentResolver.update(MessagesContentProvider.CONTENT_URI, values, COLUMN_ID_EMAILS + "=" + message.get_id(), null);
     }
 
+    public Message findMessageByServerId(int messageId) {
+
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_ID_FOLDERS_FK, COLUMN_MESSAGE_ON_SERVER_ID};
+        String selection = COLUMN_MESSAGE_ON_SERVER_ID + " = \"" + messageId + "\"";
+
+        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection, selection, null, null);
+
+        Message message = new Message();
+
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst();
+            message.set_id(Integer.parseInt(cursor.getString(cursor.getColumnIndex(COLUMN_ID_EMAILS))));
+            message.setFrom(cursor.getString(cursor.getColumnIndex(COLUMN_FROM)));
+            message.setTo(cursor.getString(cursor.getColumnIndex(COLUMN_TO)));
+            message.setCc(cursor.getString(cursor.getColumnIndex(COLUMN_CC)));
+            message.setBcc(cursor.getString(cursor.getColumnIndex(COLUMN_BCC)));
+            message.setSubject(cursor.getString(cursor.getColumnIndex(COLUMN_SUBJECT)));
+            message.setContent(cursor.getString(cursor.getColumnIndex(COLUMN_CONTENT)));
+            message.setDateTime(cursor.getString(cursor.getColumnIndex(COLUMN_DATETIME)));
+            message.setLogged_user_id(Integer.parseInt(cursor.getString(cursor.getColumnIndex(COLUMN_ACCOUNTS_FK))));
+            message.setFolder_id(Integer.parseInt(cursor.getString(cursor.getColumnIndex(COLUMN_ID_FOLDERS_FK))));
+            int unread = Integer.parseInt(cursor.getString(cursor.getColumnIndex(COLUMN_ISUNREAD)));
+            if (unread == 1) {
+                message.setUnread(true);
+            } else if (unread == 0) {
+                message.setUnread(false);
+            }
+            message.setIdOnServer(Integer.parseInt(cursor.getString(cursor.getColumnIndex(COLUMN_MESSAGE_ON_SERVER_ID))));
+
+            String tags = cursor.getString(11);
+
+            String[] tagList = tags.split(";[ ]*");
+
+            List<Tag> tagsList = new ArrayList<>();
+
+            for (String tag : tagList) {
+                Tag tagobj = new Tag();
+                tagobj.setName(tag);
+                tagsList.add(tagobj);
+            }
+
+            message.setTags(tagsList);
+
+            cursor.close();
+        } else {
+            message = null;
+        }
+        return message;
+    }
+
     public Cursor filterEmail(String term) {
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, };
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_MESSAGE_ON_SERVER_ID};
 
         String selection = COLUMN_CONTENT + " LIKE ? OR " + COLUMN_SUBJECT + " LIKE ? OR " + COLUMN_TAGS + " LIKE ? OR " + COLUMN_TO + " LIKE ? OR " +
                 COLUMN_FROM + " LIKE ? OR " + COLUMN_BCC + " LIKE ? OR " + COLUMN_CC + " LIKE ?";
@@ -297,7 +356,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public Cursor sortEmailAsc(int userId) {
 
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_MESSAGE_ON_SERVER_ID};
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
                 COLUMN_ID_FOLDERS_FK + "=" + 0, null,COLUMN_ID_EMAILS + " ASC");
@@ -307,7 +366,9 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public Cursor sortEmailDesc(int userId) {
 
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
+
+
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_MESSAGE_ON_SERVER_ID};
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
                 COLUMN_ID_FOLDERS_FK + "=" + 0, null, COLUMN_ID_EMAILS + " DESC");
@@ -315,10 +376,62 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         return cursor;
     }
 
+    public Cursor sortEmailByDateDesc(int userID){
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_MESSAGE_ON_SERVER_ID};
 
+/*        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
+                COLUMN_ID_FOLDERS_FK + "=" + 0, null, COLUMN_DATETIME + " DESC");*/
+
+        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
+                COLUMN_ID_FOLDERS_FK + "=" + 0 +" AND " + COLUMN_ACCOUNTS_FK + " = " + userID, null, COLUMN_DATETIME + " DESC");
+
+        return cursor;
+    }
+
+    public Cursor sortEmailByDateAsc(int userID){
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_MESSAGE_ON_SERVER_ID};
+
+        String selection = COLUMN_ID_FOLDERS_FK+" = ?" + " AND " + COLUMN_ACCOUNTS_FK + " = ?";
+        String[] selectionArgs = {"0", String.valueOf(userID)};
+
+        Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
+                COLUMN_ID_FOLDERS_FK + "=" + 0 +" AND " + COLUMN_ACCOUNTS_FK + " = " + userID, null, COLUMN_DATETIME + " ASC");
+
+  /*      Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
+                selection, selectionArgs, COLUMN_DATETIME + " ASC");*/
+        return cursor;
+    }
+
+    public void updateMessage(int idPoruke,Message message) {
+        int id = idPoruke;
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_FROM, message.getFrom());
+        values.put(COLUMN_TO, message.getTo());
+        values.put(COLUMN_CC, message.getCc());
+        values.put(COLUMN_BCC, message.getBcc());
+        values.put(COLUMN_DATETIME, message.getDateTime());
+        values.put(COLUMN_SUBJECT, message.getSubject());
+        values.put(COLUMN_CONTENT, message.getContent());
+        values.put(COLUMN_ACCOUNTS_FK, message.getLogged_user_id());
+        values.put(COLUMN_ID_FOLDERS_FK, message.getFolder_id());
+        // values.put(COLUMN_ISUNREAD,message.isUnread());
+        if (message.isUnread() == true) {
+            values.put(COLUMN_ISUNREAD, 1);
+        } else if (message.isUnread() == false) {
+            values.put(COLUMN_ISUNREAD, 0);
+        }
+        StringBuffer tagsStr = new StringBuffer();
+        for (Tag tag : message.getTags()) {
+            tagsStr.append(tag.getName() + ";");
+        }
+        values.put(COLUMN_TAGS, tagsStr.toString());
+        values.put(COLUMN_MESSAGE_ON_SERVER_ID, message.getIdOnServer());
+        // values.put(COLUMN_NEW_IMAGE,image);
+        myContentResolver.update(MessagesContentProvider.CONTENT_URI, values, COLUMN_ID_EMAILS + "=" + id, null);
+    }
     public Message findMessage(int messageId) {
 
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_ID_FOLDERS_FK};
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_ID_FOLDERS_FK, COLUMN_MESSAGE_ON_SERVER_ID};
         String selection = "_id = \"" + messageId + "\"";
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection, selection, null, null);
@@ -345,6 +458,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             }
 
             String tags = cursor.getString(10);
+            message.setIdOnServer(cursor.getInt(11));
 
             String[] tagList = tags.split(";[ ]*");
 
@@ -367,7 +481,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public Cursor getAllMessages(int userId) {
 
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_MESSAGE_ON_SERVER_ID};
 
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
@@ -378,7 +492,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public Cursor getAllMessages2() {
 
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_MESSAGE_ON_SERVER_ID};
 
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection,
@@ -389,7 +503,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public List<Message> queryAllMessages(int userId) {
 
-        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS};
+        String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_MESSAGE_ON_SERVER_ID};
         String selection = null;
 
         Cursor cursor = myContentResolver.query(MessagesContentProvider.CONTENT_URI, projection, COLUMN_ACCOUNTS_FK + "=" + userId, null, null);
@@ -432,6 +546,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
             message.setTags(tagsList);
 
+            message.setIdOnServer(cursor.getInt(11));
             messages.add(message);
             cursor.moveToNext();
         }
@@ -470,14 +585,31 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         values.put(COLUMN_EMAIL, account.geteMail());
         values.put(COLUMN_SMTPHOST, account.getSmtphost());
         values.put(COLUMN_IMAPHOST, account.getImapHost());
+        values.put(COLUMN_BITMAP,account.getImageBitmap());
 
         myContentResolver.insert(AccountsContentProvider.CONTENT_URI, values);
+    }
+
+    public void updateAccount(int idAcc, Account account) {
+        int id = idAcc;
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_SMTPADDRESS, account.getSmtpPort());
+        values.put(COLUMN_PORT, account.getPort());
+        values.put(COLUMN_USERNAME, account.getUsername());
+        values.put(COLUMN_PASSWORD, account.getPassword());
+        values.put(COLUMN_DISPLAYNAME, account.getDisplayName());
+        values.put(COLUMN_EMAIL, account.geteMail());
+        values.put(COLUMN_SMTPHOST, account.getSmtphost());
+        values.put(COLUMN_IMAPHOST, account.getImapHost());
+        values.put(COLUMN_BITMAP, account.getImageBitmap());
+
+        myContentResolver.update(AccountsContentProvider.CONTENT_URI, values, COLUMN_ID_EMAILS + "=" + id, null);
     }
 
     public List<Account> queryAccounts() {
 
         String[] projection = {COLUMN_ID_ACCOUNTS, COLUMN_SMTPADDRESS, COLUMN_PORT, COLUMN_USERNAME,
-                COLUMN_PASSWORD, COLUMN_DISPLAYNAME, COLUMN_EMAIL, COLUMN_SMTPHOST, COLUMN_IMAPHOST};
+                COLUMN_PASSWORD, COLUMN_DISPLAYNAME, COLUMN_EMAIL, COLUMN_SMTPHOST, COLUMN_IMAPHOST, COLUMN_BITMAP};
 
         Cursor cursor = myContentResolver.query(AccountsContentProvider.CONTENT_URI, projection, null, null, null);
 
@@ -495,13 +627,15 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             account.seteMail(cursor.getString(6));
             account.setSmtphost(cursor.getString(7));
             account.setImapHost(cursor.getString(8));
-
+            account.setImageBitmap(cursor.getString(9));
             accounts.add(account);
             cursor.moveToNext();
         }
         cursor.close();
         return accounts;
     }
+
+
 
 
     public boolean deleteAccount(String userName) {
@@ -520,7 +654,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public Account findAccount(String username, String password) {
         String[] projection = {COLUMN_ID_ACCOUNTS, COLUMN_SMTPADDRESS, COLUMN_PORT, COLUMN_USERNAME,
-                COLUMN_PASSWORD, COLUMN_DISPLAYNAME, COLUMN_EMAIL, COLUMN_SMTPHOST, COLUMN_IMAPHOST};
+                COLUMN_PASSWORD, COLUMN_DISPLAYNAME, COLUMN_EMAIL, COLUMN_SMTPHOST, COLUMN_IMAPHOST, COLUMN_BITMAP};
 
         String selection = "username = ? AND password = ?";
         String[] selectionArgs = {username, password};
@@ -542,6 +676,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             account.seteMail(cursor.getString(6));
             account.setSmtphost(cursor.getString(7));
             account.setImapHost(cursor.getString(8));
+            account.setImageBitmap(cursor.getString(9));
             cursor.close();
         } else {
             account = null;

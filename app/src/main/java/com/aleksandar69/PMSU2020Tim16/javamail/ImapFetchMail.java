@@ -1,5 +1,6 @@
 package com.aleksandar69.PMSU2020Tim16.javamail;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -46,9 +47,7 @@ import javax.mail.internet.MimeMultipart;
 public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
 
 
-    /* //String user = "mindsnackstore@gmail.com";
-     String user = "clockworkaleks@gmail.com";
-     String password = "TooStronk69!";*/
+
     String storeType = "imaps";
     Context mContext;
 
@@ -101,21 +100,21 @@ public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
 
                 for (int j = 0; j < messagesFromDB.length; j++) {
                     com.aleksandar69.PMSU2020Tim16.models.Message messagefromDB = messagesFromDB[j];
-                    int idMess = messagefromDB.get_id();
+                    int idMess = messagefromDB.getIdOnServer();
                     messagesFromDBids.add(idMess);
                 }
 
 
                 for (int i = 0; i < messages.length; i++) {
                     Message messageInb = messages[i];
-                    int messageid = (int) uf.getUID(messageInb);
+                    int messageOnServerid = (int) uf.getUID(messageInb);
 
 
-                    if (!(messagesFromDBids.contains(messageid))) {
+                    if (!(messagesFromDBids.contains(messageOnServerid))) {
 
                         com.aleksandar69.PMSU2020Tim16.models.Message message = new com.aleksandar69.PMSU2020Tim16.models.Message();
 
-                        message.set_id(messageid);
+                        message.setIdOnServer(messageOnServerid);
 
                         String contentType = messageInb.getContentType();
                         String content = getTextFromMessage(messageInb);
@@ -126,43 +125,9 @@ public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
                         message.setLogged_user_id(Data.account.get_id());
 
 
-                        Pattern pattern = Pattern.compile("(?<=TAGS:)(?s)(.*$)");
-                        Matcher matcher = pattern.matcher(content);
-
-
-                        StringBuffer tags = new StringBuffer();
-
-                        if (matcher.find()) {
-
-                            tags.append(matcher.group(1));
-                        }
-
-                        String[] tagList = tags.toString().split(";[ ]*");
-
-                        for (String s : tagList
-                        ) {
-                            Tag tag = new Tag();
-                            tag.setName(s);
-                            tag.setMessageId(messageid);
-                            //tag.set_id(Integer.parseInt(String.valueOf(UUID.randomUUID())));
-                            dbHandler.addTag(tag);
-                        }
-
-                        List<Tag> listOfTags = dbHandler.queryTagByMessID(messageid);
-
-                        message.setTags(listOfTags);
-
-                        // content.replaceAll("(?<=TAGS:)(?s)(.*$)","");
-
-                        String updatedContent = content.replaceAll("TAGS:.*", "");
-
-
                         InternetAddress[] to = (InternetAddress[]) messageInb.getRecipients(Message.RecipientType.TO);
                         InternetAddress[] cc = (InternetAddress[]) messageInb.getRecipients(Message.RecipientType.CC);
                         InternetAddress[] bcc = (InternetAddress[]) messageInb.getRecipients(Message.RecipientType.BCC);
-
-
-                        message.setContent(updatedContent);
                         if (to != null) {
                             StringBuffer tobuffer = new StringBuffer();
 
@@ -187,10 +152,18 @@ public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
                             }
                         }
 
-                        String date = toUTC(messageInb.getSentDate());
+                        if (android.os.Debug.isDebuggerConnected())
+                            android.os.Debug.waitForDebugger();
+
+                        String date = toUTCLocal(messageInb.getSentDate());
                         Date dateConverted = fromUTC(date);
 
-                        message.setDateTime(dateConverted.toString());
+                        message.setDateTime(date);
+
+                        dbHandler.addMessage(message);
+                        messagesFromDBids.add(message.getIdOnServer());
+
+                        com.aleksandar69.PMSU2020Tim16.models.Message mess =dbHandler.findMessageByServerId(messageOnServerid);
 
                         if (contentType.contains("multipart")) {
                             // content may contain attachments
@@ -203,7 +176,7 @@ public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
                                     Attachment attachment = new Attachment();
                                     attachment.setContent(part.getContent().toString());
                                     attachment.setFileName(part.getFileName());
-                                    attachment.setMessageId(messageid);
+                                    attachment.setMessageId(mess.get_id());
                                     //String fileContent = part.getContent().toString();
                                     //part.saveFile(saveDirectory + File.separator + fileName);
                                     dbHandler.addAttachment(attachment);
@@ -212,14 +185,50 @@ public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
                                 message.setAttachmentId(attachmentCopy.get_id());*/
                                 }
                             }
-                        } else {
+                        } /*else {
                             message.setSubject(messageInb.getSubject());
                             message.setFrom(messageInb.getFrom()[0].toString());
                             message.setContent(messageInb.getContent().toString());
                             message.setUnread(true);
+                        }*/
+ /*                       dbHandler.addMessage(message);
+                        messagesFromDBids.add(message.get_id());*/
+
+                        if (android.os.Debug.isDebuggerConnected())
+                            android.os.Debug.waitForDebugger();
+
+                        Pattern pattern = Pattern.compile("(?<=TAGS:)(?s)(.*$)");
+                        Matcher matcher = pattern.matcher(content);
+
+
+                        StringBuffer tags = new StringBuffer();
+
+                        if (matcher.find()) {
+
+                            tags.append(matcher.group(1));
                         }
-                        dbHandler.addMessage(message);
-                        messagesFromDBids.add(message.get_id());
+
+                        String[] tagList = tags.toString().split(";[ ]*");
+
+                        for (String s : tagList
+                        ) {
+                            Tag tag = new Tag();
+                            tag.setName(s);
+                            tag.setMessageId(mess.get_id());
+                            dbHandler.addTag(tag);
+                        }
+
+                        List<Tag> listOfTags = dbHandler.queryTagByMessID(mess.get_id());
+
+                        mess.setTags(listOfTags);
+
+
+                        String updatedContent = content.replaceAll("TAGS:.*", "");
+                        String withoutContainsAttachment = updatedContent.replace("Contains attachment", "");
+
+                        mess.setContent(withoutContainsAttachment);
+
+                        dbHandler.updateMessage(mess.get_id(), mess);
                     }
                 }
 
@@ -239,10 +248,12 @@ public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
 
 
                 for (int id : messagesFromDBidsCopy) {
-
-                    dbHandler.deleteMessage(id);
-                    //dbHandler.moveToTrash(id);
-                }
+                    com.aleksandar69.PMSU2020Tim16.models.Message mess =dbHandler.findMessageByServerId(id);
+                    //dbHandler.deleteMessage(id);
+                    if(mess.getFolder_id() != 1 && mess.getFolder_id() != 2) {
+                        dbHandler.moveToTrash(mess.get_id());
+                    }
+                    }
 //---------------
                 inboxFolder.close(false);
                 store.close();
@@ -260,7 +271,7 @@ public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
 
         public static Date fromUTC (String dateStr){
             TimeZone tz = TimeZone.getTimeZone("UTC");
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             df.setTimeZone(tz);
 
             try {
@@ -274,11 +285,16 @@ public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
 
         public static String toUTC (Date date){
             TimeZone tz = TimeZone.getTimeZone("UTC");
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+            @SuppressLint("SimpleDateFormat") DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             df.setTimeZone(tz);
             return df.format(date);
         }
-
+        public static String toUTCLocal (Date date){
+        TimeZone tz = TimeZone.getDefault();
+        @SuppressLint("SimpleDateFormat") DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        df.setTimeZone(tz);
+        return df.format(date);
+    }
 
         private String getTextFromMessage (Message message) throws IOException, MessagingException {
             String result = "";
@@ -313,7 +329,6 @@ public class ImapFetchMail extends AsyncTask<Void, Void, Void> {
 
         private String getTextFromBodyPart (
                 BodyPart bodyPart) throws IOException, MessagingException {
-
             String result = "";
             if (Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition())) {
                 result = "Contains attachment ";

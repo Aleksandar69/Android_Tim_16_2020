@@ -72,6 +72,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class ContactsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,ListView.OnItemClickListener {
     private ListView contactsListView;
     private ArrayList<Contact> list = new ArrayList<>();
@@ -81,6 +83,8 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
     ContactsBaseAdapter adapter = null;
     ImageView imageViewContact;
     String filePath;
+    private TextView displayNameNav;
+    private TextView emailNav;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -260,6 +264,18 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.nav_contacts);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View header = navigationView.getHeaderView(0);
+        CircleImageView imageView23 = (CircleImageView) header.findViewById(R.id.imageViewNav);
+        Bitmap bitmapImage = Data.StringToBitMap(Data.account.getImageBitmap());
+        if(bitmapImage!=null) {
+            imageView23.setImageBitmap(bitmapImage);
+        }
+
+        displayNameNav = (TextView) header.findViewById(R.id.displayNameNav);
+        emailNav = (TextView) header.findViewById(R.id.emailNav);
+        displayNameNav.setText(Data.account.getDisplayName());
+        emailNav.setText(Data.account.geteMail());
     }
 
     private void populateView() {

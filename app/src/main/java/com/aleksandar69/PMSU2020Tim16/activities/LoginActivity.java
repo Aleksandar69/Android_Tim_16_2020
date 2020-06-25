@@ -3,8 +3,10 @@ package com.aleksandar69.PMSU2020Tim16.activities;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -13,10 +15,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -30,6 +34,7 @@ import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.aleksandar69.PMSU2020Tim16.models.Account;
 import com.aleksandar69.PMSU2020Tim16.services.EmailSyncService;
 import com.aleksandar69.PMSU2020Tim16.services.EmailsJobSchedulerSyncService;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
 
@@ -41,6 +46,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordText;
     MessagesDBHandler dbHandler;
 
+    private TextInputLayout usernameLayout;
+    private TextInputLayout passwordLayout;
+
     SharedPreferences sharedPreferences;
     //public static String myPreferance = "mypref";
     private ProgressDialog mProgressDialog;
@@ -51,9 +59,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        isStoragePermissionGranted();
 
         registerTV = findViewById(R.id.register);
-        testView = findViewById(R.id.test_accounts);
         usernameText = findViewById(R.id.username_field);
         passwordText = findViewById(R.id.password_field);
         dbHandler = new MessagesDBHandler(this);
@@ -78,11 +86,43 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        fillAccountsList();
+        usernameLayout = findViewById(R.id.usernameLayoutLogin);
+        passwordLayout = findViewById(R.id.password_layout_login);
+
     }
 
 
+    public boolean validateUsername() {
+        String usernameLayoutStr = usernameLayout.getEditText().getText().toString().trim();
+
+        if (usernameLayoutStr.isEmpty()) {
+            usernameLayout.setError("Field can't be empty");
+            return false;
+        } else {
+            usernameLayout.setError(null);
+            return true;
+        }
+    }
+
+    public boolean valdiatePassword(){
+        String passwordLayoutStr = passwordLayout.getEditText().getText().toString().trim();
+
+
+        if(passwordLayoutStr.isEmpty()){
+            passwordLayout.setError("Field can't be empty");
+            return false;
+        }
+        else{
+            passwordLayout.setError(null);
+            return true;
+        }
+    }
+
     public void onLoginButtonClicked(View view) {
+
+        if(!validateUsername() | !valdiatePassword()){
+            return;
+        }
 
 
         Data.account = dbHandler.findAccount(usernameText.getText().toString(), passwordText.getText().toString());
@@ -138,74 +178,34 @@ public class LoginActivity extends AppCompatActivity {
                 .show();
     }
 
-    public void tempButtClick(View view) {
-
-        mProgressDialog.setMessage("Logging you in, please wait.");
-        mProgressDialog.setTitle("Logging in");
-        mProgressDialog.show();
 
 
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                mProgressDialog.cancel();
-                Intent intent = new Intent(LoginActivity.this, EmailsActivity.class);
-                startActivity(intent);
+        public  boolean isStoragePermissionGranted() {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    return true;
+                } else {
+
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    return false;
+                }
             }
-        };
-
-        Handler pdCancel = new Handler();
-        pdCancel.postDelayed(runnable, 6000);
-
-
-/*        Intent intent = new Intent(this, EmailsActivity.class);
-        startActivity(intent);*/
-/*        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(userId, account.get_id());
-        editor.commit();*/
-    }
-
-
-    //PRIVREMENO
-    public void fillAccountsList() {
-
-        dbHandler = new MessagesDBHandler(this);
-
-        List<Account> accounts = dbHandler.queryAccounts();
-
-
-        Account[] listAccounts = new Account[accounts.size()];
-        listAccounts = accounts.toArray(listAccounts);
-
-        try {
-
-            ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listAccounts);
-            testView.setAdapter(adapter);
-        } catch (NullPointerException e) {
-            Toast.makeText(this, "Object null", Toast.LENGTH_LONG).show();
+            else { //permission is automatically granted on sdk<23 upon installation
+                return true;
+            }
         }
 
-
-/*        List<Message> messages = dbHandler.queryAllNoContentP();
-
-        Message[] listMessages = new Message[messages.size()];
-        listMessages = messages.toArray(listMessages);
-
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listMessages);
-        testView.setAdapter(adapter);*/
-    }
 
     @Override
     protected void onStart() {
 
-        fillAccountsList();
         super.onStart();
 
     }
 
     @Override
     protected void onResume() {
-        fillAccountsList();
         super.onResume();
     }
 

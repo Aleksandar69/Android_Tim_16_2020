@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -23,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.Data;
@@ -31,6 +33,8 @@ import com.aleksandar69.PMSU2020Tim16.adapters.FoldersCursorAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.google.android.material.navigation.NavigationView;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class FoldersActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ListView.OnItemClickListener  {
 
     Cursor cursor;
@@ -38,6 +42,8 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
     MessagesDBHandler handler;
     SwipeRefreshLayout pullToRefresh;
     FoldersCursorAdapter foldersAdapter;
+    private TextView displayNameNav;
+    private TextView emailNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +85,16 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
         navigationView.setCheckedItem(R.id.nav_folders);
         navigationView.setNavigationItemSelectedListener(this);
 
+        View header = navigationView.getHeaderView(0);
+        CircleImageView imageView23 = (CircleImageView) header.findViewById(R.id.imageViewNav);
+        Bitmap bitmapImage = Data.StringToBitMap(Data.account.getImageBitmap());
+        if(bitmapImage!=null) {
+            imageView23.setImageBitmap(bitmapImage);
+        }
+        displayNameNav = (TextView) header.findViewById(R.id.displayNameNav);
+        emailNav = (TextView) header.findViewById(R.id.emailNav);
+        displayNameNav.setText(Data.account.getDisplayName());
+        emailNav.setText(Data.account.geteMail());
     }
 
 

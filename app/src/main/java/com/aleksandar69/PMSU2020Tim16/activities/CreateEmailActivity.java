@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,10 +35,16 @@ import com.aleksandar69.PMSU2020Tim16.models.Account;
 import com.aleksandar69.PMSU2020Tim16.models.Message;
 import com.aleksandar69.PMSU2020Tim16.models.Tag;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -184,10 +191,32 @@ public class CreateEmailActivity extends AppCompatActivity {
         openFile("*/*");
     }
 
+    public static Date fromUTC (String dateStr){
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        df.setTimeZone(tz);
 
+        try {
+            return df.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static String toUTC (Date date){
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
+        df.setTimeZone(tz);
+        return df.format(date);
+    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Date trenutniDatum = new Date();
+        String formatiranDatum = toUTC( trenutniDatum);
+
         switch (item.getItemId()) {
             case R.id.email_cancel_button:
 
@@ -196,9 +225,12 @@ public class CreateEmailActivity extends AppCompatActivity {
                     Message message = new Message(toEditBox.getText().toString(),
                             ccEditBox.getText().toString(), bccEditBox.getText().toString(), subjectEditBox.getText().toString(), contentEditBox.getText().toString());
                     message.setLogged_user_id(mSharedPreferences.getInt(Data.userId, -1));
+                    message.setUnread(true);
                     message.setFolder_id(1);
+                    message.setDateTime(formatiranDatum);
                     dbHandler.addMessage(message);
                     Intent intent = new Intent(this, EmailsActivity.class);
+                    Data.totalEmailsServer++;
                     Toast.makeText(this, "Message saved as Draft", Toast.LENGTH_LONG).show();
                     startActivity(intent);
                     return true;
@@ -210,23 +242,29 @@ public class CreateEmailActivity extends AppCompatActivity {
                     return true;
                 }
             case R.id.email_send_button:
+                if(validateMail() | validateBCC() | validateCC()){
+
+
                 Message message = new Message(toEditBox.getText().toString(),
                         ccEditBox.getText().toString(), bccEditBox.getText().toString(), subjectEditBox.getText().toString(), contentEditBox.getText().toString());
                 message.setLogged_user_id(mSharedPreferences.getInt(Data.userId, -1));
                 /*  dbHandler.addMessage(message);*/
-
                 tags.append(tagsEditBox.getText().toString());
 
  /*               if (filePath != null || !tags.toString().isEmpty()) {*/
-          /*          SendMultipartEmail sendMessage = new SendMultipartEmail(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
-                    sendMessage.execute();*/
-                    SendMultipartMailConcurrent sendeMai= new SendMultipartMailConcurrent(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
+                 //   SendMultipartEmail sendMessage = new SendMultipartEmail(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
+                //    sendMessage.execute();
+                   SendMultipartMailConcurrent sendeMai= new SendMultipartMailConcurrent(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
                     sendeMai.Send();
-   /*             } else {
+
+      /*         } else {
                     SendEmail sendMessage = new SendEmail(message.getSubject(), message.getContent(), message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
                     sendMessage.execute();
                 }*/
+                 Toast.makeText(this, "Message sent", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this, EmailsActivity.class));
+                return true;
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -282,7 +320,85 @@ public class CreateEmailActivity extends AppCompatActivity {
         }
     }
 
+    private TextInputLayout toLayout;
+    private TextInputLayout ccLayout;
+    private TextInputLayout bccLayout;
 
+    public boolean validateMail(){
+        toLayout = findViewById(R.id.to_edit_layout);
+
+        String emailLayout = toLayout.getEditText().getText().toString().trim();
+
+        boolean status = false;
+
+        String[] emails = emailLayout.split(";[ ]*");
+
+        for (String s: emails
+             )
+        {
+            if(!Patterns.EMAIL_ADDRESS.matcher(s).matches())
+            {
+                toLayout.setError("Wrong email format.");
+                status = false;
+             }
+            {
+                toLayout.setError(null);
+                status = true;
+            }
+        }
+        return status;
+    }
+
+    public boolean validateCC(){
+        ccLayout = findViewById(R.id.cc_layout_createnew);
+
+        String emailLayout = ccLayout.getEditText().getText().toString().trim();
+
+        boolean status = false;
+
+        String[] emails = emailLayout.split(";[ ]*");
+
+
+        for (String s: emails
+        )
+        {
+            if(!Patterns.EMAIL_ADDRESS.matcher(s).matches())
+            {
+                ccLayout.setError("Wrong email format.");
+                status = false;
+            }
+            {
+                ccLayout.setError(null);
+                status = true;
+            }
+        }
+        return status;
+    }
+
+    public boolean validateBCC(){
+        bccLayout = findViewById(R.id.bcc_layout_createnew);
+
+        String emailLayout = bccLayout.getEditText().getText().toString().trim();
+
+        boolean status = false;
+
+        String[] emails = emailLayout.split(";[ ]*");
+
+        for (String s: emails
+        )
+        {
+            if(!Patterns.EMAIL_ADDRESS.matcher(s).matches())
+            {
+                bccLayout.setError("Wrong email format.");
+                status = false;
+            }
+            {
+                bccLayout.setError(null);
+                status = true;
+            }
+        }
+        return status;
+    }
 
 /*    public void sendMessage(View view) {
         MessagesDBHandler dbHandler = new MessagesDBHandler(this);

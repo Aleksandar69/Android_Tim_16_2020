@@ -288,6 +288,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -304,6 +305,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.preference.PreferenceManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aleksandar69.PMSU2020Tim16.Data;
@@ -316,6 +318,8 @@ import com.aleksandar69.PMSU2020Tim16.services.EmailSyncService;
 import com.aleksandar69.PMSU2020Tim16.services.EmailsJobSchedulerSyncService;
 import com.google.android.material.navigation.NavigationView;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class FolderActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ListView.OnItemClickListener {
 
     Cursor cursor;
@@ -327,6 +331,8 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
     String folderID;
     EmailsCursorAdapter emailsAdapter;
     SwipeRefreshLayout pullToRefresh;
+    private TextView displayNameNav;
+    private TextView emailNav;
     int idID;
 
     @Override
@@ -365,13 +371,18 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        View header = navigationView.getHeaderView(0);
+        CircleImageView imageView23 = (CircleImageView) header.findViewById(R.id.imageViewNav);
+        Bitmap bitmapImage = Data.StringToBitMap(Data.account.getImageBitmap());
+        if(bitmapImage!=null) {
+            imageView23.setImageBitmap(bitmapImage);
+        }
 
-
+        displayNameNav = (TextView) header.findViewById(R.id.displayNameNav);
+        emailNav = (TextView) header.findViewById(R.id.emailNav);
+        displayNameNav.setText(Data.account.getDisplayName());
+        emailNav.setText(Data.account.geteMail());
         populateList();
-
-        Log.d("onCreateSharedPrefs" ,Data.allowSync.toString());
-        Log.d("onCreateSharedPrefs" ,Data.syncTime);
-        Log.d("onCreateSharedPrefs" ,Data.prefSort);
 
         handleIntent(getIntent());
 
@@ -386,7 +397,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
 
     }
 
-    public void startSyncService() {
+/*    public void startSyncService() {
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
@@ -402,7 +413,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
             Intent i = new Intent(this, EmailSyncService.class);
             startService(i);
         }
-    }
+    }*/
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void StopSyncingService(){
@@ -542,7 +553,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+/*    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onStart() {
         populateList();
@@ -555,7 +566,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
         }
 
         super.onStart();
-    }
+    }*/
 
     @Override
     protected void onResume() {

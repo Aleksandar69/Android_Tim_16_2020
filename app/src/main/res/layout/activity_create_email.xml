@@ -13,6 +13,7 @@
 
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/to_edit_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:errorEnabled="true">
@@ -26,6 +27,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/cc_layout_createnew"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:errorEnabled="true">
@@ -40,6 +42,7 @@
 
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/bcc_layout_createnew"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:errorEnabled="true">
@@ -83,12 +86,22 @@
             android:hint="@string/tags_edit" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Note: Use ';' to separate recipients and tags"
+        android:textColor="#ff6666"
+        />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
     <Button
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:textSize="12dp"
+        android:background="#4700b3"
         android:id="@+id/add_attach"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
