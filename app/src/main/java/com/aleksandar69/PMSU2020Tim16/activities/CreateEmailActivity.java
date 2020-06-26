@@ -62,6 +62,10 @@ public class CreateEmailActivity extends AppCompatActivity {
     private TextInputEditText tagsEditBox;
     MessagesDBHandler dbHandler;
 
+    private TextInputLayout toLayout;
+    private TextInputLayout ccLayout;
+    private TextInputLayout bccLayout;
+
     private List<Tag> listOfTagObjs;
 
 
@@ -90,6 +94,13 @@ public class CreateEmailActivity extends AppCompatActivity {
         contentEditBox = findViewById(R.id.email_content);
         attachedFiles = findViewById(R.id.attached_files);
         tagsEditBox = findViewById(R.id.tags_edit);
+        toLayout = findViewById(R.id.to_edit_layout);
+        ccLayout = findViewById(R.id.cc_layout_createnew);
+
+
+
+        bccLayout = findViewById(R.id.bcc_layout_createnew);
+
 
         tags = new StringBuffer();
         dbHandler = new MessagesDBHandler(this);
@@ -242,25 +253,25 @@ public class CreateEmailActivity extends AppCompatActivity {
                     return true;
                 }
             case R.id.email_send_button:
-                if(validateMail() | validateBCC() | validateCC()){
+                if(validateMail() & validateBCC() & validateCC() & checkIfAllAreEmpty()){
 
 
                 Message message = new Message(toEditBox.getText().toString(),
                         ccEditBox.getText().toString(), bccEditBox.getText().toString(), subjectEditBox.getText().toString(), contentEditBox.getText().toString());
                 message.setLogged_user_id(mSharedPreferences.getInt(Data.userId, -1));
-                /*  dbHandler.addMessage(message);*/
+                  dbHandler.addMessage(message);
                 tags.append(tagsEditBox.getText().toString());
 
- /*               if (filePath != null || !tags.toString().isEmpty()) {*/
+                if (filePath != null || !tags.toString().isEmpty()) {
                  //   SendMultipartEmail sendMessage = new SendMultipartEmail(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
                 //    sendMessage.execute();
                    SendMultipartMailConcurrent sendeMai= new SendMultipartMailConcurrent(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
                     sendeMai.Send();
 
-      /*         } else {
+               } else {
                     SendEmail sendMessage = new SendEmail(message.getSubject(), message.getContent(), message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
                     sendMessage.execute();
-                }*/
+                }
                  Toast.makeText(this, "Message sent", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this, EmailsActivity.class));
                 return true;
@@ -269,6 +280,7 @@ public class CreateEmailActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
     public void openFile(String mimeType) {
 
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -320,27 +332,30 @@ public class CreateEmailActivity extends AppCompatActivity {
         }
     }
 
-    private TextInputLayout toLayout;
-    private TextInputLayout ccLayout;
-    private TextInputLayout bccLayout;
 
     public boolean validateMail(){
-        toLayout = findViewById(R.id.to_edit_layout);
 
         String emailLayout = toLayout.getEditText().getText().toString().trim();
 
-        boolean status = false;
+        boolean status = true;
 
         String[] emails = emailLayout.split(";[ ]*");
 
         for (String s: emails
              )
         {
-            if(!Patterns.EMAIL_ADDRESS.matcher(s).matches())
+            if(emailLayout.isEmpty() || emailLayout == ""){
+            toLayout.setError(null);
+            status=true;
+        }
+            else if(!Patterns.EMAIL_ADDRESS.matcher(s).matches())
             {
-                toLayout.setError("Wrong email format.");
                 status = false;
+                toLayout.setError("Wrong email format.");
+                Toast.makeText(this, "Wrong email format", Toast.LENGTH_SHORT).show();
+
              }
+            else
             {
                 toLayout.setError(null);
                 status = true;
@@ -350,23 +365,28 @@ public class CreateEmailActivity extends AppCompatActivity {
     }
 
     public boolean validateCC(){
-        ccLayout = findViewById(R.id.cc_layout_createnew);
 
         String emailLayout = ccLayout.getEditText().getText().toString().trim();
 
-        boolean status = false;
+        boolean status = true;
 
         String[] emails = emailLayout.split(";[ ]*");
 
 
-        for (String s: emails
-        )
+        for (String s: emails)
         {
-            if(!Patterns.EMAIL_ADDRESS.matcher(s).matches())
-            {
-                ccLayout.setError("Wrong email format.");
-                status = false;
-            }
+
+            if(emailLayout.isEmpty() || emailLayout == ""){
+            ccLayout.setError(null);
+            status=true;
+        }
+            else  if(!Patterns.EMAIL_ADDRESS.matcher(s).matches())
+        {
+            status = false;
+            ccLayout.setError("Wrong email format.");
+            Toast.makeText(this, "Wrong email format", Toast.LENGTH_SHORT).show();
+        }
+            else
             {
                 ccLayout.setError(null);
                 status = true;
@@ -376,28 +396,59 @@ public class CreateEmailActivity extends AppCompatActivity {
     }
 
     public boolean validateBCC(){
-        bccLayout = findViewById(R.id.bcc_layout_createnew);
 
         String emailLayout = bccLayout.getEditText().getText().toString().trim();
 
-        boolean status = false;
+        boolean status = true;
 
         String[] emails = emailLayout.split(";[ ]*");
 
-        for (String s: emails
-        )
+        for (String s: emails)
         {
-            if(!Patterns.EMAIL_ADDRESS.matcher(s).matches())
-            {
-                bccLayout.setError("Wrong email format.");
-                status = false;
-            }
+            if(emailLayout.isEmpty() || emailLayout == ""){
+            bccLayout.setError(null);
+            status=true;
+        }
+
+            else if(!Patterns.EMAIL_ADDRESS.matcher(s).matches())
+        {
+            status = false;
+            bccLayout.setError("Wrong email format.");
+            Toast.makeText(this, "Wrong email format", Toast.LENGTH_SHORT).show();
+        }
+            else
             {
                 bccLayout.setError(null);
                 status = true;
             }
+
+        }
+
+
+        return status;
+    }
+
+    public boolean checkIfAllAreEmpty(){
+        String toL = toLayout.getEditText().getText().toString().trim();
+        String ccL = ccLayout.getEditText().getText().toString().trim();
+        String bccL = bccLayout.getEditText().getText().toString().trim();
+
+        boolean status = true;
+
+        if(toL.isEmpty() && ccL.isEmpty() && bccL.isEmpty()){
+            toLayout.setError("Please fill at least one recipient field");
+            ccLayout.setError("Please fill at least one recipient field");
+            bccLayout.setError("Please fill at least one recipient field");
+            status = false;
+        }
+        else{
+            toLayout.setError(null);
+            ccLayout.setError(null);
+            bccLayout.setError(null);
         }
         return status;
+
+
     }
 
 /*    public void sendMessage(View view) {

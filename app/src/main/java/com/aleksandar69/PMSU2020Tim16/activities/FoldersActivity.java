@@ -8,6 +8,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.preference.PreferenceManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.SearchManager;
@@ -44,6 +45,7 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
     FoldersCursorAdapter foldersAdapter;
     private TextView displayNameNav;
     private TextView emailNav;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,7 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
 
         folders = findViewById(R.id.folders_list_view);
         pullToRefresh = findViewById(R.id.pullToRefresh);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         try {
             handler = new MessagesDBHandler(this);
@@ -143,8 +146,11 @@ public class FoldersActivity extends AppCompatActivity implements NavigationView
                 intent = new Intent(this, SettingsActivity.class);
                 break;
             case R.id.nav_logout:
-                intent = new Intent(this, LoginActivity.class);
+                startActivity(new Intent(this, LoginActivity.class));
                 Data.account = null;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.commit();
                 break;
             default:
                 intent = new Intent(this, FoldersActivity.class);

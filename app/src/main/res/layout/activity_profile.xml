@@ -16,7 +16,8 @@
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
         <LinearLayout
             android:id="@+id/main_content"
@@ -110,6 +111,24 @@
                     android:text="Username"
                     style="@style/TextAppearance.AppCompat.Large"/>
 
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <Button
+                    android:padding="5dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Switch account"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:textSize="12dp"
+                    android:onClick="switchAcc"
+                    android:background="#4700b3"/>
             </LinearLayout>
 
 

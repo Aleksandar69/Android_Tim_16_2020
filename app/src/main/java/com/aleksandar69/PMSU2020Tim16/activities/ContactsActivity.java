@@ -16,6 +16,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
@@ -44,6 +45,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -85,6 +87,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
     String filePath;
     private TextView displayNameNav;
     private TextView emailNav;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -96,7 +99,7 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         CustomAdapter adapter = new CustomAdapter(this, R.layout.row, list);
         populateView();
         contactsListView.setAdapter(adapter);
-
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         //list = new ArrayList<>();
         //adapter = new ContactsBaseAdapter(this, R.layout.row, list);
@@ -490,6 +493,10 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
                 break;
             case R.id.nav_logout:
                 intent = new Intent(this, LoginActivity.class);
+                Data.account = null;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.commit();
                 break;
             default:
                 intent = new Intent(this, ContactsActivity.class);

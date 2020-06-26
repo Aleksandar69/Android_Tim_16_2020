@@ -48,6 +48,7 @@ public class Data {
 
     public static String profileImageFilePath = null;
     public static Bitmap bitmap = null;
+    public static String currentImage = null;
 
     public static Bitmap StringToBitMap(String encodedString){
         try {

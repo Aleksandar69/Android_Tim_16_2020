@@ -113,14 +113,12 @@ public class ProfileActivity extends AppCompatActivity implements NavigationView
         emailNav = (TextView) header.findViewById(R.id.emailNav);
 
         Bitmap bitmapImage = Data.StringToBitMap(Data.account.getImageBitmap());
-        if(bitmapImage!=null) {
+        if(Data.profileImageFilePath!=null) {
+            ucitajSliku();
+        }
+        else if(bitmapImage!=null) {
             imageView23.setImageBitmap(bitmapImage);
             imageViewTV.setImageBitmap(bitmapImage);
-        }
-        else{
-            if(Data.profileImageFilePath!=null) {
-                ucitajSliku();
-            }
         }
 
         imageViewTV.setOnClickListener(new View.OnClickListener() {
@@ -179,6 +177,13 @@ public class ProfileActivity extends AppCompatActivity implements NavigationView
         }
     }
 
+    public void switchAcc(View view){
+        startActivity(new Intent(this, LoginActivity.class));
+        Data.account = null;
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.commit();
+    }
 
 
     public String BitMapToString(Bitmap bitmap){
@@ -237,7 +242,7 @@ public class ProfileActivity extends AppCompatActivity implements NavigationView
     public void openFile(String mimeType) {
 
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,false);
         intent.setType(mimeType);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
 
@@ -327,7 +332,11 @@ public class ProfileActivity extends AppCompatActivity implements NavigationView
                 intent = new Intent(this, ContactsActivity.class);
                 break;
             case R.id.nav_settings:
-                intent = new Intent(this, SettingsActivity.class);
+                intent = new Intent(this, LoginActivity.class);
+                Data.account = null;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.commit();
                 break;
             case R.id.nav_logout:
                 intent = new Intent(this, LoginActivity.class);
@@ -356,9 +365,18 @@ public class ProfileActivity extends AppCompatActivity implements NavigationView
 
     @Override
     protected void onStart() {
-/*        if(Data.profileImageFilePath!=null){
+        Bitmap bitmapImage = Data.StringToBitMap(Data.account.getImageBitmap());
+        if(Data.profileImageFilePath!=null) {
             ucitajSliku();
-        }*/
+        }
+        else if(bitmapImage!=null) {
+            imageView23.setImageBitmap(bitmapImage);
+            imageViewTV.setImageBitmap(bitmapImage);
+        }
+        else{
+
+        }
+
         super.onStart();
     }
 
