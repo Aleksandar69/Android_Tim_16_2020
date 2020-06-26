@@ -16,22 +16,10 @@
         android:layout_height="match_parent"
         android:id="@+id/drawer_layout">
 
-        <!--
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/progress_bar_circle"
-            android:layout_centerInParent = "true"/>
-            -->
-
-
-
       <ListView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:id="@+id/recycler_v"/>
-
-
 
         <com.google.android.material.navigation.NavigationView
             android:layout_width="wrap_content"
