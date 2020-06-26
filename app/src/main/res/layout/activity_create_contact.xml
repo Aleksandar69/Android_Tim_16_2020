@@ -23,7 +23,7 @@
         android:id="@+id/choose_image_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose image" />
+        android:text="@string/choose_image" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -77,20 +77,12 @@
         android:layout_height="wrap_content"
         android:hint="@string/hint_display_name"
         android:inputType="text" />
-<!--
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
-
--->
 
     <TextView
         android:id="@+id/text_view_show_contacts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Show contacts" />
+        android:text="@string/show_contacts" />
 
 </LinearLayout>

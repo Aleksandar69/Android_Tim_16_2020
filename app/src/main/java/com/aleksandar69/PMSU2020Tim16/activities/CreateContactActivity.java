@@ -88,7 +88,6 @@ public class CreateContactActivity extends AppCompatActivity {
         showContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //klik na show contacts iz layout-a
                 openContactsActivity();
             }
         });
@@ -128,7 +127,7 @@ public class CreateContactActivity extends AppCompatActivity {
         switch(item.getItemId()) {
             case R.id.cancel_contact_creation:
                 Intent intent = new Intent(this,ContactsActivity.class);
-                Toast.makeText(this,"Contact creation canceled", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Otkazano kreiranje kontakta!", Toast.LENGTH_SHORT).show();
                 startActivity(intent);
                 return true;
             case R.id.save_new_contact:
@@ -149,40 +148,19 @@ public class CreateContactActivity extends AppCompatActivity {
                     displayNameEdit.setError("Unesite ime koje zelite da se prikazuje! ");
                     displayNameEdit.requestFocus();
                 } else if (!email.matches(emailPattern)) {
-                    Toast.makeText(getApplicationContext(), "Email adresa nije validna! Unesite ponovo!", Toast.LENGTH_SHORT).show();
-                    //emailEdit.setError("Niste unijeli email!");
-                    //emailEdit.requestFocus();
+                    Toast.makeText(getApplicationContext(), "Email adresa nije unesena u ispravnom formatu! Pokusajte ponovo..", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    handler.insertData(first,last,display,email,image);
-                    Toast.makeText(this, "Kontakt je uspjesno kreiran", Toast.LENGTH_SHORT).show();
+                    handler.insertData10(first,last,display,email,image);
+                    Toast.makeText(this, "Kontakt je uspjesno kreiran!", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(CreateContactActivity.this,ContactsActivity.class));
                 }
-
-                /*
-                if(!TextUtils.isEmpty(first) || !TextUtils.isEmpty(last) || !TextUtils.isEmpty(display) ||
-                !TextUtils.isEmpty(email) || image !=null) {
-                    handler.insertData(first, last,display,email,image);
-                } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setMessage("Please fill at least one field! ").setNegativeButton("OK",null).show();
-                }
-                Toast.makeText(CreateContactActivity.this, "Added successfully", Toast.LENGTH_SHORT).show()
-                 */
-                /*
-                if(!TextUtils.isEmpty(first) || !TextUtils.isEmpty(last) || !TextUtils.isEmpty(display) || !TextUtils.isEmpty(email)){
-                    Contact contact = new Contact(first,last,display,email);
-                    handler.addContact(contact);
-                    startActivity(new Intent(context,ContactsActivity.class));
-                } else{
-
-                }
-                 */
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    //pomocu ove metode image view kompresujem u bajtove
     public static byte[] imageViewToByte(ImageView image) {
         Bitmap bitmap = ((BitmapDrawable)image.getDrawable()).getBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -191,12 +169,8 @@ public class CreateContactActivity extends AppCompatActivity {
         return byteArray;
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-    }
-
     //when we pick out file this is called
+    //kad izaberem sliku iz galerije, pomocu ove metode se slika setuje u imageview
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -212,10 +186,10 @@ public class CreateContactActivity extends AppCompatActivity {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            // Picasso.get().load(imageUri).into(imageEdit);
         }
     }
 
+    //enkodiranje slike u base 65 preko bitmapa
     private String encodeImage(Bitmap bm)
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -226,6 +200,7 @@ public class CreateContactActivity extends AppCompatActivity {
         return encImage;
     }
 
+    //enkodiranje slike u base 64 preko putanje
     private String encodeImage(String path)
     {
         File imagefile = new File(path);

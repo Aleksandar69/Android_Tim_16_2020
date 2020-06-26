@@ -118,8 +118,6 @@ public class ContactActivity extends AppCompatActivity {
         actionBar.setTitle("Contact");
     }
 
-
-
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_contact, menu);
         return super.onCreateOptionsMenu(menu);
@@ -146,26 +144,19 @@ public class ContactActivity extends AppCompatActivity {
                     displayNameEditt.setError("Unesite ime koje zelite da se prikazuje! ");
                     displayNameEditt.requestFocus();
                 } else if (!email.matches(emailPattern)) {
-                    Toast.makeText(getApplicationContext(), "Email adresa nije validna! Unesite ponovo!", Toast.LENGTH_SHORT).show();
-                    //emailEditt.setError("Niste unijeli email!");
-                    //emailEditt.requestFocus();
-                } else if (image == null && image.length < 0) {
-                    Toast.makeText(ContactActivity.this,  "Postavite fotografiju! ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Email adresa nije unesena u ispravnom formatu! Unesite ponovo.. ", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     handler.updateData10(selectedID,first,last,display,email);
                     Toast.makeText(this, "Uspjesno ste izmijenili kontakt! ", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(ContactActivity.this,ContactsActivity.class));
                 }
-
-
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
 
     }
-
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
@@ -206,7 +197,6 @@ public class ContactActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
     }
 
     @Override
@@ -216,10 +206,6 @@ public class ContactActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        // hide the keyboard in order to avoid getTextBeforeCursor on inactive InputConnection
-        //InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        //inputMethodManager.hideSoftInputFromWindow(myEditText.getWindowToken(), 0);
         super.onPause();
     }
 
