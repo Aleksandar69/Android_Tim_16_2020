@@ -61,10 +61,14 @@ public class CreateEmailActivity extends AppCompatActivity {
     private TextView attachedFiles;
     private TextInputEditText tagsEditBox;
     MessagesDBHandler dbHandler;
+    Message mes;
 
     private TextInputLayout toLayout;
     private TextInputLayout ccLayout;
     private TextInputLayout bccLayout;
+
+    int itemId;
+
 
     private List<Tag> listOfTagObjs;
 
@@ -86,6 +90,7 @@ public class CreateEmailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_email);
+        dbHandler = new MessagesDBHandler(this);
 
         toEditBox = findViewById(R.id.email_to);
         ccEditBox = findViewById(R.id.email_cc);
@@ -102,8 +107,23 @@ public class CreateEmailActivity extends AppCompatActivity {
         bccLayout = findViewById(R.id.bcc_layout_createnew);
 
 
+        try {
+            String emailId = (String) getIntent().getExtras().get(Data.MESS_ID_EXTRA);
+            itemId = Integer.parseInt(emailId);
+        }
+        catch (NullPointerException e){}
+
+        if (itemId != 0){
+            mes = dbHandler.findMessage(itemId);
+            toEditBox.setText(mes.getTo());
+            ccEditBox.setText(mes.getCc());
+            bccEditBox.setText(mes.getBcc());
+            subjectEditBox.setText(mes.getSubject());
+            contentEditBox.setText(mes.getContent());
+        }
+
+
         tags = new StringBuffer();
-        dbHandler = new MessagesDBHandler(this);
 
         attachedFiles.setText("0");
 
@@ -239,7 +259,17 @@ public class CreateEmailActivity extends AppCompatActivity {
                     message.setUnread(true);
                     message.setFolder_id(1);
                     message.setDateTime(formatiranDatum);
+                    //Message m = dbHandler.findMessage(itemId);
+//                    if(!m.getTo().equals(message.getTo()) || !m.getCc().equals(message.getCc()) || !m.getBcc().equals(message.getBcc())
+//                    || !m.getSubject().equals(message.getSubject()) || !m.getContent().equals(message.getContent()) ){
                     dbHandler.addMessage(message);
+                    try {
+                        if(mes.getFolder_id() == 1){
+                            dbHandler.deleteMessage(itemId);
+                        }
+                    }
+                    catch(NullPointerException e){}
+
                     Intent intent = new Intent(this, EmailsActivity.class);
                     Data.totalEmailsServer++;
                     Toast.makeText(this, "Message saved as Draft", Toast.LENGTH_LONG).show();
@@ -259,8 +289,10 @@ public class CreateEmailActivity extends AppCompatActivity {
                 Message message = new Message(toEditBox.getText().toString(),
                         ccEditBox.getText().toString(), bccEditBox.getText().toString(), subjectEditBox.getText().toString(), contentEditBox.getText().toString());
                 message.setLogged_user_id(mSharedPreferences.getInt(Data.userId, -1));
-                  dbHandler.addMessage(message);
                 tags.append(tagsEditBox.getText().toString());
+                if(mes.getFolder_id() == 1){
+                    dbHandler.deleteMessage(itemId);
+                }
 
                 if (filePath != null || !tags.toString().isEmpty()) {
                  //   SendMultipartEmail sendMessage = new SendMultipartEmail(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
@@ -272,7 +304,7 @@ public class CreateEmailActivity extends AppCompatActivity {
                     SendEmail sendMessage = new SendEmail(message.getSubject(), message.getContent(), message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
                     sendMessage.execute();
                 }
-                 Toast.makeText(this, "Message sent", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Message sent", Toast.LENGTH_LONG).show();
                 startActivity(new Intent(this, EmailsActivity.class));
                 return true;
                 }

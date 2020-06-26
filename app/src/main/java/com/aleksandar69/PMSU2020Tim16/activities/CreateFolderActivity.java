@@ -100,8 +100,12 @@ public class CreateFolderActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        setTitle("Create/Edit Folder");
-
+        if(id == 0) {
+            setTitle("Create Folder");
+        }
+        else{
+            setTitle("Edit folder" );
+        }
     }
 
     @Override
@@ -116,7 +120,8 @@ public class CreateFolderActivity extends AppCompatActivity {
 
         String enum1 = spinerCondition.getSelectedItem().toString();
         String enum2 = spinerOperation.getSelectedItem().toString();
-        String folderName = etName.getText().toString();
+        String folderName = etName.getText().toString().trim();
+        String cTxt = etConditonTxt.getText().toString().trim();
 
         switch (item.getItemId()) {
             case R.id.folder_cancel:
@@ -126,12 +131,22 @@ public class CreateFolderActivity extends AppCompatActivity {
             case R.id.folder_save:
 
                 if (id == 0){
-                    Folder folder = new Folder(folderName);
-                    dbHandler.addFolder(folder);
-                    Folder newFolder = dbHandler.findFolderID(folderName);
-                    dbHandler.addRule(enum1, etConditonTxt.getText().toString(), enum2, newFolder.getId());
-                    startActivity(new Intent(this, FoldersActivity.class));
-                    return true;
+                    if(folderName.isEmpty()){
+                        etName.setError("Unesite ime foldera.");
+                        etName.requestFocus();
+                    }
+                    else if(cTxt.isEmpty()){
+                        etConditonTxt.setError("Popunite polje.");
+                        etConditonTxt.requestFocus();
+                    }
+                    else {
+                        Folder folder = new Folder(folderName);
+                        dbHandler.addFolder(folder);
+                        Folder newFolder = dbHandler.findFolderID(folderName);
+                        dbHandler.addRule(enum1, cTxt, enum2, newFolder.getId());
+                        startActivity(new Intent(this, FoldersActivity.class));
+                        return true;
+                    }
                 }
                 else {
                     String name = tvName.getText().toString().trim();

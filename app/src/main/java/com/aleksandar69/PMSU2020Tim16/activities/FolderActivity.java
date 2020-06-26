@@ -296,6 +296,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -314,6 +315,7 @@ import com.aleksandar69.PMSU2020Tim16.adapters.EmailsCursorAdapter;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.aleksandar69.PMSU2020Tim16.javamail.ImapFetchMail;
 import com.aleksandar69.PMSU2020Tim16.models.Folder;
+import com.aleksandar69.PMSU2020Tim16.models.Message;
 import com.aleksandar69.PMSU2020Tim16.services.EmailSyncService;
 import com.aleksandar69.PMSU2020Tim16.services.EmailsJobSchedulerSyncService;
 import com.google.android.material.navigation.NavigationView;
@@ -326,32 +328,39 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
     ListView emails;
     SharedPreferences sharedPreferences;
     MessagesDBHandler handler;
-    SearchView searchView;
-    EditText searchViewET;
     String folderID;
     EmailsCursorAdapter emailsAdapter;
     SwipeRefreshLayout pullToRefresh;
     private TextView displayNameNav;
     private TextView emailNav;
     int idID;
+    Folder f;
+    String folderName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_folder);
-
-        emails = findViewById(R.id.emails_list_view);
-        pullToRefresh = findViewById(R.id.pullToRefresh);
-        folderID = (String) getIntent().getExtras().get(Data.FOLDERS_ID_EXTRA);
-        idID = Integer.parseInt(folderID);
-
-
         try {
             handler = new MessagesDBHandler(this);
         } catch (SQLException e) {
             Toast toast = Toast.makeText(this, "Database unavailable", Toast.LENGTH_SHORT);
             toast.show();
         }
+
+        emails = findViewById(R.id.emails_list_view);
+        pullToRefresh = findViewById(R.id.pullToRefresh);
+        try {
+            folderID = (String) getIntent().getExtras().get(Data.FOLDERS_ID_EXTRA);
+            idID = Integer.parseInt(folderID);
+        }
+        catch (NullPointerException e){}
+
+        if(idID != 0) {
+            f = handler.findFolder(idID);
+            folderName = f.getName();
+        }
+
 
 
 
@@ -360,7 +369,7 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle("Folder");
+        actionBar.setTitle(folderName);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -448,12 +457,20 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Cursor cursor = (Cursor) parent.getAdapter().getItem(position);
         String email_id = cursor.getString(0);
-
-        Intent intent = new Intent(this, EmailActivity.class);
-        intent.putExtra(Data.MESS_ID_EXTRA, email_id);
-        startActivity(intent);
+        int itemId = Integer.parseInt(email_id);
+        // Proverimo da li se nalazimo u Drafts folderu, onda pozivamo createEmailActivity
+        //da bi mogli nastaviti prekinuto kreiranje emaila.
+        if (idID == 1) {
+             Intent intent = new Intent(this, CreateEmailActivity.class);
+            intent.putExtra(Data.MESS_ID_EXTRA, email_id);
+            startActivity(intent);
+        }
+        else {
+            Intent intent = new Intent(this, EmailActivity.class);
+            intent.putExtra(Data.MESS_ID_EXTRA, email_id);
+            startActivity(intent);
+        }
     }
-
 
     public void populateList() {
 
@@ -484,21 +501,28 @@ public class FolderActivity extends AppCompatActivity implements NavigationView.
             case R.id.folder_delete_button:
                 if(idID == 1 || idID == 2){
                     Toast.makeText(this, "Ne mozete obrisati ovaj folder", Toast.LENGTH_LONG).show();
+                    return true;
                 }
                 else{
                     handler.deleteFolder(idID);
                     startActivity(new Intent(this, FoldersActivity.class));
                     return true;
                 }
-                return true;
+
 
             case R.id.edit_folder:
-                Intent intent = new Intent(this, CreateFolderActivity.class);
-                intent.putExtra(Data.FOLDERS_ID_EXTRA, folderID);
+                if(idID == 1 || idID == 2){
+                    Toast.makeText(this, "Ne mozete menjati ovaj folder.", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+                else {
+                    Intent intent = new Intent(this, CreateFolderActivity.class);
+                    intent.putExtra(Data.FOLDERS_ID_EXTRA, folderID);
 
-                Toast.makeText(this, "Edit folder selected", Toast.LENGTH_LONG).show();
-                startActivity(intent);
-                return true;
+                    Toast.makeText(this, "Edit folder selected", Toast.LENGTH_LONG).show();
+                    startActivity(intent);
+                    return true;
+                }
             default:
                 return super.onOptionsItemSelected(item);
 

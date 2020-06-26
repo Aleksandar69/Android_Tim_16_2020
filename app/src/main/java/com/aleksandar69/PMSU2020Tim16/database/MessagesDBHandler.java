@@ -43,7 +43,7 @@ import static com.aleksandar69.PMSU2020Tim16.Data.TABLE_CONTACTS;
 
 public class MessagesDBHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 495;
+    public static final int DATABASE_VERSION = 498;
     public static final String DATABASE_NAME = "EMAILDB";
 
     //folders
@@ -252,6 +252,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
     public void addMessage(Message message) {
         ContentValues values = new ContentValues();
+        //values.put(COLUMN_ID_EMAILS, message.get_id());
         values.put(COLUMN_FROM, message.getFrom());
         values.put(COLUMN_TO, message.getTo());
         values.put(COLUMN_CC, message.getCc());
@@ -1037,11 +1038,10 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
                     String from = message.getFrom();
                     String cc = message.getCc();
                     String subject = message.getSubject();
+                    int messageFolderID = message.getFolder_id();
 
                     if(c == Condition.CC && o == Operation.COPY && cc.contains(t)){
-                        message.set_id(0);
-                        message.setFolder_id(idFolder);
-                        addMessage(message);
+                        copyInFolder(message, idFolder);
                     }
                     else if(c == Condition.CC && o == Operation.DELETE  && cc.contains(t)){
                         moveToFolder(idMessage, idFolder);
@@ -1050,9 +1050,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
                         moveToFolder(idMessage, idFolder);
                     }
                     else if(c == Condition.TO && o == Operation.COPY && to.equals(t)){
-                        message.set_id(0);
-                        message.setFolder_id(idFolder);
-                        addMessage(message);
+                        copyInFolder(message, idFolder);
                     }
                     else if(c == Condition.TO && o == Operation.DELETE && to.equals(t)){
                         moveToFolder(idMessage, idFolder);
@@ -1061,9 +1059,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
                         moveToFolder(idMessage, idFolder);
                     }
                     else if(c == Condition.FROM && o == Operation.COPY && from.equals(t)){
-                        message.set_id(0);
-                        message.setFolder_id(idFolder);
-                        addMessage(message);
+                        copyInFolder(message, idFolder);
                     }
                     else if(c == Condition.FROM && o == Operation.DELETE && from.equals(t)){
                         moveToFolder(idMessage, idFolder);
@@ -1072,9 +1068,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
                         moveToFolder(idMessage, idFolder);
                     }
                     else if(c == Condition.SUBJECT && o == Operation.COPY && subject.contains(t)){
-                        message.set_id(0);
-                        message.setFolder_id(idFolder);
-                        addMessage(message);
+                        copyInFolder(message, idFolder);
                     }
                     else if(c == Condition.SUBJECT && o == Operation.DELETE && subject.contains(t)){
                         moveToFolder(idMessage, idFolder);
@@ -1086,6 +1080,46 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
             }
         }
 
+    }
+
+    private void copyInFolder(Message message, int idFolder) {
+        String countQuery = "SELECT  * FROM " + TABLE_MESSAGES + " WHERE " + COLUMN_MESSAGE_ON_SERVER_ID + " = " + message.getIdOnServer();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
+        cursor.close();
+        if(count == 1){
+            message.setFolder_id(idFolder);
+            addMessage(message);
+        }
+//        else if(count > 1 && message.getFolder_id() != idFolder && message.getFolder_id() != 0 ){
+//            message.setFolder_id(idFolder);
+//            addMessage(message);
+//        }
+
+//        ContentValues values = new ContentValues();
+//        values.put(COLUMN_FROM, message.getFrom());
+//        values.put(COLUMN_TO, message.getTo());
+//        values.put(COLUMN_CC, message.getCc());
+//        values.put(COLUMN_BCC, message.getBcc());
+//        values.put(COLUMN_DATETIME, message.getDateTime());
+//        values.put(COLUMN_SUBJECT, message.getSubject());
+//        values.put(COLUMN_CONTENT, message.getContent());
+//        values.put(COLUMN_ACCOUNTS_FK, message.getLogged_user_id());
+//        values.put(COLUMN_ID_FOLDERS_FK, idFolder);
+//        if (message.isUnread() == true) {
+//            values.put(COLUMN_ISUNREAD, 1);
+//        } else if (message.isUnread() == false) {
+//            values.put(COLUMN_ISUNREAD, 0);
+//        }
+//        StringBuffer tagsStr = new StringBuffer();
+//        for (Tag tag : message.getTags()) {
+//            tagsStr.append(tag.getName() + ";");
+//        }
+//        values.put(COLUMN_TAGS, tagsStr.toString());
+//        values.put(COLUMN_MESSAGE_ON_SERVER_ID, message.getIdOnServer());
+//
+//        myContentResolver.insert(MessagesContentProvider.CONTENT_URI, values);
     }
 
     public void moveToFolder(int idMessage, int idFolder) {
