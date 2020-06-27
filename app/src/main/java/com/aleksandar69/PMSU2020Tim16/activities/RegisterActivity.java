@@ -12,6 +12,7 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
 
+import com.aleksandar69.PMSU2020Tim16.Data;
 import com.aleksandar69.PMSU2020Tim16.R;
 import com.aleksandar69.PMSU2020Tim16.database.MessagesDBHandler;
 import com.aleksandar69.PMSU2020Tim16.javamail.AuthenticateMail;
@@ -43,6 +44,10 @@ public class RegisterActivity extends AppCompatActivity {
     private MessagesDBHandler dbHandler;
 
 
+    private ArrayList<Account> accounts;
+    private ArrayList<String> emails;
+    private ArrayList<String> usernames;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +74,12 @@ public class RegisterActivity extends AppCompatActivity {
         usernameLayout = findViewById(R.id.usernameLayoutRegister);
         displayNameLayout = findViewById(R.id.displayNameLayoutRegister);
         passwordLayout = findViewById(R.id.passwordLayoutRegister);
+
+        accounts = new ArrayList<>();
+        emails = new ArrayList<>();
+        usernames = new ArrayList<>();
     }
+
 
 /*
     public boolean validateMail(){
@@ -107,7 +117,8 @@ public boolean validateUsername() {
     if (usernameLayoutStr.isEmpty()) {
         usernameLayout.setError("Field can't be empty");
         return false;
-    } else {
+    }
+    else {
         usernameLayout.setError(null);
         return true;
     }
@@ -154,6 +165,21 @@ public boolean validateUsername() {
         final String displayName = displayNameinput.getText().toString();
         final String email = eMailinput.getText().toString();
 
+        for (String e: emails
+             ) {
+            if(e.equals(email)){
+                Toast.makeText(this, "E-mail already exists.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+        for(String u : usernames){
+            if(u.equals(userName)){
+                Toast.makeText(this, "Username already exists.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
 
         Account account;
 
@@ -167,12 +193,19 @@ public boolean validateUsername() {
                 @Override
                 public void processFinish(Boolean isConnected) {
 
+                    for (String s : Data.emails) {
+                        if(s.equals(email)){
+                            Toast.makeText(getApplicationContext(), "That E-mail already exists.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
 
                     Log.d("iConnRegisterAc", isConnected.toString());
 
                     if (isConnected) {
                         Account account = new Account(smtpPort, smtpPort, userName, password, displayName, email, smtphost, imaphost);
                         dbHandler.addAccount(account);
+                        Data.emails.add(email);
                         startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
 
                     } else {
@@ -191,10 +224,18 @@ public boolean validateUsername() {
                 @Override
                 public void processFinish(Boolean isConnected) {
 
+                    for (String s : Data.emails) {
+                        if(s.equals(email)){
+                            Toast.makeText(getApplicationContext(), "That E-mail already exists.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
                     Log.d("iConnRegisterAc", isConnected.toString());
                     if (isConnected) {
                         Account account = new Account(smtpPort, smtpPort, userName, password, displayName, email, smtphost, imaphost);
                         dbHandler.addAccount(account);
+                        Data.emails.add(email);
                         startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
 
                     } else {
@@ -217,4 +258,17 @@ public boolean validateUsername() {
 
 
     }
+
+    @Override
+    protected void onStart() {
+        accounts = (ArrayList<Account>) dbHandler.queryAccounts();
+
+        for (Account a: accounts
+        ) {
+            emails.add(a.geteMail());
+            usernames.add(a.getUsername());
+        }
+    super.onStart();
+    }
 }
+

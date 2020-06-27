@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         app:errorEnabled="true">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/email_to"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         app:errorEnabled="true">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/email_cc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
         android:layout_height="wrap_content"
         app:errorEnabled="true">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/email_bcc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

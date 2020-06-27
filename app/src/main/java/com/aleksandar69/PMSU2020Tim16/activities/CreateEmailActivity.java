@@ -21,6 +21,8 @@ import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +34,7 @@ import com.aleksandar69.PMSU2020Tim16.javamail.SendEmail;
 import com.aleksandar69.PMSU2020Tim16.javamail.SendMultipartEmail;
 import com.aleksandar69.PMSU2020Tim16.javamail.SendMultipartMailConcurrent;
 import com.aleksandar69.PMSU2020Tim16.models.Account;
+import com.aleksandar69.PMSU2020Tim16.models.Contact;
 import com.aleksandar69.PMSU2020Tim16.models.Message;
 import com.aleksandar69.PMSU2020Tim16.models.Tag;
 import com.google.android.material.textfield.TextInputEditText;
@@ -53,9 +56,9 @@ public class CreateEmailActivity extends AppCompatActivity {
     private static final int PERM_CODE = 125;
 
 
-    private TextInputEditText toEditBox;
-    private TextInputEditText ccEditBox;
-    private TextInputEditText bccEditBox;
+    private AutoCompleteTextView toEditBox;
+    private AutoCompleteTextView ccEditBox;
+    private AutoCompleteTextView bccEditBox;
     private TextInputEditText subjectEditBox;
     private EditText contentEditBox;
     private TextView attachedFiles;
@@ -69,6 +72,7 @@ public class CreateEmailActivity extends AppCompatActivity {
 
     int itemId;
 
+    ArrayList<Contact> listOfContacts;
 
     private List<Tag> listOfTagObjs;
 
@@ -102,6 +106,24 @@ public class CreateEmailActivity extends AppCompatActivity {
         toLayout = findViewById(R.id.to_edit_layout);
         ccLayout = findViewById(R.id.cc_layout_createnew);
 
+        listOfContacts = (ArrayList<Contact>)dbHandler.getAllContactsList();
+
+        String[] emails = new String[listOfContacts.size()];
+
+        ArrayList<String> listOfEmails = new ArrayList<>();
+        for(int i=0; i < listOfContacts.size(); i++){
+            Contact c = listOfContacts.get(i);
+            listOfEmails.add(c.getEmail());
+            emails[i] = listOfEmails.get(i);
+        }
+
+
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, emails);
+        toEditBox.setAdapter(adapter);
+        ccEditBox.setAdapter(adapter);
+        bccEditBox.setAdapter(adapter);
 
 
         bccLayout = findViewById(R.id.bcc_layout_createnew);

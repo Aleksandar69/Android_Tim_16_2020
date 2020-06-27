@@ -10,6 +10,9 @@ import androidx.preference.PreferenceManager;
 
 import com.aleksandar69.PMSU2020Tim16.models.Account;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 public class Data {
 
     public static String syncTime;
@@ -49,6 +52,8 @@ public class Data {
     public static String profileImageFilePath = null;
     public static Bitmap bitmap = null;
     public static String currentImage = null;
+
+    public static ArrayList<String> emails = new ArrayList<>();
 
     public static Bitmap StringToBitMap(String encodedString){
         try {

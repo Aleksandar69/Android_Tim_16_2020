@@ -355,6 +355,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         return cursor;
     }
 
+
     public Cursor sortEmailAsc(int userId) {
 
         String[] projection = {COLUMN_ID_EMAILS, COLUMN_FROM, COLUMN_TO, COLUMN_CC, COLUMN_BCC, COLUMN_SUBJECT, COLUMN_CONTENT, COLUMN_DATETIME, COLUMN_ACCOUNTS_FK, COLUMN_ISUNREAD, COLUMN_TAGS, COLUMN_MESSAGE_ON_SERVER_ID};
@@ -639,6 +640,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
 
 
 
+
     public boolean deleteAccount(String userName) {
         boolean result = false;
 
@@ -844,6 +846,7 @@ public class MessagesDBHandler extends SQLiteOpenHelper {
         Cursor data = db.rawQuery(query, null);
         return data;
     }
+
 
        public void updateData10(int contactID ,String first, String last, String display, String email){
         int id = contactID;

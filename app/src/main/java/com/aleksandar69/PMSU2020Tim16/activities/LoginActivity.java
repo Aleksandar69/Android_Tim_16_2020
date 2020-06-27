@@ -36,6 +36,7 @@ import com.aleksandar69.PMSU2020Tim16.services.EmailSyncService;
 import com.aleksandar69.PMSU2020Tim16.services.EmailsJobSchedulerSyncService;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
@@ -88,6 +89,8 @@ public class LoginActivity extends AppCompatActivity {
 
         usernameLayout = findViewById(R.id.usernameLayoutLogin);
         passwordLayout = findViewById(R.id.password_layout_login);
+
+
 
     }
 
@@ -199,6 +202,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+
 
         super.onStart();
 
