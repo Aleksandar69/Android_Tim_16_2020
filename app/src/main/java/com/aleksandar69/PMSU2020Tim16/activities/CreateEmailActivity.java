@@ -40,6 +40,7 @@ import com.aleksandar69.PMSU2020Tim16.models.Tag;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import java.io.Console;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -135,13 +136,18 @@ public class CreateEmailActivity extends AppCompatActivity {
         }
         catch (NullPointerException e){}
 
-        if (itemId != 0){
-            mes = dbHandler.findMessage(itemId);
-            toEditBox.setText(mes.getTo());
-            ccEditBox.setText(mes.getCc());
-            bccEditBox.setText(mes.getBcc());
-            subjectEditBox.setText(mes.getSubject());
-            contentEditBox.setText(mes.getContent());
+        try {
+            if (itemId != 0) {
+                mes = dbHandler.findMessage(itemId);
+                toEditBox.setText(mes.getTo());
+                ccEditBox.setText(mes.getCc());
+                bccEditBox.setText(mes.getBcc());
+                subjectEditBox.setText(mes.getSubject());
+                contentEditBox.setText(mes.getContent());
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
 
 
@@ -312,10 +318,15 @@ public class CreateEmailActivity extends AppCompatActivity {
                         ccEditBox.getText().toString(), bccEditBox.getText().toString(), subjectEditBox.getText().toString(), contentEditBox.getText().toString());
                 message.setLogged_user_id(mSharedPreferences.getInt(Data.userId, -1));
                 tags.append(tagsEditBox.getText().toString());
-                if(mes.getFolder_id() == 1){
-                    dbHandler.deleteMessage(itemId);
+                try {
+                    if (mes.getFolder_id() == 1) {
+                        dbHandler.deleteMessage(itemId);
+                    }
                 }
-
+                catch(NullPointerException e){
+                    Log.d("Greska", "Ne postoji poruka");
+                    e.printStackTrace();
+                }
                 if (filePath != null || !tags.toString().isEmpty()) {
                  //   SendMultipartEmail sendMessage = new SendMultipartEmail(this, message.getSubject(), message.getContent(), uriList, message.getCc(), message.getBcc(), message.getTo(), tags.toString(), Data.account);
                 //    sendMessage.execute();

@@ -128,6 +128,18 @@ public class ContactsActivity extends AppCompatActivity implements NavigationVie
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.nav_contacts);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View header = navigationView.getHeaderView(0);
+        CircleImageView imageView23 = (CircleImageView) header.findViewById(R.id.imageViewNav);
+        Bitmap bitmapImage = Data.StringToBitMap(Data.account.getImageBitmap());
+        if(bitmapImage!=null) {
+            imageView23.setImageBitmap(bitmapImage);
+        }
+
+        displayNameNav = (TextView) header.findViewById(R.id.displayNameNav);
+        emailNav = (TextView) header.findViewById(R.id.emailNav);
+        displayNameNav.setText(Data.account.getDisplayName());
+        emailNav.setText(Data.account.geteMail());
     }
 
 
